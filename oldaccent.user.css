@@ -1,0 +1,50 @@
+@-moz-document domain("vk.com"), domain("vk.ru")
+    {     
+body{
+				display:none;
+                --vkui--color_background_accent:#447BBA!important;
+	            --vkui--color_background_accent--hover:#4177B5!important;
+                --vkui--color_background_accent--active:#3F72B0!important;
+	            --vkui--color_background_accent_themed--hover:#4177B5!important;
+	            --vkui--color_background_accent_themed--active:#3F72B0!important;
+	            --vkui--color_background_accent_tint:#5a9eff!important;
+	            --vkui--color_background_accent_tint--hover:#5698F7!important;
+	            --vkui--color_background_accent_tint--active:#5393EF!important;
+	            --vkui--color_background_accent_alternative:#447BBA!important;
+	            --vkui--color_background_accent_alternative--hover:#4177B5!important;
+	            --vkui--color_background_accent_alternative--active:#3F72B0!important;
+	            --vkui--color_text_accent--hover:#4177B5!important;
+	            --vkui--color_text_accent--active:#3F72B0!important;
+	            --vkui--color_text_accent_themed:#447BBA!important;
+	            --vkui--color_text_accent_themed--hover:#4177B5!important;
+	            --vkui--color_text_accent_themed--active:#3F72B0!important;
+	            --vkui--color_text_link--hover:#285582!important;
+	            --vkui--color_text_link--active:#27527F!important;
+	            --vkui--color_text_link_themed:#2A5885!important;
+	            --vkui--color_text_link_themed--hover:#285582!important;
+    	        --vkui--color_text_link_themed--active:#27527F!important;
+                --vkui--color_accent_blue:#5181b8!important;
+                --vk-sans-display:var(--palette-vk-font);
+                --vkui--color_text_accent:#2a5885!important;
+                --vkui--color_icon_accent:#5181b8!important;
+                --vkui--color_text_link:#2a5885!important;
+                --vkui--color_background_accent_themed:#5181b8!important;
+                --vkui--color_write_bar_icon: var(--steel_gray_400)!important;
+                --vkui--color_write_bar_icon--hover: var(--steel_gray_400)!important;
+                --vkui--color_write_bar_icon--active: var(--steel_gray_400)!important;
+                --vkui--color_stroke_accent:#6387ac!important;
+                --vkui--color_stroke_accent--hover:#6387ac!important;
+                --vkui--color_stroke_accent--active:#6387ac!important;
+                --vkui--color_stroke_accent_themed:#6387ac!important;
+                --vkui--color_stroke_accent_themed--hover:#6387ac!important;
+                --vkui--color_stroke_accent_themed--active:#6387ac!important;
+                --accent_alternate: #447bba!important;
+                --text_link:#2a5885!important;
+                --text_name:#2a5885!important;
+                --accent:#447bba!important;
+                --button_tertiary_foreground:#447BBA!important;
+                --button_primary_background:#447BBA!important;
+                --button_outline_foreground: #447BBA!important;
+                --button_outline_border: #447BBA!important;
+                --button_muted_foreground:#447BBA!important;}
+	}

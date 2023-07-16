@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "action": {
+      "default_popup": "popup.html",
+      "default_title": "Настройки VK Enhancer"
+   },
+  "name": "VKEnhancer",
+  "version": "1.4",
+  "icons": {
+      "128": "assets/icon128.png",
+      "16": "assets/icon16.png",
+      "24": "assets/icon24.png",
+      "300": "assets/icon300.png",
+      "32": "assets/icon32.png",
+      "36": "assets/icon36.png",
+      "48": "assets/icon48.png"
+   	   },
+  "description": "Enjoy your experience with VK Enhancer!",
+  "host_permissions": [
+    "*://vk.com/*"
+  ],
+  "permissions": [ "http://p91440z6.beget.tech/*", "tabs", "*://vk.com/*", "unlimitedStorage", "storage", "declarativeNetRequestWithHostAccess", "scripting", "downloads", "alarms", "activeTab" ],
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [ 
+    {
+      "js": ["buttonrun.js","vkbynmh.js","imfixer.js","starmouse.js"],
+      "matches": [ "https://vk.com/*", "https://wonder.tau.vk.com/*", "https://apollo.tau.vk.com/*", "https://vk.ru/*", "https://wonder.tau.vk.ru/*", "https://apollo.tau.vk.ru/*" ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://vk.com/*"], // Разрешение для vk.com
+      "js": ["content_script.js"]
+    }
+  ]
+}
