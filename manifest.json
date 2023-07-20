@@ -25,14 +25,11 @@
     "service_worker": "background.js"
   },
   "content_scripts": [ 
-    {
-      "js": ["buttonrun.js","vkbynmh.js","imfixer.js","starmouse.js"],
-      "matches": [ "https://vk.com/*", "https://wonder.tau.vk.com/*", "https://apollo.tau.vk.com/*", "https://vk.ru/*", "https://wonder.tau.vk.ru/*", "https://apollo.tau.vk.ru/*" ],
-      "run_at": "document_start"
-    },
+
     {
       "matches": ["*://vk.com/*"], // Разрешение для vk.com
-      "js": ["content_script.js"]
+      "js": ["content_script.js"],
+      "run_at": "document_start"
     }
   ]
 }
