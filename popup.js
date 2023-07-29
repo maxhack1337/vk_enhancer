@@ -5,6 +5,7 @@ var msgreact = document.getElementById('messagereactions');
 var secretFuncC = document.getElementById('secretfunctions');
 var postReactionsC = document.getElementById('postreactions');
 var hiderC = document.getElementById('hider');
+var addSticker = document.getElementById('addsticker');
 
 accentC.addEventListener('change', (event) => {
     const checked = event.target.checked;
@@ -49,6 +50,14 @@ hiderC.addEventListener('change', (event) => {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, { type: "toggleHider", isChecked: checked });
     });
+});
+
+addSticker.addEventListener('click', () => {
+  const stickerId = document.getElementById('addstickertextfield').value;
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const activeTabId = tabs[0].id;
+    chrome.tabs.sendMessage(activeTabId, { type: "addSticker", stickerId });
+  });
 });
 
 document.addEventListener('DOMContentLoaded', () => {

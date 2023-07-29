@@ -56,6 +56,7 @@ function removeStyle2() {
 }
 
 function addStyle4() {
+	console.log("hider executed");
     const styleElement = document.createElement("style");
     styleElement.id = "hider";
     styleElement.innerHTML = "       .im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg,.MEAvatar {    filter: blur(10px) grayscale(1) !important;}";
@@ -122,8 +123,26 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider") {
     applySavedStyles();
   }
+  
+  if(message.type === "addSticker")
+  {
+	  runStickerAdder(message.stickerId);
+  }
 });
 
+function runStickerAdder(idSticker)
+{	
+	copyToClipboard("cur.chooseMedia('sticker','"+idSticker+"', { performer: '123', title: '123', info: 124, duration: '244' });");
+}
+
+function copyToClipboard(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+}
 
 
 
@@ -135,10 +154,288 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 // Функция для добавления скриптов на страницу
 function loadScripts() {
+	if (document.querySelector('.top_profile_name')) {
+  console.log('Элемент top_profile_name найден на странице. Нет смысла запускать скрипты');
+} else {
+  console.log('Элемент top_profile_name не найден на странице. Запускаю скрипты');
+  fixname1();
   buttonrun();
-  imfixer();
-  starmouse();
-  vkbynmh();
+  favicons();
+  document.querySelectorAll('a.LeftMenuItem-module__item--XMcN9')[7].href = "https://vk.com/videos";
+	if(window.location.href.startsWith("https://vk.com/im"))
+		{
+			console.log("Обнаружена вкладка диалогов. Активирую нужные скрипты");
+			imfixer();
+			starmouse();
+		}
+	vkbynmh
+	if(window.location.href.startsWith("https://vk.com/video"))
+		{
+			console.log("Обнаружена вкладка видео. Активирую нужные скрипты");
+			videoinject();
+		}
+}
+  
+}
+
+let isFaviconReplaced = false;
+let isTitleReplaced = false;
+function favicons() {
+	
+	if (document.title == 'Мессенджер')
+		{
+			document.title = 'Сообщения';
+        }
+	else if (document.title == 'VK Видео — смотреть онлайн бесплатно')
+		{
+			document.title = 'Видеокаталог';
+		}
+	else if (document.title == 'Реакции')
+		{
+			document.title = 'Понравилось';
+		}
+	else if (document.title == 'Приложения')
+		{
+			let side = document.querySelector('div#side_bar')
+			side.style.setProperty("display", "none", "important")
+		}
+    if (document.title == 'Сообщения' || document.title == 'Messages') 
+		{
+			document.querySelector("link[rel='shortcut icon']").href = "data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAlElEQVR4AWNwL/BhCGrcURfYuOMpEP8F4v8E8F+QWpAekF6Y5v/kYJBeBqjN/8nETxnwO5uwdxiQBWoWnPz/8v23/3///fuPBkBiIDmwGmQ9yAaAFRAAIDU4DcBmMzaX4DaASECxC2gXBpTHArbwuPHo/f+k3n040wLOhPTu84//2049/B/avBNvQqI4KVOcmSjOzgBou+P2cojtUQAAAABJRU5ErkJggg==";
+		} 
+	else 
+		{
+			document.querySelector("link[rel='shortcut icon']").href = "https://vk.com/images/faviconnew.ico?6";
+		}
+		
+    isFaviconReplaced = true;
+	isTitleReplaced = true;
+	if(isFaviconReplaced)
+		{
+			console.log("Favicons replaced succesfully!");
+		}
+	if(isTitleReplaced)
+		{
+			console.log("Titles replaced succesfully!");
+		}
+}
+
+function videoinject()
+{
+	const subtitleElements = document.querySelectorAll('.js-video-subtitle');
+if (subtitleElements.length >= 5) {
+  subtitleElements[4].textContent = 'Альбомы';
+}
+  console.log(subtitleElements[4]);
+	
+	
+var newElement = document.createElement('div');
+newElement.className = 'VideoActions__item VideoActions__item--secondary';
+newElement.setAttribute('data-task-click', 'VideoShowcase/create_playlist');
+newElement.setAttribute('data-owner-id', '185853506');
+newElement.setAttribute('data-task-mouseover', 'VideoShowcase/show_main_action_tooltip');
+newElement.setAttribute('data-task-mouseout', 'VideoShowcase/hide_tooltip');
+newElement.setAttribute('data-text', 'Создать альбом');
+newElement.setAttribute('aria-label', 'Создать альбом');
+newElement.style.fontSize = '13px';
+newElement.textContent = 'Создать альбом';
+
+// Нахождение родительского элемента
+var parentElement = document.querySelector('.VideoActions ');
+
+// Добавление нового элемента внутрь родительского элемента
+parentElement.appendChild(newElement);
+
+//Видео by @notmaxhack
+const videoActionsElement = document.querySelector('.VideoActions');
+const headerExtraElements = document.querySelectorAll('.page_block_header_extra._header_extra');
+
+headerExtraElements[1].insertBefore(videoActionsElement, headerExtraElements[1].firstChild);
+
+
+
+const uploadVideoBtns = document.querySelectorAll('[data-task-click="VideoShowcase/upload_video"]');
+
+// проверяем, что второй элемент существует
+if (uploadVideoBtns.length >= 2) {
+  // выбираем второй элемент из массива и меняем его текст
+    uploadVideoBtns[1].style.fontSize = "13px";
+  uploadVideoBtns[1].textContent = "Добавить видео";
+}
+
+const uploadVideoBtns1 = document.querySelector('[data-task-click="VideoShowcase/create_live"]');
+    uploadVideoBtns1.style.fontSize = "13px";
+  uploadVideoBtns1.textContent = "Создать трансляцию";
+
+setInterval(function() {
+  let uploadModal = document.querySelector('#box_layer > div.popup_box_container.video_upload_box');
+  if (uploadModal) {
+      const brElements = document.querySelectorAll('.video_upload_title br');
+
+// Удалить элементы <br>
+brElements.forEach((br) => {
+  br.remove();
+});
+      console.log("Injected! Video");
+    const textElements = uploadModal.querySelectorAll('.video_upload_title');
+    textElements.forEach(function(textElement) {
+      if (textElement.innerHTML.includes("Перед загрузкой советуем ознакомиться")) {
+        textElement.innerHTML = textElement.innerHTML.replace("Перед загрузкой советуем ознакомиться", "");
+      }
+      if (textElement.innerHTML.includes("рекомендациями для авторов видео")) {
+        textElement.innerHTML = textElement.innerHTML.replace("рекомендациями для авторов видео", "Подробнее о правилах");
+      }
+        if (textElement.innerHTML.includes(" Чтобы начать загрузку, выберите файл ")) {
+        textElement.innerHTML = textElement.innerHTML.replace(" Чтобы начать загрузку, выберите файл ", "Чтобы нaчать загрузку, выберите файл на");
+      }
+        if (textElement.innerHTML.includes(" с&nbsp;")) {
+        textElement.innerHTML = textElement.innerHTML.replace(" с&nbsp;", "");
+      }
+        if (textElement.innerHTML.includes(" на&nbsp;компьютере или перетащите его в это окно. ")) {
+        textElement.innerHTML = textElement.innerHTML.replace("на&nbsp;компьютере или перетащите его в это окно.", "компьютере или перетащите видеозапись в это&nbsp; окно");
+      }
+        document.querySelector('.box_title').textContent = 'Новое видео';
+
+    });
+  }
+}, 500);
+
+setInterval(function() {
+  let uploadModal1= document.querySelector('#box_layer > div.popup_box_container.VideoPlaylistPopup');
+  if (uploadModal1) {
+
+      console.log("Injected! Album");
+    const textElements = uploadModal1.querySelectorAll('.box_body');
+    textElements.forEach(function(textElement) {
+      if (textElement.innerHTML.includes("Название плейлиста")) {
+        textElement.innerHTML = textElement.innerHTML.replace("Название плейлиста", "Название альбома");
+      }
+      if (textElement.innerHTML.includes("Введите название плейлиста")) {
+        textElement.innerHTML = textElement.innerHTML.replace("Введите название плейлиста", "Введите название альбома");
+      }
+        if (textElement.innerHTML.includes("Кто может просматривать этот плейлист?")) {
+        textElement.innerHTML = textElement.innerHTML.replace("Кто может просматривать этот плейлист?", "Кто может просматривать этот альбом?");
+      }
+document.querySelector('.box_title').textContent = 'Создание альбома';
+
+    });
+  }
+}, 500);
+
+
+ var search = document.querySelector('.ui_search_new.ui_search.ui_search_field_empty.video_search_input.VideoSearchInput.ui_search_custom.ui_search_with_custom_controls._wrap')
+    if (search) {
+        search.classList = 'ui_search_new ui_search ui_search_field_empty video_search_input ui_search_btn_large _wrap'
+
+        // Передвижение поиска
+        var parent = document.querySelector('div#video_main_block h2.page_block_h2')
+        var child = document.querySelector('.ui_search_new.ui_search.ui_search_field_empty.video_search_input.ui_search_btn_large._wrap')
+        parent.appendChild(child)
+    }
+
+var search1 = document.querySelector('.ui_search_new.ui_search.ui_search_field_empty.video_search_input.VideoSearchInput.ui_search_custom.ui_search_with_custom_controls._wrap')
+    var header = document.querySelector('div#video_block_header')
+    if (search1) {
+        search1.classList = 'ui_search_new ui_search ui_search_field_empty video_search_input ui_search_btn_large _wrap'
+        header.after(search1)
+    }
+
+seacrh2();
+seacrh4();
+
+function seacrh2() {
+	console.log("s2");
+    // Установка старого поиска
+    var search = document.querySelector('.ui_search_new.ui_search.ui_search_field_empty.video_search_input.VideoSearchInput.ui_search_custom.ui_search_with_custom_controls._wrap')
+    if (search) {
+        search.classList = 'ui_search_new ui_search ui_search_field_empty video_search_input ui_search_btn_large _wrap'
+
+        // Передвижение поиска
+        var parent = document.querySelector('.ui_gallery__arrow.ui_gallery__arrow_left')
+        var child = document.querySelector('.ui_search_new.ui_search.ui_search_field_empty.video_search_input.ui_search_btn_large._wrap')
+        if (parent) {
+            parent.before(child)
+        }
+    }
+}
+
+function seacrh4() {
+	console.log("s4");
+    // Передвижение поиска
+    var parent = document.querySelector('ul.ui_tabs.clear_fix.ui_tabs_header.ui_tabs_with_progress.ui_my_vid')
+    var child = document.querySelector('.ui_search_new.ui_search.ui_search_field_empty.video_search_input.ui_search_btn_large._wrap')
+    if (parent) {
+        parent.after(child)
+    }
+}
+
+
+}
+
+function fixname1() {
+	console.log("fixname");
+    try {
+    var parentlnk = document.querySelector('div#top_profile_menu')
+    var lnk = document.querySelector('li#l_pr a')
+    var setlnk = document.querySelector('a#top_settings_link');
+    var suplnk = document.querySelector('a#top_support_link');
+    var loglnk = document.querySelector('a#top_logout_link');
+    var name = document.querySelector('img.TopNavBtn__profileImg');
+    var name2 = document.querySelector('a[href*="connect.vk.com"] div[style="color: var(--text_primary);"]')
+    var name3 = document.querySelector('[style="background-color: var(--content_tint_background); border-radius: 8px; width: 254px; font-family: inherit;"]')
+
+    if (name) {
+        var namealt = name.alt
+    }
+    var s = document.querySelector('a#top_profile_link');
+    var q = document.createElement('div');
+    var w = document.createElement('a');
+    var wtext = document.createTextNode("Моя страница");
+    var ewtext = document.createTextNode("My profile");
+    var n = document.createElement('a');
+    var ntext = document.createTextNode("Редактировать");
+    var entext = document.createTextNode("Edit");
+    var u = document.createElement('div');
+    var k = document.createElement('div');
+    var b1
+w.classList.add("top_profile_mrow");
+n.classList.add("top_profile_mrow");
+w.setAttribute("id", "top_myprofile_link");
+n.setAttribute("id", "top_edit_link");
+n.href = ("https://vk.com/edit");
+u.classList.add("top_profile_sep");
+k.classList.add("top_profile_sep");
+q.classList.add("top_profile_name");
+document.getElementById("top_profile_menu").classList.remove('top_profile_menu_new');
+document.getElementById("top_profile_menu").classList.add('top_profile_menu');
+ if (document.querySelector('a#top_profile_link[aria-label="Настройки страницы"]')) {
+w.appendChild(wtext);
+n.appendChild(ntext);
+ }
+ if (document.querySelector('a#top_profile_link[aria-label="Profile settings"]')) {
+w.appendChild(ewtext);
+n.appendChild(entext);
+ }
+
+
+    q.innerHTML = `` + namealt + ``;
+    if (lnk) {
+        w.href = lnk.href
+    }
+    if (namealt != null) {
+
+        s.insertBefore(q, s.firstChild)
+        setlnk.insertAdjacentElement('beforeBegin', w);
+        var home = document.querySelector('a#top_home_link')
+        parentlnk.insertBefore(u, setlnk)
+        parentlnk.insertBefore(k, loglnk)
+        parentlnk.insertBefore(n, setlnk)
+
+
+
+    }
+    }catch(e){
+    }
 }
 
 function buttonrun()
@@ -146,7 +443,7 @@ function buttonrun()
 	console.log("buttonrun executed");
 var count = 0;
   var interval = setInterval(function() {
- if (count >= 10) {
+ if (count >= 3) {
 	 console.log(count + " passed")
       clearInterval(interval);
       return;
@@ -166,7 +463,8 @@ if (username.includes("?")) {
         // Получение значения переменной objectId внутри блока .then()
         objectId = data.response.object_id;
         console.log("ID fetched succesfully: " + objectId);
-
+		if(objectId != "185853506")
+		{
         var newElement = document.createElement("a");
         newElement.className = "ms_item ms_item_gift _type_gift";
         newElement.tabIndex = "0";
@@ -177,6 +475,7 @@ if (username.includes("?")) {
         newElement.innerHTML = 'Отправить подарок';
         newElement.href = "/gifts" + objectId + "?act=send&ref=profile_module";
         document.querySelector("#profile_redesigned").appendChild(newElement);
+		}
       })
       .catch(error => {
         // Обработка ошибок, если таковые возникнут
@@ -188,7 +487,7 @@ if (username.includes("?")) {
 
 function imfixer()
 {
-	document.addEventListener('DOMContentLoaded', function () {
+
 // Находим элемент <button> по его классу или другому селектору
 const buttonElement = document.querySelector('.im-page--dialogs-header-control_call');
 
@@ -211,7 +510,7 @@ var svgElement = linkElement.querySelector('svg');
 if (svgElement) {
   svgElement.remove();
 }
-});
+
 
 
 
@@ -295,25 +594,7 @@ function wait_form(){
 
 
 // Создание элемента
-document.addEventListener('DOMContentLoaded', function () {
-document.querySelectorAll('a.LeftMenuItem-module__item--XMcN9')[7].href = "https://vk.com/videos";
-var newElement = document.createElement('div');
-newElement.className = 'VideoActions__item VideoActions__item--secondary';
-newElement.setAttribute('data-task-click', 'VideoShowcase/create_playlist');
-newElement.setAttribute('data-owner-id', '185853506');
-newElement.setAttribute('data-task-mouseover', 'VideoShowcase/show_main_action_tooltip');
-newElement.setAttribute('data-task-mouseout', 'VideoShowcase/hide_tooltip');
-newElement.setAttribute('data-text', 'Создать альбом');
-newElement.setAttribute('aria-label', 'Создать альбом');
-newElement.style.fontSize = '13px';
-newElement.textContent = 'Создать альбом';
 
-// Нахождение родительского элемента
-var parentElement = document.querySelector('.VideoActions ');
-
-// Добавление нового элемента внутрь родительского элемента
-parentElement.appendChild(newElement);
-});
 
  window.addEventListener('load', function() {const createPlaylistButton = document.querySelectorAll('[aria-label="Создать плейлист"]');
   const plist1 = createPlaylistButton[1];
@@ -321,100 +602,9 @@ parentElement.appendChild(newElement);
   plist1.querySelector('.FlatButton__before').remove();
   plist1.querySelector('.FlatButton__content').textContent = 'Создать альбом';});
 
-const subtitleElements = document.querySelectorAll('.js-video-subtitle');
-if (subtitleElements.length >= 5) {
-  subtitleElements[4].textContent = 'Альбомы';
-}
-  console.log(subtitleElements[4]);
-
-window.addEventListener('load', function() {
-    //Видео by @notmaxhack
-const videoActionsElement = document.querySelector('.VideoActions');
-const headerExtraElements = document.querySelectorAll('.page_block_header_extra._header_extra');
-
-headerExtraElements[1].insertBefore(videoActionsElement, headerExtraElements[1].firstChild);
 
 
 
-const uploadVideoBtns = document.querySelectorAll('[data-task-click="VideoShowcase/upload_video"]');
-
-// проверяем, что второй элемент существует
-if (uploadVideoBtns.length >= 2) {
-  // выбираем второй элемент из массива и меняем его текст
-    uploadVideoBtns[1].style.fontSize = "13px";
-  uploadVideoBtns[1].textContent = "Добавить видео";
-}
-
-const uploadVideoBtns1 = document.querySelector('[data-task-click="VideoShowcase/create_live"]');
-    uploadVideoBtns1.style.fontSize = "13px";
-  uploadVideoBtns1.textContent = "Создать трансляцию";
-
-setInterval(function() {
-  let uploadModal = document.querySelector('#box_layer > div.popup_box_container.video_upload_box');
-  if (uploadModal) {
-      const brElements = document.querySelectorAll('.video_upload_title br');
-
-// Удалить элементы <br>
-brElements.forEach((br) => {
-  br.remove();
-});
-      console.log("Injected! Video");
-    const textElements = uploadModal.querySelectorAll('.video_upload_title');
-    textElements.forEach(function(textElement) {
-      if (textElement.innerHTML.includes("Перед загрузкой советуем ознакомиться")) {
-        textElement.innerHTML = textElement.innerHTML.replace("Перед загрузкой советуем ознакомиться", "");
-      }
-      if (textElement.innerHTML.includes("рекомендациями для авторов видео")) {
-        textElement.innerHTML = textElement.innerHTML.replace("рекомендациями для авторов видео", "Подробнее о правилах");
-      }
-        if (textElement.innerHTML.includes(" Чтобы начать загрузку, выберите файл ")) {
-        textElement.innerHTML = textElement.innerHTML.replace(" Чтобы начать загрузку, выберите файл ", "Чтобы нaчать загрузку, выберите файл на");
-      }
-        if (textElement.innerHTML.includes(" с&nbsp;")) {
-        textElement.innerHTML = textElement.innerHTML.replace(" с&nbsp;", "");
-      }
-        if (textElement.innerHTML.includes(" на&nbsp;компьютере или перетащите его в это окно. ")) {
-        textElement.innerHTML = textElement.innerHTML.replace("на&nbsp;компьютере или перетащите его в это окно.", "компьютере или перетащите видеозапись в это&nbsp; окно");
-      }
-        document.querySelector('.box_title').textContent = 'Новое видео';
-
-    });
-  }
-}, 500);
-
-setInterval(function() {
-  let uploadModal1= document.querySelector('#box_layer > div.popup_box_container.VideoPlaylistPopup');
-  if (uploadModal1) {
-
-      console.log("Injected! Album");
-    const textElements = uploadModal1.querySelectorAll('.box_body');
-    textElements.forEach(function(textElement) {
-      if (textElement.innerHTML.includes("Название плейлиста")) {
-        textElement.innerHTML = textElement.innerHTML.replace("Название плейлиста", "Название альбома");
-      }
-      if (textElement.innerHTML.includes("Введите название плейлиста")) {
-        textElement.innerHTML = textElement.innerHTML.replace("Введите название плейлиста", "Введите название альбома");
-      }
-        if (textElement.innerHTML.includes("Кто может просматривать этот плейлист?")) {
-        textElement.innerHTML = textElement.innerHTML.replace("Кто может просматривать этот плейлист?", "Кто может просматривать этот альбом?");
-      }
-document.querySelector('.box_title').textContent = 'Создание альбома';
-
-    });
-  }
-}, 500);
-let uploadModal2= document.querySelector('.video_content_playlist');
-const textElements = uploadModal2.querySelectorAll('.VideoEmptyStub ');
- textElements.forEach(function(textElement) {
-      if (textElement.innerHTML.includes("В плейлисте нет видео")) {
-        textElement.innerHTML = textElement.innerHTML.replace("В плейлисте нет видео", "В альбоме нет видео");
-      }
-
-
-    });
-
-
-});
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -454,7 +644,6 @@ function initial() {
     console.log('Скрипт запущен');
     setInterval(title, 2000);
     setInterval(check, 1000);
-    fix_name();
     }
 
 // Проверка
@@ -535,33 +724,6 @@ window.addEventListener('scroll', function () {
 // Название
 function title() {
 
-    if (document.title == 'Мессенджер'){
-        document.title = 'Сообщения';
-        document.querySelector("link[rel='shortcut icon']").href = "data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAlElEQVR4AWNwL/BhCGrcURfYuOMpEP8F4v8E8F+QWpAekF6Y5v/kYJBeBqjN/8nETxnwO5uwdxiQBWoWnPz/8v23/3///fuPBkBiIDmwGmQ9yAaAFRAAIDU4DcBmMzaX4DaASECxC2gXBpTHArbwuPHo/f+k3n040wLOhPTu84//2049/B/avBNvQqI4KVOcmSjOzgBou+P2cojtUQAAAABJRU5ErkJggg==";
-    }else if (document.title == 'VK Видео — смотреть онлайн бесплатно'){
-        document.title = 'Видеокаталог';
-        document.querySelector("link[rel='shortcut icon']").href = "https://vk.com/images/faviconnew.ico?6";
-    }else if (document.title == 'Реакции'){
-        document.title = 'Понравилось'
-    }else if (document.title == 'Приложения'){
-        let side = document.querySelector('div#side_bar')
-        side.style.setProperty("display", "none", "important")
-    }
-        else if (document.title == 'Новости'){
-        document.querySelector("link[rel='shortcut icon']").href = "https://vk.com/images/faviconnew.ico?6";
-}
-    const videoPageRegex = /^https?:\/\/vk\.com\/video\//i;
-if (videoPageRegex.test(window.location.href)) {
-
-
-   document.querySelector("link[rel='shortcut icon']").href = "https://vk.com/images/faviconnew.ico?6";
-}
-   
-
-    
-    
-    
-    
     
    }
 
@@ -610,70 +772,7 @@ if (clickableElement) {
 
 
 // Меню и Имя возле иконки
-function fix_name() {
-    try {
-    var parentlnk = document.querySelector('div#top_profile_menu')
-    var lnk = document.querySelector('li#l_pr a')
-    var setlnk = document.querySelector('a#top_settings_link');
-    var suplnk = document.querySelector('a#top_support_link');
-    var loglnk = document.querySelector('a#top_logout_link');
-    var name = document.querySelector('img.TopNavBtn__profileImg');
-    var name2 = document.querySelector('a[href*="connect.vk.com"] div[style="color: var(--text_primary);"]')
-    var name3 = document.querySelector('[style="background-color: var(--content_tint_background); border-radius: 8px; width: 254px; font-family: inherit;"]')
 
-    if (name) {
-        var namealt = name.alt
-    }
-    var s = document.querySelector('a#top_profile_link');
-    var q = document.createElement('div');
-    var w = document.createElement('a');
-    var wtext = document.createTextNode("Моя страница");
-    var ewtext = document.createTextNode("My profile");
-    var n = document.createElement('a');
-    var ntext = document.createTextNode("Редактировать");
-    var entext = document.createTextNode("Edit");
-    var u = document.createElement('div');
-    var k = document.createElement('div');
-    var b1
-w.classList.add("top_profile_mrow");
-n.classList.add("top_profile_mrow");
-w.setAttribute("id", "top_myprofile_link");
-n.setAttribute("id", "top_edit_link");
-n.href = ("https://vk.com/edit");
-u.classList.add("top_profile_sep");
-k.classList.add("top_profile_sep");
-q.classList.add("top_profile_name");
-document.getElementById("top_profile_menu").classList.remove('top_profile_menu_new');
-document.getElementById("top_profile_menu").classList.add('top_profile_menu');
- if (document.querySelector('a#top_profile_link[aria-label="Настройки страницы"]')) {
-w.appendChild(wtext);
-n.appendChild(ntext);
- }
- if (document.querySelector('a#top_profile_link[aria-label="Profile settings"]')) {
-w.appendChild(ewtext);
-n.appendChild(entext);
- }
-
-
-    q.innerHTML = `` + namealt + ``;
-    if (lnk) {
-        w.href = lnk.href
-    }
-    if (namealt != null) {
-
-        s.insertBefore(q, s.firstChild)
-        setlnk.insertAdjacentElement('beforeBegin', w);
-        var home = document.querySelector('a#top_home_link')
-        parentlnk.insertBefore(u, setlnk)
-        parentlnk.insertBefore(k, loglnk)
-        parentlnk.insertBefore(n, setlnk)
-
-
-
-    }
-    }catch(e){
-    }
-}
 const styleremove = document.createElement('style');
 styleremove.innerHTML = `
       .ReactionsMenuPopper,.fans_fanph_reaction,li#likes_tab_reactions_0, li#likes_tab_reactions_1, li#likes_tab_reactions_2, li#likes_tab_reactions_3, li#likes_tab_reactions_4, li#likes_tab_reactions_5,.ui_tab.ui_tab_group,.menu_item_icon,#react_rootEcosystemAccountMenuEntry {
@@ -711,24 +810,11 @@ if (window.location.href.includes('https://vk.com/settings?act=classicsecurity')
     }
 function seacrh() {
     // Установка старого поиска
-    var search = document.querySelector('.ui_search_new.ui_search.ui_search_field_empty.video_search_input.VideoSearchInput.ui_search_custom.ui_search_with_custom_controls._wrap')
-    if (search) {
-        search.classList = 'ui_search_new ui_search ui_search_field_empty video_search_input ui_search_btn_large _wrap'
-
-        // Передвижение поиска
-        var parent = document.querySelector('div#video_main_block h2.page_block_h2')
-        var child = document.querySelector('.ui_search_new.ui_search.ui_search_field_empty.video_search_input.ui_search_btn_large._wrap')
-        parent.appendChild(child)
-    }
+   
 }
 
 function seacrh3() {
-    var search = document.querySelector('.ui_search_new.ui_search.ui_search_field_empty.video_search_input.VideoSearchInput.ui_search_custom.ui_search_with_custom_controls._wrap')
-    var header = document.querySelector('div#video_block_header')
-    if (search) {
-        search.classList = 'ui_search_new ui_search ui_search_field_empty video_search_input ui_search_btn_large _wrap'
-        header.after(search)
-    }
+    
 }
 
 

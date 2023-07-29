@@ -300,6 +300,37 @@
     .vknextPanelHeaderButton {
       border-radius: var(--vkui--size_border_radius--regular) !important
     }
+	
+	.betathing
+	{
+	position:absolute;
+	margin-left:200px;
+	margin-top:-20px;
+	color: var(--vkui--color_text_subhead);
+    background-color: var(--vkui--color_background_content--active);
+    border-radius: 3px;
+    padding-left: 4px;
+    text-transform: lowercase;
+    font-size: 12px;
+	}
+	
+	.textfieldpro
+	{
+	width:120%;
+	display:block;
+	color: var(--vkui--color_text_subhead);
+    background-color: var(--vkui--color_background_content--active);
+    border-radius: 3px;}
+	
+	#home > div > section > div > div:nth-child(1) > div:nth-child(5) > h5
+	{
+		color:#e1e3e6;
+		font-size:14px;
+	}
+	
+	#home > div > section > div > div:nth-child(1) > div:nth-child(5) > span._OdEaRZRcthBcQty.ie6jnmeUOSRv1qMj.scFDDTpUBnp_wNOx.Y1aohYZJ5QjB1Nuw.NkHYQdoknESxu79l.A6SQhVKIkf9ugRZf
+	{
+	top:14px;}
     
     .react-loading-skeleton.skeletonCircle {
       border-radius: 50% !important
@@ -1747,9 +1778,9 @@
     
     .y2tAdaKbIKTTIdCH::after {
       content: "​ old design ​";
-	  color:var(--vkui--color_text_subhead);
+      color: var(--vkui--color_text_subhead);
       background-color: var(--vkui--color_background_content--active);
-	  border-radius:3px;
+      border-radius: 3px;
       padding-left: 4px;
       text-transform: lowercase;
       font-size: 12px
@@ -3342,18 +3373,19 @@
     }
   </style>
   <style>
-	.O75OhMD_KtsQponB
-	{
-		margin-top:-86px;
-		margin-left: 160px;
-	}
-	
-	.O75OhMD_KtsQponC
-	{
-		margin-top:-86px;
-		margin-left: 320px;
-	}
-    .O75OhMD_KtsQponA, .O75OhMD_KtsQponB,.O75OhMD_KtsQponC {
+    .O75OhMD_KtsQponB {
+      margin-top: -86px;
+      margin-left: 160px;
+    }
+    
+    .O75OhMD_KtsQponC {
+      margin-top: -86px;
+      margin-left: 320px;
+    }
+    
+    .O75OhMD_KtsQponA,
+    .O75OhMD_KtsQponB,
+    .O75OhMD_KtsQponC {
       display: block;
       padding: var(--vkui--size_form_item_padding_vertical--regular) var(--vkui--size_base_padding_horizontal--regular)
     }
@@ -7091,16 +7123,15 @@
       }
     }
     
-	input[type="color"]
-	{
-	border:0!important;
-	border-radius:3px;
-	background:none;
-	inline-size:80px;
-	block-size:36px;
-	cursor:pointer!important;
-	}
-	
+    input[type="color"] {
+      border: 0!important;
+      border-radius: 3px;
+      background: none;
+      inline-size: 80px;
+      block-size: 36px;
+      cursor: pointer!important;
+    }
+    
     .b9tzWTsL36z8gKbF .rylfwBI1dQJrirPa {
       box-shadow: -2px 0 12px rgba(0, 0, 0, .3)
     }
@@ -8755,6 +8786,14 @@
                                 </div><span aria-hidden="true" class="gK9DFzdHNf6Fodxv"></span><span aria-hidden="true" class="J6dUA2R_sk4KJbmV EeEhM8FMDREwnB7E"></span></label>
 
                               <div class="O75OhMD_KtsQponA vknextInternalFormItem dgcSiiAshfVDJZvR KF7MikEzMtxFYXtE vknextInternalFormItem--withTop" style="width: 50%;">
+                                <h5 class="sgKS3x5MeEJKRKxo I_LWGH8mtF7qZ0ne k4q8sBWhQpHixmFA yzc7SKBatlPnU34G">Добавить стикер во вложения</h5><span class="betathing">beta ​</span><span class="textfieldpro">1. Откройте инструменты разработчика(CTRL + Shift + I)ᅠ2. Нажмите на "Console" ᅠᅠᅠᅠᅠᅠᅠᅠᅠᅠᅠᅠᅠᅠᅠᅠ 3. Вставьте скопированный в Ваш буфер обмена код в консоль</span><span class="_OdEaRZRcthBcQty ie6jnmeUOSRv1qMj scFDDTpUBnp_wNOx Y1aohYZJ5QjB1Nuw NkHYQdoknESxu79l A6SQhVKIkf9ugRZf"><input placeholder="id стикера" type="text" id="addstickertextfield" class="eE7bcOEr98jEbUOF" value=""><span aria-hidden="true" class="rY27IPGdeDBioVrF"></span></span>
+                              </div>
+							
+                              <div class="O75OhMD_KtsQponA vknextInternalFormItem dgcSiiAshfVDJZvR">
+                                <button type="button" id="addsticker" class="KAaccyKZbBm0fbKm sQj2SvIAT5Z3lYIy GvpQJxOI0iScuRW2 CuJ4nsmh6wS_UnoD utV6SLW86PeliCvm H0Zlpjp2PVW2nRlD vknextInternalTappable Db4roYxvwz3KfnqS MhS3xzxtmwtJHJ1C j1cxnjKBhhvd6Ssy wGa9D1Hzhv_13Ald"><span class="GesLuBxznR_RUm_Y"><span class="sH6RDidRxauHzAZY">Добавить</span></span><span aria-hidden="true" class="J6dUA2R_sk4KJbmV VRdibjZIlAwe9k3r"></span></button>
+                              </div>
+
+                              <div class="O75OhMD_KtsQponA vknextInternalFormItem dgcSiiAshfVDJZvR KF7MikEzMtxFYXtE vknextInternalFormItem--withTop" style="width: 50%;">
                                 <h5 class="sgKS3x5MeEJKRKxo I_LWGH8mtF7qZ0ne k4q8sBWhQpHixmFA yzc7SKBatlPnU34G">Свой логотип в шапке профиля</h5><span class="_OdEaRZRcthBcQty ie6jnmeUOSRv1qMj scFDDTpUBnp_wNOx NkHYQdoknESxu79l A6SQhVKIkf9ugRZf"><input placeholder="Добавьте ссылку..." type="text" class="eE7bcOEr98jEbUOF" value=""><span aria-hidden="true" class="rY27IPGdeDBioVrF"></span></span>
                               </div>
 
@@ -8777,20 +8816,22 @@
                               <label class="bNHWj_hw2xA6gbjl iZlVeIi8ZAxHB0jP">
                                 <input type="checkbox" id="secretfunctions" class="gBWzXxSGiOV5X1Ls osjpmUXNCnr3R3NT"><span aria-hidden="true" class="EC8bn4FFx4VEZ2XF"></span><span aria-hidden="true" class="J6dUA2R_sk4KJbmV VRdibjZIlAwe9k3r"></span></label>
                             </div><span aria-hidden="true" class="gK9DFzdHNf6Fodxv"></span><span aria-hidden="true" class="J6dUA2R_sk4KJbmV EeEhM8FMDREwnB7E"></span></label>
-							
-							<div class="O75OhMD_KtsQponA" style="width: 50%;">
-                                <h5 class="sgKS3x5MeEJKRKxo I_LWGH8mtF7qZ0ne k4q8sBWhQpHixmFA yzc7SKBatlPnU34G">Кастомный акцент</h5><input type="color" id="color-picker-accent" name="color-picker">                              
-							</div>
-							
-							<div class="O75OhMD_KtsQponB" style="width: 50%;">
-                                <h5 class="sgKS3x5MeEJKRKxo I_LWGH8mtF7qZ0ne k4q8sBWhQpHixmFA yzc7SKBatlPnU34G">Цвет выделения</h5><input type="color" id="color-picker-selection" name="color-picker">                              
-							</div>
-							
-							<div class="O75OhMD_KtsQponC" style="width: 50%;">
-                                <h5 class="sgKS3x5MeEJKRKxo I_LWGH8mtF7qZ0ne k4q8sBWhQpHixmFA yzc7SKBatlPnU34G">Цвет выделенного текста</h5><input type="color" id="color-picker-selection-text" name="color-picker">                              
-							</div>
-							
-							
+
+                            <div class="O75OhMD_KtsQponA" style="width: 50%;">
+                              <h5 class="sgKS3x5MeEJKRKxo I_LWGH8mtF7qZ0ne k4q8sBWhQpHixmFA yzc7SKBatlPnU34G">Кастомный акцент</h5>
+                              <input type="color" id="color-picker-accent" name="color-picker">
+                            </div>
+
+                            <div class="O75OhMD_KtsQponB" style="width: 50%;">
+                              <h5 class="sgKS3x5MeEJKRKxo I_LWGH8mtF7qZ0ne k4q8sBWhQpHixmFA yzc7SKBatlPnU34G">Цвет выделения</h5>
+                              <input type="color" id="color-picker-selection" name="color-picker">
+                            </div>
+
+                            <div class="O75OhMD_KtsQponC" style="width: 50%;">
+                              <h5 class="sgKS3x5MeEJKRKxo I_LWGH8mtF7qZ0ne k4q8sBWhQpHixmFA yzc7SKBatlPnU34G">Цвет выделенного текста</h5>
+                              <input type="color" id="color-picker-selection-text" name="color-picker">
+                            </div>
+
                             <div aria-hidden="true" class="_AATIyBe5IWyCkAI" style="height: 12px; padding: 6px 0px;">
                               <div aria-hidden="true" class="YcnqAJrg5X8zKzCe Ece3Af2vGNcbNRsc" role="separator">
                                 <div class="zVIVfRUbKBCnmp1k"></div>
