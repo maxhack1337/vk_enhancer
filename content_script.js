@@ -1,5 +1,28 @@
 console.log('Content script is running!');
 
+const url = window.location.href;
+    var parts = url.split("/");
+    var username = parts[parts.length - 1];
+if (username.includes("?")) {
+  username = username.split("?")[0];
+}
+    var objectId;
+	console.log("Username:" + username);
+    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.sYQv8a8EnO_V9-B1-30RwELhng0DR-LHBGSdjMsVG6xT_bhYj_hC8UNgB2SPsZbARMMS0RdV_2kg31IPphOmDfk9l_fe7dCYAzXxVAdx6hsHuu8t_-Gy-QM6V71ZGbzFsHieLUAQkNgZI9MZa3ieeza1ntxm0xyf1hLIju8YdsKYCINlN-QW1kc9eIxB-KOzEd2OLef9z-LeKerJNpg54w&request_id=7`;
+    fetch(url1)
+      .then(response => response.json())
+      .then(data => {
+        // Получение значения переменной objectId внутри блока .then()
+        objectId = data.response.object_id;
+        // Отправка сообщения из content_script.js
+		chrome.runtime.sendMessage({ greeting: objectId });
+
+      })
+      .catch(error => {
+        // Обработка ошибок, если таковые возникнут
+        console.error('Ошибка:', error);
+      });
+
 // Функция для добавления стиля
 function addStyle() {
     const styleElement = document.createElement("style");
@@ -70,8 +93,53 @@ function removeStyle4() {
     }
 }
 
+function addCAccent(cAccentValue)
+{
+	console.log("Caccent executed");
+    const styleElement = document.createElement("style");
+    styleElement.id = "CAccentID";
+    styleElement.innerHTML = "body{    --accent:"+cAccentValue+"!important;    --blue_400: var(--accent) !important;    --action_sheet_action_foreground: var(--accent) !important;    --attach_picker_tab_active_background: var(--accent) !important;    --attach_picker_tab_active_text: var(--accent) !important;    --cell_button_foreground: var(--accent) !important;    --control_foreground: var(--accent) !important;    --counter_primary_background: var(--accent) !important;    --header_alternate_tab_active_indicator: var(--accent) !important;    --header_tab_active_indicator: var(--accent) !important;    --header_tint: var(--accent) !important;    --header_tint_alternate: var(--accent) !important;    --im_attach_tint: var(--accent) !important;    --im_reply_sender_text: var(--accent) !important;    --im_reply_separator: var(--accent) !important;    --landing_login_button_background: var(--accent) !important;    --landing_primary_button_background: var(--accent) !important;    --landing_tertiary_button_foreground: var(--accent) !important;    --landing_text_title: var(--accent) !important;    --landing_secondary_button_foreground: var(--accent) !important;    --link_alternate: var(--accent) !important;    --loader_track_value_fill: var(--accent) !important;    --feed_recommended_friend_promo_background: var(--accent) !important;    --tabbar_active_icon: var(--accent) !important;    --tabbar_tablet_active_icon: var(--accent) !important;    --text_link: var(--accent) !important;    --text_name: var(--accent) !important;    --writebar_icon: var(--accent) !important;    --dynamic_blue: var(--accent) !important;    --text_link_hightlighted_background: var(--accent) !important;    --im_text_name: var(--accent) !important;    --button-background-color: var(--accent) !important;    --sky_100: var(--accent) !important;    --sky_200: var(--accent) !important;    --light_blue_700: var(--accent) !important;    --blue_bright: var(--accent) !important;    --vkui--color_icon_accent: var(--accent) !important;    --vkui--color_background_accent_themed: var(--accent) !important;    --vkui--color_background_accent: var(--accent) !important;    --vkui--color_background_accent--hover: var(--accent) !important;    --vkui--color_background_accent--active: var(--accent) !important;    --vkui--color_background_accent_themed--hover: var(--accent) !important;    --vkui--color_background_accent_themed--active: var(--accent) !important;    --vkui--color_background_accent_tint--hover: var(--accent) !important;    --vkui--color_background_accent_tint--active: var(--accent) !important;    --vkui--color_background_accent_alternative: var(--accent) !important;    --vkui--color_background_accent_alternative--hover: var(--accent) !important;    --vkui--color_background_accent_alternative--active: var(--accent) !important;    --vkui--color_text_accent: var(--accent) !important;    --vkui--color_text_accent--hover: var(--accent) !important;    --vkui--color_text_accent--active: var(--accent) !important;    --vkui--color_text_accent_themed: var(--accent) !important;    --vkui--color_text_accent_themed--hover: var(--accent) !important;    --vkui--color_text_accent_themed--active: var(--accent) !important;    --vkui--color_text_link: var(--accent) !important;    --vkui--color_text_link--hover: var(--accent) !important;    --vkui--color_text_link--active: var(--accent) !important;    --vkui--color_text_link_themed: var(--accent) !important;    --vkui--color_text_link_themed--hover: var(--accent) !important;    --vkui--color_text_link_themed--active: var(--accent) !important;    --vkui--color_text_link_visited--hover: var(--accent) !important;    --vkui--color_text_link_visited--active: var(--accent) !important;    --blue_a400: var(--accent) !important;    --blue_400_alpha20: var(--accent),0.2 !important;    --blue_400_alpha48: var(--accent),0.48 !important;    --blue_420: var(--accent) !important;    --blue_550: var(--accent) !important;    --blue_600: var(--accent) !important;    --blue_640: var(--accent) !important;    --blue_800: var(--accent) !important;    #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg > g > g > path:nth-child(2){        fill: "+cAccentValue+" !important;    }}";
+	document.head.appendChild(styleElement);
+	// Получаем элемент SVG
+	try{
+		const svgElement1 = document.querySelector('#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg');
+  const pathElement1 = svgElement1.querySelector('g > g > path:nth-child(2)');
+  pathElement1.setAttribute('fill', cAccentValue);
+  console.log("logo accepted " + svgElement1);
+	}
+	catch (error) {
+    console.error('logo not accepted. Trying to use DOM', error);
+  }
+	document.addEventListener('DOMContentLoaded', function() {
+  const svgElement = document.querySelector('#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg');
+  const pathElement = svgElement.querySelector('g > g > path:nth-child(2)');
+  pathElement.setAttribute('fill', cAccentValue);
+  console.log("logo accepted reload" + svgElement);
+});
+
+
+}
+function removeCAccent()
+{
+	const customStyle = document.getElementById("CAccentID");
+    if (customStyle) {
+        customStyle.remove();
+    }
+	const svgElement = document.querySelector('#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg');
+	const pathElement = svgElement.querySelector('g > g > path:nth-child(2)');
+	pathElement.setAttribute('fill', '#07F');
+}
+
+function addColorPicker(cColorValue,cTextValue)
+{
+	const styleElement = document.createElement("style");
+    styleElement.id = "selections";
+    styleElement.innerHTML = "::selection {                background-color: "+cColorValue+";                color: "+cTextValue+";                    }";
+	document.head.appendChild(styleElement);
+}
+
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue) {
   if (isOldAccentChecked) {
     addStyle();
   } else {
@@ -101,17 +169,31 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
   } else {
     removeStyle4();
   }
+  
+  if (cAccentValue != "#FFFFFF" && cAccentValue != "#ffffff")
+  {
+	  addCAccent(cAccentValue);
+  }
+  else
+  {
+	  removeCAccent();
+  }
+  
+  addColorPicker(cColorValue,cTextValue);
 }
 
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-  chrome.storage.local.get(["checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState"], function(items) {
+  chrome.storage.local.get(["checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText"], function(items) {
     const isOldAccentChecked = items.checkboxState;
     const isMsgReactionsChecked = items.checkboxState1;
 	const isPostReactionsChecked = items.postReactionsState;
 	const isSecretChecked = items.secretFuncState;
 	const isHiderChecked = items.hiderState;
-    applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked);
+	const cAccentValue = items.customAccent;
+	const cColorValue = items.colorPicker;
+	const cTextValue = items.colorPickerText;
+    applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue);
   });
 }
 
