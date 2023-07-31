@@ -8,7 +8,7 @@ if (username.includes("?")) {
 }
     var objectId;
 	console.log("Username:" + username);
-    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.sYQv8a8EnO_V9-B1-30RwELhng0DR-LHBGSdjMsVG6xT_bhYj_hC8UNgB2SPsZbARMMS0RdV_2kg31IPphOmDfk9l_fe7dCYAzXxVAdx6hsHuu8t_-Gy-QM6V71ZGbzFsHieLUAQkNgZI9MZa3ieeza1ntxm0xyf1hLIju8YdsKYCINlN-QW1kc9eIxB-KOzEd2OLef9z-LeKerJNpg54w&request_id=7`;
+    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.jDiii-1_vBa5senQNEtBBrUiT7hG7wQIYLQCJ0SlCN4gY6wm2413ViqDmBsz1t5qHxbme6aFZzfbOSnkBN5DEtsBt8T1FEkugmoNe8GYC06MqDVzP8EGYjHAXwNksV6E_T7xQulXzpjUM2DNL59qumtJyng_hM7f1rh8TctOfypxDlXCtpTQ6XwFQhFpktRiCzh2Ft1VqpSZZJ2aX4H-jA&request_id=7`;
     fetch(url1)
       .then(response => response.json())
       .then(data => {
@@ -108,7 +108,7 @@ function addCAccent(cAccentValue)
   console.log("logo accepted " + svgElement1);
 	}
 	catch (error) {
-    console.error('logo not accepted. Trying to use DOM', error);
+    console.log('logo not accepted. Trying to use DOM');
   }
 	document.addEventListener('DOMContentLoaded', function() {
   const svgElement = document.querySelector('#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg');
@@ -138,8 +138,56 @@ function addColorPicker(cColorValue,cTextValue)
 	document.head.appendChild(styleElement);
 }
 
+function addLogo(cLogoValue)
+{
+	const styleElement = document.createElement("style");
+	styleElement.id = "logos";
+    styleElement.innerHTML = "#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink {          background:url("+cLogoValue+") no-repeat;          background-size: contain;          background-position: center;      }      #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg g{          display:none;      }";
+	document.head.appendChild(styleElement);
+}
+
+function removeLogo()
+{
+	const customStyle = document.getElementById("logos");
+    if (customStyle) {
+        customStyle.remove();
+    }
+}
+
+function addBg(cBgValue)
+{
+	const styleElement = document.createElement("style");
+	styleElement.id = "custombg";
+    styleElement.innerHTML = ':root,.vknBgWrapper,.scroll_fix {          background-image:url('+cBgValue+')!important;          background-size: contain;          background-position: center;          background-attachment: fixed;      }                        #side_bar {              background-color:#fff;              width:15%;              margin-left:-20px!important;              border-radius:5px;              padding-left:12px;          }    .body_im .side_bar {        background-color:#fff;        visibility:visible;        padding-right:0;    }    [scheme="vkcom_dark"] #side_bar {        background-color:#141414;              width:15%;              margin-left:-20px!important;              border-radius:5px;              padding-left:12px;    }        [scheme="vkcom_dark"] .body_im .side_bar {        background-color:#141414;        visibility:visible;        padding-right:0;    }';
+	document.head.appendChild(styleElement);
+}
+
+function removeBg()
+{
+	const customStyle = document.getElementById("custombg");
+    if (customStyle) {
+        customStyle.remove();
+    }
+}
+
+function addFont(cFontValue)
+{
+	const styleElement = document.createElement("style");
+	styleElement.id = "customfont";
+    styleElement.innerHTML = "html, body, p, h1, h2, h3, h4, h5, h6, span, div, a, ul, ol, li,input,button {  font-family: "+cFontValue+"!important;}";
+	document.head.appendChild(styleElement);
+}
+
+function removeFont()
+{
+	const customStyle = document.getElementById("customfont");
+    if (customStyle) {
+        customStyle.remove();
+    }
+}
+
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue) {
   if (isOldAccentChecked) {
     addStyle();
   } else {
@@ -179,12 +227,43 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
 	  removeCAccent();
   }
   
+  if(cLogoValue != '' && cLogoValue != 'undefined')
+  {
+	  addLogo(cLogoValue);
+  }
+  else
+  {
+	  removeLogo();
+  }
+  
+  if(cBgValue != '' && cBgValue != 'undefined')
+  {
+	  addBg(cBgValue);
+  }
+  else
+  {
+	  removeBg();
+  }
+
+	console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+cFontValue);
+  if(cFontValue != '' && cFontValue != 'undefined')
+  {
+	  
+	  addFont(cFontValue);
+  }
+  else
+  {
+	  removeFont();
+  }
+  
   addColorPicker(cColorValue,cTextValue);
 }
 
+
+
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-  chrome.storage.local.get(["checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText"], function(items) {
+  chrome.storage.local.get(["checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
     const isOldAccentChecked = items.checkboxState;
     const isMsgReactionsChecked = items.checkboxState1;
 	const isPostReactionsChecked = items.postReactionsState;
@@ -193,17 +272,20 @@ function applySavedStyles() {
 	const cAccentValue = items.customAccent;
 	const cColorValue = items.colorPicker;
 	const cTextValue = items.colorPickerText;
-    applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue);
+	const cLogoValue = items.customLogo;
+	const cBgValue = items.customBg;
+	const cFontValue = items.customFont;
+	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue);
   });
 }
 
 // При загрузке страницы применяем сохраненные стили
-applySavedStyles();
+document.addEventListener('DOMContentLoaded', applySavedStyles);
 
 // Обработчик сообщений от background.js
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider") {
-    applySavedStyles();
+if (message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont") {
+	applySavedStyles();
   }
   
   if(message.type === "addSticker")
@@ -538,7 +620,7 @@ if (username.includes("?")) {
 }
     var objectId;
 
-    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.sYQv8a8EnO_V9-B1-30RwELhng0DR-LHBGSdjMsVG6xT_bhYj_hC8UNgB2SPsZbARMMS0RdV_2kg31IPphOmDfk9l_fe7dCYAzXxVAdx6hsHuu8t_-Gy-QM6V71ZGbzFsHieLUAQkNgZI9MZa3ieeza1ntxm0xyf1hLIju8YdsKYCINlN-QW1kc9eIxB-KOzEd2OLef9z-LeKerJNpg54w&request_id=7`;
+    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.jDiii-1_vBa5senQNEtBBrUiT7hG7wQIYLQCJ0SlCN4gY6wm2413ViqDmBsz1t5qHxbme6aFZzfbOSnkBN5DEtsBt8T1FEkugmoNe8GYC06MqDVzP8EGYjHAXwNksV6E_T7xQulXzpjUM2DNL59qumtJyng_hM7f1rh8TctOfypxDlXCtpTQ6XwFQhFpktRiCzh2Ft1VqpSZZJ2aX4H-jA&request_id=7`;
     fetch(url1)
       .then(response => response.json())
       .then(data => {

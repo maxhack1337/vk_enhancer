@@ -35,4 +35,14 @@ if (message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" 
       }
     });
  }
+ 
+ if(message.type === "customLogo" || message.type === "customBg" || message.type === "customFont")
+ {
+	 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (tabs && tabs.length > 0) {
+        const activeTabId = tabs[0].id;
+        sendMessageToContentScript(activeTabId, message);
+      }
+    });
+ }
 });

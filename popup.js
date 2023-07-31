@@ -14,6 +14,81 @@ var colorPickerText = document.getElementById('color-picker-selection-text');
 var resetCaccent = document.getElementById('resetaccent');
 var resetCsel = document.getElementById('resetsel');
 var resetCtext = document.getElementById('resetseltext');
+var customLogo = document.getElementById('customlogo');
+var customBg = document.getElementById('custombg');
+var customFont = document.getElementById('customfont');
+var customLogoText = document.getElementById('customlogotb');
+var customBgText = document.getElementById('custombgtb');
+var customFontText = document.getElementById('customfonttb');
+var resetLogo = document.getElementById('resetlogo');
+var resetBg = document.getElementById('resetbg');
+var resetFont = document.getElementById('resetfont');
+
+resetLogo.addEventListener('click', (event) => {
+	customLogoText.value="undefined";
+	chrome.storage.local.set({
+    customLogo: customLogoText.value,
+  });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "customLogo", cLogo: customLogoText.value });
+    });
+});
+
+resetFont.addEventListener('click', (event) => {
+	customFontText.value="undefined";
+	chrome.storage.local.set({
+    customFont: customFontText.value,
+  });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "customFont", cLogo: customFontText.value });
+    });
+});
+
+resetBg.addEventListener('click', (event) => {
+	customBgText.value="undefined";
+	chrome.storage.local.set({
+    customBg: customBgText.value,
+  });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "customBg", cLogo: customBgText.value });
+    });
+});
+
+customLogo.addEventListener('click', (event) => {
+	 event.preventDefault();
+	chrome.storage.local.set({
+    customLogo: customLogoText.value,
+  });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "customLogo", cLogo: customLogoText.value });
+    });
+});
+
+customBg.addEventListener('click', (event) => {
+	 event.preventDefault();
+	chrome.storage.local.set({
+    customBg: customBgText.value,
+  });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "customBg", cBg: customBgText.value });
+    });
+});
+
+customFont.addEventListener('click', (event) => {
+	 event.preventDefault();
+	chrome.storage.local.set({
+    customFont: customFontText.value,
+  });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "customFont", cFont: customFontText.value });
+    });
+});
 
 resetCaccent.addEventListener('click', (event) => {
 	customAccent.value="#FFFFFF";
@@ -157,7 +232,7 @@ addSticker.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния чекбоксов из Local Storage
-    chrome.storage.local.get(["checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText"], function(items) {
+    chrome.storage.local.get(["checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont"], function(items) {
         accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
         secretFuncC.checked = items.secretFuncState;
@@ -166,6 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		customAccent.value = items.customAccent;
 		colorPicker.value = items.colorPicker;
 		colorPickerText.value = items.colorPickerText;
+		customLogoText.value = items.customLogo;
+		customBgText.value = items.customBg;
+		customFontText.value = items.customFont;
 
         // Отправка сообщения в content_script.js
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -175,9 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			chrome.tabs.sendMessage(activeTabId, { type: "toggleSecretFunctions", isChecked: items.secretFuncState });
 			chrome.tabs.sendMessage(activeTabId, { type: "togglePostReactions", isChecked: items.postReactionsState });
 			chrome.tabs.sendMessage(activeTabId, { type: "toggleHider", isChecked: items.hiderState });
-			chrome.tabs.sendMessage(activeTabId, { type: "customAccent", cAccent: customAccentValue });
-			chrome.tabs.sendMessage(activeTabId, { type: "colorPicker", cPicker: colorPickerValue });
-			chrome.tabs.sendMessage(activeTabId, { type: "colorPickerText", cText: colorPickerTextValue });
+			chrome.tabs.sendMessage(activeTabId, { type: "customAccent", cAccent: items.customAccent });
+			chrome.tabs.sendMessage(activeTabId, { type: "colorPicker", cPicker: items.colorPicker });
+			chrome.tabs.sendMessage(activeTabId, { type: "colorPickerText", cText: items.colorPickerText });
+			chrome.tabs.sendMessage(activeTabId, { type: "customLogo", cLogo: items.customLogo });
+			chrome.tabs.sendMessage(activeTabId, { type: "customBg", cBg: items.customBg });
+			chrome.tabs.sendMessage(activeTabId, { type: "customFont", cFont: items.customFont });
         });
     });
 });
