@@ -165,8 +165,18 @@ function removeFont()
     }
 }
 
+function removeNameAva()
+{
+	const styleElement = document.createElement("style");
+	styleElement.id = "removeNA";
+    styleElement.innerHTML = ".top_profile_name {display:none!important;}";
+	document.head.appendChild(styleElement);
+}
+
+
+
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva) {
   if (isOldAccentChecked) {
     addStyle();
   } else {
@@ -185,6 +195,19 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
     removeStyle2();
   }
   
+  if(isNameAva)
+  {
+	  const customStyle = document.getElementById("removeNA");
+    if (customStyle) {
+        customStyle.remove();
+    }
+	  fixname1();
+  }
+  else
+  {
+	  removeNameAva();
+  }
+  
   if (isSecretChecked) {
     addStyle3();
   } else {
@@ -197,7 +220,7 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
     removeStyle4();
   }
   
-  if (cAccentValue != "#FFFFFF" && cAccentValue != "#ffffff")
+  if (cAccentValue != "#FFFFFF" && cAccentValue != "#ffffff" && cAccentValue != undefined)
   {
 	  addCAccent(cAccentValue);
   }
@@ -233,15 +256,17 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
   {
 	  removeFont();
   }
-  
+  if(cColorValue != undefined && cTextValue != undefined)
+  {
   addColorPicker(cColorValue,cTextValue);
+  }
 }
 
 
 
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-  chrome.storage.local.get(["checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+  chrome.storage.local.get(["checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
     const isOldAccentChecked = items.checkboxState;
     const isMsgReactionsChecked = items.checkboxState1;
 	const isPostReactionsChecked = items.postReactionsState;
@@ -253,7 +278,8 @@ function applySavedStyles() {
 	const cLogoValue = items.customLogo;
 	const cBgValue = items.customBg;
 	const cFontValue = items.customFont;
-	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue);
+	const isNameAva = items.checkboxStateAva;
+	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva);
   });
 }
 
@@ -262,7 +288,7 @@ document.addEventListener('DOMContentLoaded', applySavedStyles);
 
 // Обработчик сообщений от background.js
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-if (message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont") {
+if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont") {
 	applySavedStyles();
   }
   
@@ -329,12 +355,11 @@ function copyToClipboard(text) {
 
 
 // Функция для добавления скриптов на страницу
-function loadScripts() {
-	if (document.querySelector('.top_profile_name')) {
-  console.log('Элемент top_profile_name найден на странице. Нет смысла запускать скрипты');
-} else {
-  console.log('Элемент top_profile_name не найден на странице. Запускаю скрипты');
-  fixname1();
+function loadScripts() 
+{if (document.querySelector("#NNVAFTTSLJUUDLPQ")) {
+  console.log('Элемент NNVAFTTSLJUUDLPQ найден на странице. Нет смысла запускать скрипты');
+}
+  else{ console.log('Элемент NNVAFTTSLJUUDLPQ не найден на странице. Запускаю скрипты');
   buttonrun();
   favicons();
   document.querySelectorAll('a.LeftMenuItem-module__item--XMcN9')[7].href = "https://vk.com/videos";
@@ -350,8 +375,11 @@ function loadScripts() {
 			console.log("Обнаружена вкладка видео. Активирую нужные скрипты");
 			videoinject();
 		}
-}
-  
+	var element = document.createElement("div");
+	element.id = "NNVAFTTSLJUUDLPQ";
+	var parent = document.querySelector('body');
+	parent.appendChild(element);
+  }
 }
 
 let isFaviconReplaced = false;
@@ -549,6 +577,9 @@ function seacrh4() {
 }
 
 function fixname1() {
+if (document.querySelector('.top_profile_name')) {
+  console.log('Элемент top_profile_name найден на странице. Нет смысла запускать скрипт');
+} else {
 	console.log("fixname");
     try {
     var parentlnk = document.querySelector('div#top_profile_menu')
@@ -593,7 +624,6 @@ w.appendChild(ewtext);
 n.appendChild(entext);
  }
 
-
     q.innerHTML = `` + namealt + ``;
     if (lnk) {
         w.href = lnk.href
@@ -612,7 +642,11 @@ n.appendChild(entext);
     }
     }catch(e){
     }
-}
+	const styleElement = document.createElement("style");
+	styleElement.id = "top_name";
+    styleElement.innerHTML = ".top_profile_name {padding-right: 10px;}";
+	document.head.appendChild(styleElement);
+}}
 
 function buttonrun()
 {

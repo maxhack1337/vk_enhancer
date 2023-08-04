@@ -24,7 +24,17 @@ var resetLogo = document.getElementById('resetlogo');
 var resetBg = document.getElementById('resetbg');
 var resetFont = document.getElementById('resetfont');
 var checkId = document.getElementById('checkid');
+var nameAva = document.getElementById('nameava');
 var ID;
+
+nameAva.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({ checkboxStateAva: checked });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "nameAva", isChecked: checked });
+    });
+});
 
 checkId.addEventListener('click', (event) => {
 	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -134,9 +144,30 @@ resetCtext.addEventListener('click', (event) => {
 
 
 function saveToCache() {
+  if(customAccent.value!=undefined)
+  {
   var customAccentValue = customAccent.value;
+  }
+  else
+  {
+  var customAccentValue = "#FFFFFF";
+  }
+  if(colorPicker.value!=undefined)
+  {
   var colorPickerValue = colorPicker.value;
+  }
+  else
+  {
+  var colorPickerValue = "#3291FF";
+  }
+  if(colorPickerText.value!=undefined)
+  {
   var colorPickerTextValue = colorPickerText.value;
+  }
+  else
+  {
+  var colorPickerTextValue = "#FFFFFF";  
+  }
 
   chrome.storage.local.set({
     customAccent: customAccentValue,
@@ -245,7 +276,7 @@ addSticker.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния чекбоксов из Local Storage
-    chrome.storage.local.get(["checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont"], function(items) {
+    chrome.storage.local.get(["checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont"], function(items) {
         accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
         secretFuncC.checked = items.secretFuncState;
@@ -257,6 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		customLogoText.value = items.customLogo;
 		customBgText.value = items.customBg;
 		customFontText.value = items.customFont;
+		nameAva.checked = items.checkboxStateAva;
 
         // Отправка сообщения в content_script.js
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -272,6 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			chrome.tabs.sendMessage(activeTabId, { type: "customLogo", cLogo: items.customLogo });
 			chrome.tabs.sendMessage(activeTabId, { type: "customBg", cBg: items.customBg });
 			chrome.tabs.sendMessage(activeTabId, { type: "customFont", cFont: items.customFont });
+			chrome.tabs.sendMessage(activeTabId, { type: "nameAva" });
         });
     });
 });
