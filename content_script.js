@@ -1,6 +1,6 @@
 console.log('Content script is running!');
 
-
+var isSecretCheck = false;
 
 // Функция для добавления стиля
 function addStyle() {
@@ -209,7 +209,7 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
   }
   
   if (isSecretChecked) {
-    addStyle3();
+	addStyle3();
   } else {
     removeStyle3();
   }
@@ -360,6 +360,7 @@ function loadScripts()
   console.log('Элемент NNVAFTTSLJUUDLPQ найден на странице. Нет смысла запускать скрипты');
 }
   else{ console.log('Элемент NNVAFTTSLJUUDLPQ не найден на странице. Запускаю скрипты');
+  isSecretCheckFunc();
   buttonrun();
   favicons();
   document.querySelectorAll('a.LeftMenuItem-module__item--XMcN9')[7].href = "https://vk.com/videos";
@@ -575,12 +576,9 @@ function seacrh4() {
 
 
 }
-
-function fixname1() {
-if (document.querySelector('.top_profile_name')) {
-  console.log('Элемент top_profile_name найден на странице. Нет смысла запускать скрипт');
-} else {
-	console.log("fixname");
+function isSecretCheckFunc()
+{
+	
     try {
     var parentlnk = document.querySelector('div#top_profile_menu')
     var lnk = document.querySelector('li#l_pr a')
@@ -612,7 +610,11 @@ n.setAttribute("id", "top_edit_link");
 n.href = ("https://vk.com/edit");
 u.classList.add("top_profile_sep");
 k.classList.add("top_profile_sep");
+if (document.querySelector('.top_profile_name')) {
+  console.log('Элемент top_profile_name найден на странице. Нет смысла запускать скрипт');
+} else {
 q.classList.add("top_profile_name");
+}
 document.getElementById("top_profile_menu").classList.remove('top_profile_menu_new');
 document.getElementById("top_profile_menu").classList.add('top_profile_menu');
  if (document.querySelector('a#top_profile_link[aria-label="Настройки страницы"]')) {
@@ -623,6 +625,68 @@ n.appendChild(ntext);
 w.appendChild(ewtext);
 n.appendChild(entext);
  }
+
+if (document.querySelector('.top_profile_name')) {
+  console.log('Элемент top_profile_name найден на странице. Нет смысла запускать скрипт');
+} else {
+    q.innerHTML = `` + namealt + ``;
+}
+    if (lnk) {
+        w.href = lnk.href
+    }
+    if (namealt != null) {
+
+        s.insertBefore(q, s.firstChild)
+        setlnk.insertAdjacentElement('beforeBegin', w);
+        var home = document.querySelector('a#top_home_link')
+        parentlnk.insertBefore(u, setlnk)
+        parentlnk.insertBefore(k, loglnk)
+        parentlnk.insertBefore(n, setlnk)
+
+
+
+    }
+    }catch(e){
+    }
+	const styleElement = document.createElement("style");
+	styleElement.id = "top_name";
+    styleElement.innerHTML = ".top_profile_name {padding-right: 10px;}";
+	document.head.appendChild(styleElement);
+
+}
+
+function fixname1() {
+if (document.querySelector('.top_profile_name')) {
+  console.log('Элемент top_profile_name найден на странице. Нет смысла запускать скрипт');
+} else {
+	console.log("fixname");
+	
+	    try {
+    var parentlnk = document.querySelector('div#top_profile_menu')
+    var lnk = document.querySelector('li#l_pr a')
+    var setlnk = document.querySelector('a#top_settings_link');
+    var suplnk = document.querySelector('a#top_support_link');
+    var loglnk = document.querySelector('a#top_logout_link');
+    var name = document.querySelector('img.TopNavBtn__profileImg');
+    var name2 = document.querySelector('a[href*="connect.vk.com"] div[style="color: var(--text_primary);"]')
+    var name3 = document.querySelector('[style="background-color: var(--content_tint_background); border-radius: 8px; width: 254px; font-family: inherit;"]')
+
+    if (name) {
+        var namealt = name.alt
+    }
+    var s = document.querySelector('a#top_profile_link');
+    var q = document.createElement('div');
+    var w = document.createElement('a');
+    var wtext = document.createTextNode("Моя страница");
+    var ewtext = document.createTextNode("My profile");
+    var n = document.createElement('a');
+    var ntext = document.createTextNode("Редактировать");
+    var entext = document.createTextNode("Edit");
+    var u = document.createElement('div');
+    var k = document.createElement('div');
+q.classList.add("top_profile_name");
+
+
 
     q.innerHTML = `` + namealt + ``;
     if (lnk) {
@@ -642,6 +706,8 @@ n.appendChild(entext);
     }
     }catch(e){
     }
+	
+	
 	const styleElement = document.createElement("style");
 	styleElement.id = "top_name";
     styleElement.innerHTML = ".top_profile_name {padding-right: 10px;}";
