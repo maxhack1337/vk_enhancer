@@ -23,6 +23,15 @@ var customFontText = document.getElementById('customfonttb');
 var resetLogo = document.getElementById('resetlogo');
 var resetBg = document.getElementById('resetbg');
 var resetFont = document.getElementById('resetfont');
+var checkId = document.getElementById('checkid');
+var ID;
+
+checkId.addEventListener('click', (event) => {
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "checkId" });
+    });
+});
 
 resetLogo.addEventListener('click', (event) => {
 	customLogoText.value="undefined";
@@ -172,6 +181,10 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (message.greeting) {
 	 console.log("Greetings "+message.greeting);
     // Обработка полученного сообщения
+	if(message.greeting == "undefined")
+	{
+		parseId.value = "Данный элемент не является пользователем или группой";
+	}
     parseId.value = message.greeting;
     // Другие действия с сообщением...
   }

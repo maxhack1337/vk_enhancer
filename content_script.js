@@ -1,27 +1,6 @@
 console.log('Content script is running!');
 
-const url = window.location.href;
-    var parts = url.split("/");
-    var username = parts[parts.length - 1];
-if (username.includes("?")) {
-  username = username.split("?")[0];
-}
-    var objectId;
-	console.log("Username:" + username);
-    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.jDiii-1_vBa5senQNEtBBrUiT7hG7wQIYLQCJ0SlCN4gY6wm2413ViqDmBsz1t5qHxbme6aFZzfbOSnkBN5DEtsBt8T1FEkugmoNe8GYC06MqDVzP8EGYjHAXwNksV6E_T7xQulXzpjUM2DNL59qumtJyng_hM7f1rh8TctOfypxDlXCtpTQ6XwFQhFpktRiCzh2Ft1VqpSZZJ2aX4H-jA&request_id=7`;
-    fetch(url1)
-      .then(response => response.json())
-      .then(data => {
-        // Получение значения переменной objectId внутри блока .then()
-        objectId = data.response.object_id;
-        // Отправка сообщения из content_script.js
-		chrome.runtime.sendMessage({ greeting: objectId });
 
-      })
-      .catch(error => {
-        // Обработка ошибок, если таковые возникнут
-        console.error('Ошибка:', error);
-      });
 
 // Функция для добавления стиля
 function addStyle() {
@@ -227,7 +206,7 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
 	  removeCAccent();
   }
   
-  if(cLogoValue != '' && cLogoValue != 'undefined')
+  if(cLogoValue != '' && cLogoValue != 'undefined' && cLogoValue != null)
   {
 	  addLogo(cLogoValue);
   }
@@ -236,7 +215,7 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
 	  removeLogo();
   }
   
-  if(cBgValue != '' && cBgValue != 'undefined')
+  if(cBgValue != '' && cBgValue != 'undefined' && cBgValue != null)
   {
 	  addBg(cBgValue);
   }
@@ -245,8 +224,7 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
 	  removeBg();
   }
 
-	console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+cFontValue);
-  if(cFontValue != '' && cFontValue != 'undefined')
+  if(cFontValue != '' && cFontValue != 'undefined' && cFontValue != null)
   {
 	  
 	  addFont(cFontValue);
@@ -292,7 +270,41 @@ if (message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" 
   {
 	  runStickerAdder(message.stickerId);
   }
+  
+  if(message.type === "checkId")
+  {
+	  checkId();
+  }
 });
+
+function checkId()
+{
+	const url = window.location.href;
+    var parts = url.split("/");
+    var username = parts[parts.length - 1];
+if (username.includes("?")) {
+  username = username.split("?")[0];
+}
+    var objectId;
+	console.log("Username:" + username);
+    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.jDiii-1_vBa5senQNEtBBrUiT7hG7wQIYLQCJ0SlCN4gY6wm2413ViqDmBsz1t5qHxbme6aFZzfbOSnkBN5DEtsBt8T1FEkugmoNe8GYC06MqDVzP8EGYjHAXwNksV6E_T7xQulXzpjUM2DNL59qumtJyng_hM7f1rh8TctOfypxDlXCtpTQ6XwFQhFpktRiCzh2Ft1VqpSZZJ2aX4H-jA&request_id=7`;
+    fetch(url1)
+      .then(response => response.json())
+      .then(data => {
+        // Получение значения переменной objectId внутри блока .then()
+        objectId = data.response.object_id;
+        // Отправка сообщения из content_script.js
+		
+		
+		chrome.runtime.sendMessage({ greeting: objectId });
+		
+
+      })
+      .catch(error => {
+        // Обработка ошибок, если таковые возникнут
+        console.error('Ошибка:', error);
+      });
+}
 
 function runStickerAdder(idSticker)
 {	
