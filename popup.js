@@ -25,7 +25,31 @@ var resetBg = document.getElementById('resetbg');
 var resetFont = document.getElementById('resetfont');
 var checkId = document.getElementById('checkid');
 var nameAva = document.getElementById('nameava');
+var themeChange = document.getElementById('themechange');
+var isThemeChanged;
 var ID;
+
+
+themeChange.addEventListener('click', (event) => {
+	if(!isThemeChanged)
+	{
+	const styleElement = document.createElement("style");
+	chrome.storage.local.set({ issThemeChanged: true });
+	isThemeChanged = true;
+	styleElement.id = "lightTheme";
+    styleElement.innerHTML = ".YcnqAJrg5X8zKzCe{color:#e1e3e6;}.ButtonInstallpreload,.GvpQJxOI0iScuRW2.CuJ4nsmh6wS_UnoD{background-color:#2483e4;}.sH6RDidRxauHzAZY,span.ButtonInstall > span.qeVEhP7dHLw0W4hC{color:#fff!important;}#home > div > div.RaOWj8vYJiHXOki3.vkuiInternalPanelHeader.Ofwd02L1tI6hcEhn.vkuiInternalPanelHeader--ios.vp5gMD2vLu1nm7ni.vkuiInternalPanelHeader--vis.vkuiInternalPanelHeader--sep.ZN4J6quRcOSJ0_7O.OYsSdd0QSXbEzp_k > div > div.rfmOPQFYHkNAuOn7 > div.h6C9DlL5EmwYZ94B.vkuiInternalPanelHeader__before > div > svg > g > path:nth-child(3){fill:black;}.ie6jnmeUOSRv1qMj.Y1aohYZJ5QjB1Nuw .rY27IPGdeDBioVrF,.ie6jnmeUOSRv1qMj .rY27IPGdeDBioVrF{border-color:rgba(0, 0, 0, 0.24)!important;}.eE7bcOEr98jEbUOF{color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{background-color:#f2f3f5;}.config-reset-icon > svg{color:black;}.RkE9rvfSw8lp10IS,.sgKS3x5MeEJKRKxo{color:black;}.EC8bn4FFx4VEZ2XF::after {background:rgba(0, 0, 0, 0.24);}.Ohn9lWvtLkvsh76Q .HRXNfAA7h_U1dgq0, .Ohn9lWvtLkvsh76Q::before,.rfmOPQFYHkNAuOn7{background-color:#fff;} .textfieldpro,.IoYEpSfrGhmp41uC,.y2tAdaKbIKTTIdCH::after,.betathing {background-color:#f5f5f5;color:#6d7885;}";
+	document.head.appendChild(styleElement);
+	}
+	else
+	{
+	const customStyle = document.getElementById("lightTheme");
+    if (customStyle) {
+        customStyle.remove();
+    }
+	isThemeChanged = false;
+	chrome.storage.local.set({ issThemeChanged: false });
+	}
+});
 
 nameAva.addEventListener('change', (event) => {
     const checked = event.target.checked;
@@ -276,8 +300,8 @@ addSticker.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния чекбоксов из Local Storage
-    chrome.storage.local.get(["checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont"], function(items) {
-        accentC.checked = items.checkboxState;
+		chrome.storage.local.get(["issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont"], function(items) {
+		accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
         secretFuncC.checked = items.secretFuncState;
         postReactionsC.checked = items.postReactionsState;
@@ -289,6 +313,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		customBgText.value = items.customBg;
 		customFontText.value = items.customFont;
 		nameAva.checked = items.checkboxStateAva;
+		if(items.issThemeChanged)
+		{
+			const styleElement = document.createElement("style");
+			chrome.storage.local.set({ issThemeChanged: true });
+			styleElement.id = "lightTheme";
+			styleElement.innerHTML = ".YcnqAJrg5X8zKzCe{color:#e1e3e6;}.ButtonInstallpreload,.GvpQJxOI0iScuRW2.CuJ4nsmh6wS_UnoD{background-color:#2483e4;}.sH6RDidRxauHzAZY,span.ButtonInstall > span.qeVEhP7dHLw0W4hC{color:#fff!important;}#home > div > div.RaOWj8vYJiHXOki3.vkuiInternalPanelHeader.Ofwd02L1tI6hcEhn.vkuiInternalPanelHeader--ios.vp5gMD2vLu1nm7ni.vkuiInternalPanelHeader--vis.vkuiInternalPanelHeader--sep.ZN4J6quRcOSJ0_7O.OYsSdd0QSXbEzp_k > div > div.rfmOPQFYHkNAuOn7 > div.h6C9DlL5EmwYZ94B.vkuiInternalPanelHeader__before > div > svg > g > path:nth-child(3){fill:black;}.ie6jnmeUOSRv1qMj.Y1aohYZJ5QjB1Nuw .rY27IPGdeDBioVrF,.ie6jnmeUOSRv1qMj .rY27IPGdeDBioVrF{border-color:rgba(0, 0, 0, 0.24)!important;}.eE7bcOEr98jEbUOF{color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{background-color:#f2f3f5;}.config-reset-icon > svg{color:black;}.RkE9rvfSw8lp10IS,.sgKS3x5MeEJKRKxo{color:black;}.EC8bn4FFx4VEZ2XF::after {background:rgba(0, 0, 0, 0.24);}.Ohn9lWvtLkvsh76Q .HRXNfAA7h_U1dgq0, .Ohn9lWvtLkvsh76Q::before,.rfmOPQFYHkNAuOn7{background-color:#fff;} .textfieldpro,.IoYEpSfrGhmp41uC,.y2tAdaKbIKTTIdCH::after,.betathing {background-color:#f5f5f5;color:#6d7885;}";
+			document.head.appendChild(styleElement);
+			isThemeChanged = true;
+		}
 
         // Отправка сообщения в content_script.js
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
