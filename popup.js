@@ -27,7 +27,88 @@ var checkId = document.getElementById('checkid');
 var nameAva = document.getElementById('nameava');
 var themeChange = document.getElementById('themechange');
 var isThemeChanged;
+var changerButton = document.getElementById('changerb');
 var ID;
+
+const url1 = `https://api.vk.com/method/board.getTopics?api_id=6798836&method=board.getTopics&format=json&v=5.131&group_id=221416961&topic_ids=50206064&preview=1&lang=ru&access_token=vk1.a.jDiii-1_vBa5senQNEtBBrUiT7hG7wQIYLQCJ0SlCN4gY6wm2413ViqDmBsz1t5qHxbme6aFZzfbOSnkBN5DEtsBt8T1FEkugmoNe8GYC06MqDVzP8EGYjHAXwNksV6E_T7xQulXzpjUM2DNL59qumtJyng_hM7f1rh8TctOfypxDlXCtpTQ6XwFQhFpktRiCzh2Ft1VqpSZZJ2aX4H-jA&request_id=7`;
+    fetch(url1)
+      .then(response => response.json())
+      .then(data => {
+        // Получение значения переменной objectId внутри блока .then()
+        var version = data.response.items[0].first_comment;
+        // Отправка сообщения из content_script.js
+		if (version != "1.7.0")
+		{
+			var dialog = document.getElementById('updateAvailable');
+			dialog.style.display = 'block';
+			const styleElement = document.createElement("style");
+			styleElement.id = "dialogOpen";
+			styleElement.innerHTML = ".vkebhancerHome .vkebhancerInternalPanel_in{    pointer-events:none; filter: blur(10px) !important;}";
+			document.head.appendChild(styleElement);
+		}
+		else
+		{
+			console.log("Вы используете последнюю версию расширения");
+		}
+		
+
+      })
+      .catch(error => {
+        // Обработка ошибок, если таковые возникнут
+        console.error('Ошибка:', error);
+      });
+
+
+document.querySelector('#updatenow').addEventListener('click', function() {
+  chrome.tabs.create({ url: 'https://github.com/maxhack1337/vk_enhancer' });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  var dialog = document.getElementById('dialog');
+  var openDialogButton = document.getElementById('openDialog');
+  var yesButton = document.getElementById('yes');
+  var noButton = document.getElementById('no');
+
+  // Показать диалоговое окно при нажатии на кнопку "Открыть диалог"
+  openDialogButton.addEventListener('click', function() {
+	const styleElement = document.createElement("style");
+	styleElement.id = "dialogOpen";
+	styleElement.innerHTML = ".vkebhancerHome .vkebhancerInternalPanel_in{    pointer-events:none; filter: blur(10px) !important;}";
+	document.head.appendChild(styleElement);
+    dialog.style.display = 'block';
+  });
+
+  // Показать диалоговое окно при нажатии на кнопку "Да"
+  yesButton.addEventListener('click', function() {
+    dialog.style.display = 'none';
+	const customStyle = document.getElementById("dialogOpen");
+    if (customStyle) {
+        customStyle.remove();
+    }
+	chrome.browsingData.remove({
+      "since": 0
+    }, {
+      "cache": true,
+      "appcache": true
+    }, function() {
+      // После очистки кеша, перезагрузить все вкладки на vk.com
+      chrome.tabs.query({ url: "https://vk.com/*" }, function(tabs) {
+        tabs.forEach(function(tab) {
+          chrome.tabs.reload(tab.id, { bypassCache: true });
+        });
+      });
+    });
+  });
+
+  // Закрыть диалоговое окно при нажатии "Нет"
+  noButton.addEventListener('click', function() {
+	  const customStyle = document.getElementById("dialogOpen");
+    if (customStyle) {
+        customStyle.remove();
+    }
+    dialog.style.display = 'none';
+  });
+});
 
 document.querySelector('.vkenhancerLogo').addEventListener('click', function() {
   chrome.tabs.create({ url: 'https://vk.com/vkenhancer' });
@@ -44,12 +125,14 @@ themeChange.addEventListener('click', (event) => {
 	chrome.storage.local.set({ issThemeChanged: true });
 	isThemeChanged = true;
 	styleElement.id = "lightTheme";
+	changerButton.title = 'Сменить тему на тёмную';
 	var imageurl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' width='24' height='24' style='display: block;'%3E%3Cg fill-rule='nonzero' fill='none'%3E%3Cpath d='M0 0h28v28H0z'%3E%3C/path%3E%3Cpath d='M24.166 15.685a1 1 0 0 1 1.277 1.275c-.569 1.614-1.445 3.046-2.632 4.229-4.418 4.418-11.58 4.417-15.997 0-4.419-4.417-4.419-11.58 0-15.998C8 4.006 9.431 3.129 11.042 2.559a1 1 0 0 1 1.276 1.277c-1.194 3.372-.394 7.133 2.16 9.69 2.554 2.553 6.317 3.353 9.688 2.16Zm-11.102-.746a11.25 11.25 0 0 1-3.163-9.643c-.61.37-1.17.806-1.673 1.309-3.637 3.637-3.637 9.534 0 13.17a9.311 9.311 0 0 0 13.17-.002 8.75 8.75 0 0 0 1.31-1.671a11.247 11.247 0 0 1-9.644-3.163Z' fill='%232483e4'%3E%3C/path%3E%3C/g%3E%3C/svg%3E ";
-    styleElement.innerHTML = ".vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url("+'"'+imageurl+'"'+") 24px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > path:nth-child(3){	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
+    styleElement.innerHTML = ".dialog > p,updateAvailable > p{color:black;}.dialog,.updateAvailable{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url("+'"'+imageurl+'"'+") 24px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > path:nth-child(3){	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
 	document.head.appendChild(styleElement);
 	}
 	else
 	{
+	changerButton.title = 'Сменить тему на светлую';
 	const customStyle = document.getElementById("lightTheme");
     if (customStyle) {
         customStyle.remove();
@@ -326,8 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			const styleElement = document.createElement("style");
 			chrome.storage.local.set({ issThemeChanged: true });
 			styleElement.id = "lightTheme";
+			changerButton.title = 'Сменить тему на тёмную';
 			var imageurl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' width='24' height='24' style='display: block;'%3E%3Cg fill-rule='nonzero' fill='none'%3E%3Cpath d='M0 0h28v28H0z'%3E%3C/path%3E%3Cpath d='M24.166 15.685a1 1 0 0 1 1.277 1.275c-.569 1.614-1.445 3.046-2.632 4.229-4.418 4.418-11.58 4.417-15.997 0-4.419-4.417-4.419-11.58 0-15.998C8 4.006 9.431 3.129 11.042 2.559a1 1 0 0 1 1.276 1.277c-1.194 3.372-.394 7.133 2.16 9.69 2.554 2.553 6.317 3.353 9.688 2.16Zm-11.102-.746a11.25 11.25 0 0 1-3.163-9.643c-.61.37-1.17.806-1.673 1.309-3.637 3.637-3.637 9.534 0 13.17a9.311 9.311 0 0 0 13.17-.002 8.75 8.75 0 0 0 1.31-1.671a11.247 11.247 0 0 1-9.644-3.163Z' fill='%232483e4'%3E%3C/path%3E%3C/g%3E%3C/svg%3E ";
-			styleElement.innerHTML = ".vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url("+'"'+imageurl+'"'+") 24px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > path:nth-child(3){	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
+			styleElement.innerHTML = ".dialog > p,.updateAvailable > p{color:black;}.dialog,.updateAvailable{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url("+'"'+imageurl+'"'+") 24px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > path:nth-child(3){	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
 			document.head.appendChild(styleElement);
 			isThemeChanged = true;
 		}
