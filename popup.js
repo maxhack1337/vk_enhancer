@@ -32,12 +32,10 @@ var ID;
 
 const url1 = 'https://maxhack1337.github.io/checker/';
 fetch(url1)
-    .then(response => response.text()) // Получить HTML-код страницы
+    .then(response => response.text())
     .then(html => {
     const tempElement = document.createElement('div');
     tempElement.innerHTML = html;
-
-    // Извлечение данных из HTML-документа
     const versionElement = tempElement.querySelector('.version');
     const serverMessageElement = tempElement.querySelector('.server_message');
     const version = versionElement.textContent;
@@ -49,8 +47,7 @@ fetch(url1)
 	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-        // Отправка сообщения из content_script.js
-		if (version != "1.8.1")
+		if (version != "1.8.1.1")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -82,17 +79,29 @@ fetch(url1)
 
       })
       .catch(error => {
-        // Обработка ошибок, если таковые возникнут
         console.error('Ошибка url1:', error);
       });
 	  
 	 
+	 document.getElementById("clearCacheUpdate").addEventListener('click', function() {
+	
+	chrome.browsingData.remove({
+      "since": 0
+    }, {
+      "cache": true,
+      "appcache": true
+    }, function() {
+      chrome.tabs.query({ url: "https://vk.com/*" }, function(tabs) {
+        tabs.forEach(function(tab) {
+          chrome.tabs.reload(tab.id, { bypassCache: true });
+        });
+      });
+    });
+  });
+	 
 var servermessagesButton = document.getElementById("servermessages");
   var serverSidebar = document.getElementById("serverSidebar");
-
-  // Добавляем обработчик события click
-  servermessagesButton.addEventListener("click", function () {
-    // Переключаем класс serverHidden для белого прямоугольника
+	servermessagesButton.addEventListener("click", function () {
     serverSidebar.classList.toggle("serverHidden");
 	console.log("123");
   });
@@ -110,13 +119,11 @@ document.querySelector('#updatenow').addEventListener('click', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-  var dialog = document.getElementById('dialog');
-  var openDialogButton = document.getElementById('openDialog');
-  var yesButton = document.getElementById('yes');
-  var noButton = document.getElementById('no');
-
-  // Показать диалоговое окно при нажатии на кнопку "Открыть диалог"
-  openDialogButton.addEventListener('click', function() {
+	var dialog = document.getElementById('dialog');
+	var openDialogButton = document.getElementById('openDialog');
+	var yesButton = document.getElementById('yes');
+	var noButton = document.getElementById('no');
+	openDialogButton.addEventListener('click', function() {
 	const styleElement = document.createElement("style");
 	styleElement.id = "dialogOpen";
 	styleElement.innerHTML = ".vkebhancerHome .vkebhancerInternalPanel_in{    pointer-events:none; filter: blur(10px) !important;}";
@@ -124,8 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
     dialog.style.display = 'block';
   });
 
-  // Показать диалоговое окно при нажатии на кнопку "Да"
-  yesButton.addEventListener('click', function() {
+	yesButton.addEventListener('click', function() {
     dialog.style.display = 'none';
 	const customStyle = document.getElementById("dialogOpen");
     if (customStyle) {
@@ -137,7 +143,6 @@ document.addEventListener('DOMContentLoaded', function() {
       "cache": true,
       "appcache": true
     }, function() {
-      // После очистки кеша, перезагрузить все вкладки на vk.com
       chrome.tabs.query({ url: "https://vk.com/*" }, function(tabs) {
         tabs.forEach(function(tab) {
           chrome.tabs.reload(tab.id, { bypassCache: true });
@@ -145,8 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   });
-
-  // Закрыть диалоговое окно при нажатии "Нет"
   noButton.addEventListener('click', function() {
 	  const customStyle = document.getElementById("dialogOpen");
     if (customStyle) {
@@ -346,7 +349,6 @@ function saveToCache() {
     });
 }
 
-// Обработчик изменения значений переменных
 customAccent.addEventListener('change', saveToCache);
 colorPicker.addEventListener('change', saveToCache);
 colorPickerText.addEventListener('change', saveToCache);
@@ -372,13 +374,11 @@ function copyToClipboard(text) {
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (message.greeting) {
 	 console.log("Greetings "+message.greeting);
-    // Обработка полученного сообщения
 	if(message.greeting == "undefined")
 	{
 		parseId.value = "Данный элемент не является пользователем или группой";
 	}
     parseId.value = message.greeting;
-    // Другие действия с сообщением...
   }
 });
 
@@ -436,7 +436,7 @@ addSticker.addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Получение состояния чекбоксов из Local Storage
+    // Получение состояния из Local Storage
 		chrome.storage.local.get(["issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont"], function(items) {
 		accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;

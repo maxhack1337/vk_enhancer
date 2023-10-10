@@ -1,4 +1,3 @@
-// Функция для отправки сообщения в content_script.js
 console.log('BG script is running!');
 
 function sendMessageToContentScript(tabId, message) {

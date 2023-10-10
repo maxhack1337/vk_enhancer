@@ -122,10 +122,9 @@ function addColorPicker(cColorValue,cTextValue)
 
 function addLogo(cLogoValue)
 {
-	//console.log(cLogoValue);
 	const styleElement = document.createElement("style");
 	styleElement.id = "logos";
-    styleElement.innerHTML = "#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink {          background:url("+"'"+cLogoValue+"'"+") no-repeat;          background-size: contain;          background-position: center;      }      #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg g{          display:none;      }";
+    styleElement.innerHTML = "#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink {          background:url("+"'"+cLogoValue+"'"+") no-repeat;          background-size: contain;          background-position: center;      }      #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg{          display:none;      }";
 	document.head.appendChild(styleElement);
 }
 
@@ -232,11 +231,9 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
   {
 	  removeCAccent();
   }
-  console.log("3344");
   if(cLogoValue != '' && cLogoValue != 'undefined' && cLogoValue != null)
   {
 	  addLogo(cLogoValue);
-	  console.log("123");
   }
   else
   {
@@ -322,17 +319,12 @@ if (username.includes("?")) {
     fetch(url1)
       .then(response => response.json())
       .then(data => {
-        // Получение значения переменной objectId внутри блока .then()
         objectId = data.response.object_id;
-        // Отправка сообщения из content_script.js
-		
-		
 		chrome.runtime.sendMessage({ greeting: objectId });
 		
 
       })
       .catch(error => {
-        // Обработка ошибок, если таковые возникнут
         console.error('Ошибка:', error);
       });
 }
@@ -351,15 +343,6 @@ function copyToClipboard(text) {
   document.body.removeChild(textarea);
 }
 
-
-
-
-
-
-
-
-
-// Функция для добавления скриптов на страницу
 function loadScripts() 
 {if (document.querySelector("#NNVAFTTSLJUUDLPQ")) {
   console.log('Элемент NNVAFTTSLJUUDLPQ найден на странице. Нет смысла запускать скрипты');
@@ -450,10 +433,7 @@ newElement.setAttribute('aria-label', 'Создать альбом');
 newElement.style.fontSize = '13px';
 newElement.textContent = 'Создать альбом';
 
-// Нахождение родительского элемента
 var parentElement = document.querySelector('.VideoActions ');
-
-// Добавление нового элемента внутрь родительского элемента
 parentElement.appendChild(newElement);
 
 //Видео by @notmaxhack
@@ -741,7 +721,6 @@ if (username.includes("?")) {
     fetch(url1)
       .then(response => response.json())
       .then(data => {
-        // Получение значения переменной objectId внутри блока .then()
         objectId = data.response.object_id;
         console.log("ID fetched succesfully: " + objectId);
 		if(objectId != "185853506")
@@ -759,7 +738,6 @@ if (username.includes("?")) {
 		}
       })
       .catch(error => {
-        // Обработка ошибок, если таковые возникнут
         console.error('Ошибка:', error);
       }); count++;
   }, 1000); // 10 секунд
@@ -768,11 +746,7 @@ if (username.includes("?")) {
 
 function imfixer()
 {
-
-// Находим элемент <button> по его классу или другому селектору
 const buttonElement = document.querySelector('.im-page--dialogs-header-control_call');
-
-// Создаем новый элемент <a>
 const linkElement = document.createElement('a');
 linkElement.setAttribute('tabindex', '0');
 linkElement.setAttribute('role', 'link');
@@ -782,12 +756,10 @@ linkElement.innerText = '';
 linkElement.style = 'margin-top: 8px; padding-left: 20px; background-color: #fff; background: url(https://sun9-33.userapi.com/impg/cAWfwzC-vRiWXCNs6daC4kJswRmLn_XL7Zi1sw/VgHLi5kumV4.jpg?size=24x24&quality=96&sign=71effcfb859fb3a838d3a04f312b2a8f&type=album) no-repeat; background-position: 15px 6.7px; background-size: 45% auto; opacity: .7';
 linkElement.removeEventListener('mouseover', null);
 
-// Заменяем <button> на <a>
 buttonElement.parentNode.replaceChild(linkElement, buttonElement);
 
 var svgElement = linkElement.querySelector('svg');
 
-// Удаляем SVG-элемент из родительского элемента
 if (svgElement) {
   svgElement.remove();
 }
@@ -812,16 +784,12 @@ console.log("Star executed!")
 function vkbynmh()
 {
 	setInterval(function() {
-  // Находим все элементы <a> на странице
 var links = document.getElementsByTagName('a');
 
 // Проходимся по каждому элементу
 for (var i = 0; i < links.length; i++) {
   var link = links[i];
-
-  // Проверяем, содержит ли атрибут onclick нужное значение
   if (link.getAttribute('onclick') === "return Gifts.showGiftBox(cur.oid, event, 'gifts');" || link.getAttribute('onclick') === "return Gifts.showGiftBox(cur.oid, event, 'gifts_own');") {
-    // Заменяем стиль элемента
     link.style.color = '#fff';
   }
 }
