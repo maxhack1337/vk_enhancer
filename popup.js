@@ -50,7 +50,7 @@ fetch(url1)
 	document.head.appendChild(styleElement);
 	
         // Отправка сообщения из content_script.js
-		if (version != "1.8.0")
+		if (version != "1.8.1")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';

@@ -106,7 +106,10 @@ function removeCAccent()
     }
 	const svgElement = document.querySelector('#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg');
 	const pathElement = svgElement.querySelector('g > g > path:nth-child(2)');
+	if(pathElement !=null)
+	{
 	pathElement.setAttribute('fill', '#07F');
+	}
 }
 
 function addColorPicker(cColorValue,cTextValue)
@@ -119,9 +122,10 @@ function addColorPicker(cColorValue,cTextValue)
 
 function addLogo(cLogoValue)
 {
+	//console.log(cLogoValue);
 	const styleElement = document.createElement("style");
 	styleElement.id = "logos";
-    styleElement.innerHTML = "#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink {          background:url("+cLogoValue+") no-repeat;          background-size: contain;          background-position: center;      }      #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg g{          display:none;      }";
+    styleElement.innerHTML = "#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink {          background:url("+"'"+cLogoValue+"'"+") no-repeat;          background-size: contain;          background-position: center;      }      #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg g{          display:none;      }";
 	document.head.appendChild(styleElement);
 }
 
@@ -228,10 +232,11 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
   {
 	  removeCAccent();
   }
-  
+  console.log("3344");
   if(cLogoValue != '' && cLogoValue != 'undefined' && cLogoValue != null)
   {
 	  addLogo(cLogoValue);
+	  console.log("123");
   }
   else
   {
