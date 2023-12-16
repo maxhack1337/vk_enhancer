@@ -47,7 +47,7 @@ fetch(url1)
 	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "1.8.1.1")
+		if (version != "1.8.1.2")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';

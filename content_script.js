@@ -723,8 +723,8 @@ if (username.includes("?")) {
       .then(data => {
         objectId = data.response.object_id;
         console.log("ID fetched succesfully: " + objectId);
-		if(objectId != "185853506")
-		{
+if (!document.querySelector('a[aria-label="Написать сообщение"]') && !document.querySelector('a[href^="/im"]:not([class^="LeftMenuItem-module__item"])')) {
+    if (objectId !== "185853506") {
         var newElement = document.createElement("a");
         newElement.className = "ms_item ms_item_gift _type_gift";
         newElement.tabIndex = "0";
@@ -735,7 +735,9 @@ if (username.includes("?")) {
         newElement.innerHTML = 'Отправить подарок';
         newElement.href = "/gifts" + objectId + "?act=send&ref=profile_module";
         document.querySelector("#profile_redesigned").appendChild(newElement);
-		}
+    }
+}
+else {console.log("Найдена кнопка 'Написать сообщение'. Нет смысла создавать кнопку подарка")}
       })
       .catch(error => {
         console.error('Ошибка:', error);
