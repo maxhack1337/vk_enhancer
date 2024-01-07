@@ -21,7 +21,7 @@ function removeStyle() {
 function addStyle1() {
     const styleElement = document.createElement("style");
     styleElement.id = "msgReactions";
-    styleElement.innerHTML = ".MessageReactionsPanel,.im-mess--reaction,.MessageReactions,MessageReactionsModalButton,.im-mess_reactions:hover .MessageReactionsModalButton,.im-mess .im-mess--reactions { display: none!important; }";
+    styleElement.innerHTML = ".MessageReactionsPanel,.im-mess--reaction,.MessageReactions,MessageReactionsModalButton,.im-mess_reactions:hover .MessageReactionsModalButton,.im-mess .im-mess--reactions,.nim-dialog .nim-dialog--unread-badge_reaction,button.im-navigation.im-navigation--to-reaction._im_to_reaction.im-navigation_shown { display: none!important; }";
     document.head.appendChild(styleElement);
 }
 
@@ -315,7 +315,7 @@ if (username.includes("?")) {
 }
     var objectId;
 	console.log("Username:" + username);
-    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.jDiii-1_vBa5senQNEtBBrUiT7hG7wQIYLQCJ0SlCN4gY6wm2413ViqDmBsz1t5qHxbme6aFZzfbOSnkBN5DEtsBt8T1FEkugmoNe8GYC06MqDVzP8EGYjHAXwNksV6E_T7xQulXzpjUM2DNL59qumtJyng_hM7f1rh8TctOfypxDlXCtpTQ6XwFQhFpktRiCzh2Ft1VqpSZZJ2aX4H-jA&request_id=7`;
+    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.tB9ubsHJxOM__fNHm9JQxarecZlO_LnkXuhVxQekQc7t_4khdCkcXBXQf9Ekk-bIdedbAD6UvqaPxjIhnIYUzUwDIMC3M1f7ZD8YG8D3IxHKkgL7vcRdVlPRPN1BpDsRjmQNMRfZ6reFXu2kw_U1IuwWONdcAvO9Mmm34wgBSxZW3D6iqhzfKktcWjz1Wod-KJcWYis18C9wFAR04mF1EA&request_id=7`;
     fetch(url1)
       .then(response => response.json())
       .then(data => {
@@ -717,7 +717,7 @@ if (username.includes("?")) {
 }
     var objectId;
 
-    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.jDiii-1_vBa5senQNEtBBrUiT7hG7wQIYLQCJ0SlCN4gY6wm2413ViqDmBsz1t5qHxbme6aFZzfbOSnkBN5DEtsBt8T1FEkugmoNe8GYC06MqDVzP8EGYjHAXwNksV6E_T7xQulXzpjUM2DNL59qumtJyng_hM7f1rh8TctOfypxDlXCtpTQ6XwFQhFpktRiCzh2Ft1VqpSZZJ2aX4H-jA&request_id=7`;
+    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.tB9ubsHJxOM__fNHm9JQxarecZlO_LnkXuhVxQekQc7t_4khdCkcXBXQf9Ekk-bIdedbAD6UvqaPxjIhnIYUzUwDIMC3M1f7ZD8YG8D3IxHKkgL7vcRdVlPRPN1BpDsRjmQNMRfZ6reFXu2kw_U1IuwWONdcAvO9Mmm34wgBSxZW3D6iqhzfKktcWjz1Wod-KJcWYis18C9wFAR04mF1EA&request_id=7`;
     fetch(url1)
       .then(response => response.json())
       .then(data => {
