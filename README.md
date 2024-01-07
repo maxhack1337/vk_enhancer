@@ -10,7 +10,7 @@
 ```
 
   ### Установить расширение
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v1.8.1.2/VK.Enhancer.zip">
+<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v1.8.2/VK.Enhancer.zip">
   <img src="https://img.shields.io/badge/УСТАНОВИТЬ-blue">
 </a>
 <div>
