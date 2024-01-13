@@ -30,6 +30,71 @@ var isThemeChanged;
 var changerButton = document.getElementById('changerb');
 var ID;
 
+
+document.addEventListener('DOMContentLoaded', function () {
+  const slider = document.getElementById('slider');
+  const sliderValue = document.getElementById('slider-value');
+
+  function updateSliderColor(value) {
+    sliderValue.textContent = value + "%";
+
+    const percentage = value;
+    const colorBefore = `linear-gradient(to right, #397dcc ${percentage}%, #ffffff ${percentage}%)`;
+
+    slider.style.background = colorBefore;
+  }
+
+  function saveSliderValue(value) {
+    // Сохраняем значение слайдера в кеш браузера
+    chrome.storage.local.set({ sliderValue: value });
+  }
+
+  slider.addEventListener('input', function () {
+    const value = slider.value;
+    updateSliderColor(value);
+
+    saveSliderValue(value);
+
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const activeTab = tabs[0];
+      chrome.tabs.sendMessage(activeTab.id, { type: 'sliderValue', value });
+    });
+  });
+  
+    slider.addEventListener('change', function () {
+    const value = slider.value;
+    updateSliderColor(value);
+
+    saveSliderValue(value);
+
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const activeTab = tabs[0];
+      chrome.tabs.sendMessage(activeTab.id, { type: 'sliderValue', value });
+    });
+  });
+
+  // Загружаем значение слайдера из кеша при загрузке расширения
+  chrome.storage.local.get(['sliderValue'], function (result) {
+    const storedValue = result.sliderValue;
+    if (storedValue === undefined) {
+      // Если значение отсутствует, установим значение по умолчанию
+      const defaultValue = 100;
+      slider.value = defaultValue;
+      updateSliderColor(defaultValue);
+      saveSliderValue(defaultValue);
+    } else {
+      slider.value = storedValue;
+      updateSliderColor(storedValue);
+    }
+  });
+});
+
+
+
+
+
+
+
 const url1 = 'https://maxhack1337.github.io/checker/';
 fetch(url1)
     .then(response => response.text())
@@ -47,7 +112,7 @@ fetch(url1)
 	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "1.8.3")
+		if (version != "1.9.0")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';

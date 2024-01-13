@@ -140,7 +140,7 @@ function addBg(cBgValue)
 {
 	const styleElement = document.createElement("style");
 	styleElement.id = "custombg";
-    styleElement.innerHTML = ':root,.vknBgWrapper,.scroll_fix {          background-image:url('+cBgValue+')!important;          background-size: contain;          background-position: center;          background-attachment: fixed;      }                        #side_bar {              background-color:#fff;              width:15%;              margin-left:-20px!important;              border-radius:5px;              padding-left:12px;          }    .body_im .side_bar {        background-color:#fff;        visibility:visible;        padding-right:0;    }    [scheme="vkcom_dark"] #side_bar {        background-color:#141414;              width:15%;              margin-left:-20px!important;              border-radius:5px;              padding-left:12px;    }        [scheme="vkcom_dark"] .body_im .side_bar {        background-color:#141414;        visibility:visible;        padding-right:0;    }';
+    styleElement.innerHTML = ':root,.vknBgWrapper,.scroll_fix {          background-image:url('+cBgValue+')!important;          background-size: contain;          background-position: center;          background-attachment: fixed;      }                        #side_bar {              background-color:var(--vkui--color_background_content);              width:15%;              margin-left:-20px!important;              border-radius:12px;              padding-left:12px;          }    .body_im .side_bar {        background-color:var(--vkui--color_background_content);       visibility:visible;        padding-right:0;    }    [scheme="vkcom_dark"] #side_bar {       background-color:var(--vkui--color_background_content);             width:15%;              margin-left:-20px!important;              border-radius:12px;              padding-left:12px;    }        [scheme="vkcom_dark"] .body_im .side_bar {        background-color:var(--vkui--color_background_content);       visibility:visible;        padding-right:0;    }';
 	document.head.appendChild(styleElement);
 }
 
@@ -176,14 +176,53 @@ function removeNameAva()
 	document.head.appendChild(styleElement);
 }
 
+function addOpacity(sliderValueCount) {
+    const opacity = sliderValueCount / 100; // Преобразуем значение ползунка в диапазон 0-1
+
+    // Преобразуем значение прозрачности в HEX-формат
+    const alphaHex = Math.floor(opacity * 255).toString(16).padStart(2, '0');
+    // Составляем строку с новым значением переменной
+
+    // Создаем стиль с !important
+    let rule;
+    if (document.querySelector('[scheme=vkcom_light]')) {
+        rule = `.ProfileHeader, .page_block, .vkuiGroup--mode-card{background: rgba(255, 255, 255, ${opacity})!important;}`;
+    } else {
+        rule = `.ProfileHeader, .page_block, .vkuiGroup--mode-card{background: rgba(25, 25, 26, ${opacity})!important;}`;
+    }
+
+    // Удаляем старый стиль, если он существует
+    const existingStyle = document.getElementById('custom-opacity-style');
+    if (existingStyle) {
+        existingStyle.remove();
+    }
+
+    // Создаем новый стиль с !important
+    const styleElement = document.createElement('style');
+    styleElement.type = 'text/css';
+    styleElement.innerHTML = rule;
+
+    // Устанавливаем идентификатор для нового стиля
+    styleElement.id = 'custom-opacity-style';
+
+    // Добавляем стиль в head
+    document.head.appendChild(styleElement);
+
+    console.log("Opacity changed to " + opacity);
+}
+
+
 
 
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount) {
   if (isOldAccentChecked) {
     addStyle();
   } else {
     removeStyle();
+  }
+  if(sliderValueCount) {
+	  addOpacity(sliderValueCount);
   }
 
   if (isMsgReactionsChecked) {
@@ -268,7 +307,7 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
 
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-  chrome.storage.local.get(["checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+  chrome.storage.local.get(["sliderValue","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
     const isOldAccentChecked = items.checkboxState;
     const isMsgReactionsChecked = items.checkboxState1;
 	const isPostReactionsChecked = items.postReactionsState;
@@ -281,7 +320,8 @@ function applySavedStyles() {
 	const cBgValue = items.customBg;
 	const cFontValue = items.customFont;
 	const isNameAva = items.checkboxStateAva;
-	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva);
+	const sliderValueCount = items.sliderValue;
+	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount);
   });
 }
 

@@ -2,6 +2,52 @@
 
 <head>
 	<style>
+.slider-container
+{
+	font-size: var(--vkui--font_subhead--font_size--compact);
+    line-height: var(--vkui--font_subhead--line_height--compact);
+	color: var(--vkui--color_text_subhead);
+	margin-left:12px;
+	width:96%;
+}
+.slider-value-container {
+  display: flex;
+  align-items: center;
+  padding-bottom:8px;
+  padding-top:8px;
+}
+
+.slider-value-container label {
+  margin-right: 10px; /* Регулирует расстояние между меткой и значением */
+}
+
+#slider-value {
+  margin: 0;
+}
+
+	.custom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  border: none;
+  height: 3px;
+  border-radius: 3px;
+  outline: none;
+  position: relative;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+
 	#serverMessageGet
 	{
 		display:none;
@@ -2174,7 +2220,9 @@ display: grid;
 												</div>
 												<section class="vkenhancerInternalGroup vkenhancerGroup vkenhancerSectionC vkenhancerSectionD vkenhancerSectionE vkenhancerSectionF">
 													<div style="position: relative; overflow: hidden; width: 100%; height: 536px;">
-														<div id="scrollableBlock" style="position: absolute; inset: 0px; margin-right: -17px; margin-bottom: -17px;"> <label class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
+														<div id="scrollableBlock" style="position: absolute; inset: 0px; margin-right: -17px; margin-bottom: -17px;"> 
+
+														<label class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
                                 <div class="vkenhancerChoosePicker">
                                   <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Убрать гирлянду</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"></div></span></div>
                                 </div>
@@ -2221,8 +2269,17 @@ display: grid;
 								<div class="vkenhancerLowText vkenhancerInternalFormItem vkenhancerLowTextItem vkenhancerLowTextItem__in vkenhancerInternalFormItem--withTop" style="width: 50%;">
 									<h5 id="colorgray" class="vkenhancerLowTextInner vkenhancerLowTextInnerH5 vkenhancerLowTextInnerStyle vkenhancerLowTextStyle">Свой фон страницы</h5><span class="vkenhancerInput vkenhancerInput__in vkenhancerInput--withPH vkenhancerTextInput vkenhancerPlaceHolder"><input id="custombgtb" placeholder="Добавьте ссылку..." type="text" class="vkenhancerPlaceHolder__in" value=""><span aria-hidden="true" class="vkenhancerPlaceHolderEmpty"></span></span> <label class="ButtonInstallpreload" id="custombg"><span class="ButtonInstall"><span class="vkenhancerPresentation" role="presentation"><svg aria-hidden="true" display="block" class=" vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--document_outline_20 " viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#document_outline_20" style="fill: currentcolor;"></use></svg></span><span class="vkenhancerButtonText__in"><input accept=".otf,.ttf,.woff,.woff2" type="file" class="vkenhancerCheckBoxClass">Установить</span></span></label> <a tabindex="0" class="config-reset-icon" id="resetbg" style="margin-top:12px!important;"><svg viewBox="0 0 20 20" fill="currentColor" class="svg-icon"><title>Сброс</title><polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5 5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10"></polygon></svg></a> </div>
 								<div id="padding" class="vkenhancerLowText vkenhancerInternalFormItem vkenhancerLowTextItem vkenhancerLowTextItem__in vkenhancerInternalFormItem--withTop" style="width: 50%;">
-									<h5 id="colorgray" class="vkenhancerLowTextInner vkenhancerLowTextInnerH5 vkenhancerLowTextInnerStyle vkenhancerLowTextStyle">Использовать свой шрифт</h5><span class="vkenhancerInput vkenhancerInput__in vkenhancerInput--withPH vkenhancerTextInput vkenhancerPlaceHolder"><input id="customfonttb" placeholder="Введите название шрифта..." type="text" class="vkenhancerPlaceHolder__in" value=""><span aria-hidden="true" class="vkenhancerPlaceHolderEmpty"></span></span> <label class="ButtonInstallpreload" id="customfont"><span class="ButtonInstall"><span class="vkenhancerPresentation" role="presentation"><svg aria-hidden="true" display="block" class=" vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--document_outline_20 " viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#document_outline_20" style="fill: currentcolor;"></use></svg></span><span class="vkenhancerButtonText__in"><input accept=".otf,.ttf,.woff,.woff2" type="file" class="vkenhancerCheckBoxClass">Установить</span></span></label> <a tabindex="0" class="config-reset-icon" id="resetfont" style="margin-top:12px!important;"><svg viewBox="0 0 20 20" fill="currentColor" class="svg-icon"><title>Сброс</title><polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5 5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10"></polygon></svg></a> </div> <label class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
-                                <div class="vkenhancerChoosePicker">
+									<h5 id="colorgray" class="vkenhancerLowTextInner vkenhancerLowTextInnerH5 vkenhancerLowTextInnerStyle vkenhancerLowTextStyle">Использовать свой шрифт</h5><span class="vkenhancerInput vkenhancerInput__in vkenhancerInput--withPH vkenhancerTextInput vkenhancerPlaceHolder"><input id="customfonttb" placeholder="Введите название шрифта..." type="text" class="vkenhancerPlaceHolder__in" value=""><span aria-hidden="true" class="vkenhancerPlaceHolderEmpty"></span></span> <label class="ButtonInstallpreload" id="customfont"><span class="ButtonInstall"><span class="vkenhancerPresentation" role="presentation"><svg aria-hidden="true" display="block" class=" vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--document_outline_20 " viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#document_outline_20" style="fill: currentcolor;"></use></svg></span><span class="vkenhancerButtonText__in"><input accept=".otf,.ttf,.woff,.woff2" type="file" class="vkenhancerCheckBoxClass">Установить</span></span></label>  <a tabindex="0" class="config-reset-icon" id="resetfont" style="margin-top:12px!important;"><svg viewBox="0 0 20 20" fill="currentColor" class="svg-icon"><title>Сброс</title><polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5 5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10"></polygon></svg></a> </div>  
+									<div class="slider-container">    
+										<div class="slider-value-container">
+											<label for="slider">Прозрачность блоков </label>
+											<p id="slider-value">100</p>
+										</div>
+									<input type="range" id="slider" min="0" max="100" value="50" class="custom-slider">
+								</div>
+									<label class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
+                                
+								<div class="vkenhancerChoosePicker">
                                   <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Дополнительные функции VK Enhancer</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"><span class="emptyt"></span></div>
                                   </span>
                                 </div>

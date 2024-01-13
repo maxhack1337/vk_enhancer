@@ -28,6 +28,16 @@ if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.
     });
  }
  
+  if(message.type === "sliderValue")
+ {
+	 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (tabs && tabs.length > 0) {
+        const activeTabId = tabs[0].id;
+        sendMessageToContentScript(activeTabId, message);
+      }
+    });
+ }
+ 
  if(message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText")
  {
 	 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
