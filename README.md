@@ -45,7 +45,7 @@
 распакованное расширение», затем, выбрать папку с расширением и нажать «Выбор папки»
 ```
 <p align="center">
-  <img src="https://sun9-64.userapi.com/impg/P4l_FTHNxj9G_1Qfi6YbtGWzq-wn8WIXuuDBZw/mgdrYtFZPvo.jpg?size=807x432&quality=95&sign=94e7e480c9b724b121d03f1747083be7&type=album">
+  <img src="https://sun9-64.userapi.com/impg/P4l_FTHNxj9G_1Qfi6YbtGWzq-wn8WIXuuDBZw/mgdrYtFZPvo.jpg?size=1372x734&quality=95&sign=1af82560b386af74752f9b039609fe90&type=album">
 </p>
 
 ```
