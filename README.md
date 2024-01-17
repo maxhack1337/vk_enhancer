@@ -57,6 +57,7 @@
 <p align="center">
   <strong>P.S. Не забудьте закрепить расширение для более удобного доступа 😉</strong>
   </br>
+  </br>
   <img src="https://sun9-48.userapi.com/impg/5rGoDVWaSWYAR9_4aB5WJYLAQeqdaswre6Guwg/DthwKdQJ7Bg.jpg?size=230x49&quality=95&sign=00022ec72a04974290675c61a981efe1&type=album">
 </p>
 
