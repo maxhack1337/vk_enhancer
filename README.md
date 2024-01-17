@@ -13,12 +13,12 @@
 ```
 Для установки пролистайте в самый низ страницы и нажмите на кнопку "Установить"
 ```
+<p align="center">
+  <img src="https://sun9-41.userapi.com/impg/M5khrsIji2bZ8-CdKqJSa3NTXjBpYtGZpqiiVQ/Va-70lpfJFQ.jpg?size=487x284&quality=95&sign=9a5717468fa5e91c2abd50ab1a176528&type=album">
+</p>
 ```
 После того, как вы скачали архив, распакуйте его, нажав «Извлечь в VK.Enhancer\»
 ```
-<a align="center">
-  <img src="https://sun9-41.userapi.com/impg/M5khrsIji2bZ8-CdKqJSa3NTXjBpYtGZpqiiVQ/Va-70lpfJFQ.jpg?size=487x284&quality=95&sign=9a5717468fa5e91c2abd50ab1a176528&type=album">
-</a>
 
 ### Установить расширение
 <a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v1.9.0/VK.Enhancer.zip">
