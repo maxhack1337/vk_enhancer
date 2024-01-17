@@ -1,6 +1,6 @@
 # VK Enhancer
 ### Наслаждайтесь VK по полной!
-<a href="https://vk.com/vkenhancer"><img src="https://sun9-35.userapi.com/impf/CFcmAkWfHjzic076_R1imGpSeQHwd5VywXM3dQ/jLxRXAyfwJA.jpg?size=1920x768&quality=95&crop=0,0,1920,767&sign=e1c054eb320594ce8e56024865141a12&type=cover_group)"></a>
+<a style="border-radius:8px;" href="https://vk.com/vkenhancer"><img src="https://sun9-35.userapi.com/impf/CFcmAkWfHjzic076_R1imGpSeQHwd5VywXM3dQ/jLxRXAyfwJA.jpg?size=1920x768&quality=95&crop=0,0,1920,767&sign=e1c054eb320594ce8e56024865141a12&type=cover_group)"></a>
 ## Функции расширения
 ```
  * Возможность убрать значки
