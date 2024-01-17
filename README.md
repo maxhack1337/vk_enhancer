@@ -68,7 +68,7 @@
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
 <a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v1.9.0/VK.Enhancer.zip">
-  <img src="https://psv4.userapi.com/c909628/u185853506/docs/d3/fccb07a43602/yvavayp.png?extra=UpKCFZnWp-92R0fq2GB6gr_Hcr7cnUsRlEe8Pi7W0Rx8wIsxLjrCGMgRhhdfnhyeSIkuok4mrjPEgAmAVhVoeAB48SVj8nTq4vEedyUOTQTNgPojDtQ6ZHfwERhqr1ITL6LeaE6JjCJmSRD_rzJhF9neI13d">
+  <img src="https://psv4.userapi.com/c909628/u185853506/docs/d25/cc52a3da2928/yvavayp.png?extra=6dC4e3rCXcQ5EywfjB3LUR1r3d0siFMg-5EIhDmHNag_qePeklcIjgetm0iBUVQ4y4eC5tJUbQANiZSz4KDyTLB6HY-o02rVR7qktRn2H1RsqOj0b3KT3tm48Nd6g4eTnbSsh3coMN2uxxTmWTGMKtln49-W">
 </a></p>
 <div>
   
