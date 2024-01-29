@@ -1,6 +1,6 @@
 # VK Enhancer
 ### Наслаждайтесь VK по полной!
-<a href="https://vk.com/vkenhancer"><img style="border-radius:8px;" src="https://psv4.userapi.com/c909628/u185853506/docs/d38/46d8c9b2a874/vdd.png?extra=e7AnDK8DvGnKi91x-tNMxhgoHrCCSxsEaqcKmzOXOdBCQH2qXfSwI9ww919sHndfstJ15OJ-hdDOObXX5Tb18EEsYgovueKtUoprokEiDhz9vf3tnV24-4GW7Qu-LxgoK_x6qBDo9yU2A7LnrlnFvY8eOLW5"></a>
+<a href="https://vk.com/vkenhancer"><img style="border-radius:8px;" src="https://maxhack1337.github.io/checker/main.png"></a>
 ## Функции расширения
 ```
  * Возможность убрать значки
@@ -68,7 +68,7 @@
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
 <a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v1.9.1/VK.Enhancer.zip">
-  <img src="https://psv4.userapi.com/c909628/u185853506/docs/d25/cc52a3da2928/yvavayp.png?extra=6dC4e3rCXcQ5EywfjB3LUR1r3d0siFMg-5EIhDmHNag_qePeklcIjgetm0iBUVQ4y4eC5tJUbQANiZSz4KDyTLB6HY-o02rVR7qktRn2H1RsqOj0b3KT3tm48Nd6g4eTnbSsh3coMN2uxxTmWTGMKtln49-W" width="202" height="83">
+  <img src="https://maxhack1337.github.io/checker/download.png" width="202" height="83">
 </a></p>
 <div>
   
