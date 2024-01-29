@@ -3,7 +3,6 @@
 <a href="https://vk.com/vkenhancer"><img style="border-radius:8px;" src="https://maxhack1337.github.io/checker/main.png"></a>
 ## Функции расширения
 ```
- * Возможность убрать значки
  * Возможность убрать реакции
  * Возможность добавления стикеров во вложения
  * Возможность узнать id пользователя или группы
