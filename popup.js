@@ -115,7 +115,7 @@ fetch(url1)
 	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.0")
+		if (version != "2.1")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -167,12 +167,21 @@ fetch(url1)
     });
   });
 	 
-var servermessagesButton = document.getElementById("servermessages");
-  var serverSidebar = document.getElementById("serverSidebar");
-	servermessagesButton.addEventListener("click", function () {
-    serverSidebar.classList.toggle("serverHidden");
-	console.log("123");
-  });
+    var servermessagesButton = document.getElementById("servermessages");
+    var serverSidebar = document.getElementById("serverSidebar");
+    var serverMessageTextLow = document.getElementById("serverMessageTextLow");
+
+    servermessagesButton.addEventListener("click", function () {
+        serverSidebar.classList.toggle("serverHidden");
+
+        // После того, как класс serverHidden применен, запускаем анимацию печатания
+        if (serverSidebar.classList.contains("serverHidden")) {
+            serverMessageTextLow.style.animation = 'typing 5s steps(40, end)';
+        } else {
+            // Если боковая панель скрыта, удаляем класс анимации
+            serverMessageTextLow.style.animation = '';
+        }
+    });
 
   document.getElementById('closeServerMessage').addEventListener('click', function() {
 	  const customStyle = document.getElementById("serverMessage");
@@ -189,22 +198,41 @@ document.querySelector('#updatenow').addEventListener('click', function() {
 document.addEventListener('DOMContentLoaded', function() {
 	var dialog = document.getElementById('dialog');
 	var openDialogButton = document.getElementById('openDialog');
+	var vkebhancerInternalPanel = document.querySelector('.vkebhancerInternalPanel_in');
 	var yesButton = document.getElementById('yes');
 	var noButton = document.getElementById('no');
 	openDialogButton.addEventListener('click', function() {
-	const styleElement = document.createElement("style");
-	styleElement.id = "dialogOpen";
-	styleElement.innerHTML = ".vkebhancerHome .vkebhancerInternalPanel_in{    pointer-events:none; filter: blur(10px) !important;}";
-	document.head.appendChild(styleElement);
-    dialog.style.display = 'block';
+		const styleElement = document.createElement("style");
+		styleElement.id = "dialogOpen";
+		styleElement.innerHTML = ".vkebhancerHome .vkebhancerInternalPanel_in{    pointer-events:none; filter: blur(10px); transition: filter 0.5s ease-in-out;}";
+		document.head.appendChild(styleElement);
+		dialog.style.opacity = '1';
+		dialog.style.visibility = 'visible';
   });
 
 	yesButton.addEventListener('click', function() {
-    dialog.style.display = 'none';
-	const customStyle = document.getElementById("dialogOpen");
-    if (customStyle) {
-        customStyle.remove();
-    }
+    const customStyle = document.getElementById("dialogOpen");
+
+    // Анимированное исчезновение
+    dialog.style.opacity = '0';
+
+    // Создаем Promise, который будет разрешен по завершении анимации
+    const animationPromise = new Promise(resolve => {
+        dialog.addEventListener('transitionend', resolve, { once: true });
+    });
+
+    // Ждем завершения анимации и устанавливаем visibility: hidden
+    animationPromise.then(() => {
+        dialog.style.visibility = 'hidden';
+        vkebhancerInternalPanel.style.filter = 'blur(0px)';
+        // Удаление стиля
+    setTimeout(() => {
+        if (customStyle) {
+			vkebhancerInternalPanel.style.filter = '';
+            customStyle.remove();
+        }
+    }, 500); 
+    });
 	chrome.browsingData.remove({
       "since": 0
     }, {
@@ -218,13 +246,32 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   });
-  noButton.addEventListener('click', function() {
-	  const customStyle = document.getElementById("dialogOpen");
-    if (customStyle) {
-        customStyle.remove();
-    }
-    dialog.style.display = 'none';
-  });
+noButton.addEventListener('click', function() {
+    const customStyle = document.getElementById("dialogOpen");
+
+    // Анимированное исчезновение
+    dialog.style.opacity = '0';
+
+    // Создаем Promise, который будет разрешен по завершении анимации
+    const animationPromise = new Promise(resolve => {
+        dialog.addEventListener('transitionend', resolve, { once: true });
+    });
+
+    // Ждем завершения анимации и устанавливаем visibility: hidden
+    animationPromise.then(() => {
+        dialog.style.visibility = 'hidden';
+        vkebhancerInternalPanel.style.filter = 'blur(0px)';
+        // Удаление стиля
+    setTimeout(() => {
+        if (customStyle) {
+			vkebhancerInternalPanel.style.filter = '';
+            customStyle.remove();
+        }
+    }, 500); 
+    });
+});
+
+
 });
 
 document.querySelector('.vkenhancerLogo').addEventListener('click', function() {
@@ -244,7 +291,7 @@ themeChange.addEventListener('click', (event) => {
 	styleElement.id = "lightTheme";
 	changerButton.title = 'Сменить тему на тёмную';
 	var imageurl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' width='24' height='24' style='display: block;'%3E%3Cg fill-rule='nonzero' fill='none'%3E%3Cpath d='M0 0h28v28H0z'%3E%3C/path%3E%3Cpath d='M24.166 15.685a1 1 0 0 1 1.277 1.275c-.569 1.614-1.445 3.046-2.632 4.229-4.418 4.418-11.58 4.417-15.997 0-4.419-4.417-4.419-11.58 0-15.998C8 4.006 9.431 3.129 11.042 2.559a1 1 0 0 1 1.276 1.277c-1.194 3.372-.394 7.133 2.16 9.69 2.554 2.553 6.317 3.353 9.688 2.16Zm-11.102-.746a11.25 11.25 0 0 1-3.163-9.643c-.61.37-1.17.806-1.673 1.309-3.637 3.637-3.637 9.534 0 13.17a9.311 9.311 0 0 0 13.17-.002 8.75 8.75 0 0 0 1.31-1.671a11.247 11.247 0 0 1-9.644-3.163Z' fill='%232483e4'%3E%3C/path%3E%3C/g%3E%3C/svg%3E ";
-    styleElement.innerHTML = "#inMessage{color:black!important;}#serverSidebar{background-color:#fff;  box-shadow: 0px 9px 10px gray;}.serverMessage > div > a,.dialog > p, .updateAvailable > p, .serverMessage > div > p{color:black!important;} .dialog,.updateAvailable,.serverMessage{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url("+'"'+imageurl+'"'+") 24px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > path:nth-child(3){	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
+    styleElement.innerHTML = ".custom-slider::-webkit-slider-thumb{	  box-shadow: 0px 0px 5px #ccc;}#inMessage{color:black!important;}#serverSidebar{background-color:#fff;  box-shadow: 0px 9px 10px gray;}.serverMessage > div > a,.dialog > p, .updateAvailable > p, .serverMessage > div > p{color:black!important;} .dialog,.updateAvailable,.serverMessage{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url("+'"'+imageurl+'"'+") 4px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > path:nth-child(3){	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
 	document.head.appendChild(styleElement);
 	}
 	else
@@ -556,7 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			styleElement.id = "lightTheme";
 			changerButton.title = 'Сменить тему на тёмную';
 			var imageurl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' width='24' height='24' style='display: block;'%3E%3Cg fill-rule='nonzero' fill='none'%3E%3Cpath d='M0 0h28v28H0z'%3E%3C/path%3E%3Cpath d='M24.166 15.685a1 1 0 0 1 1.277 1.275c-.569 1.614-1.445 3.046-2.632 4.229-4.418 4.418-11.58 4.417-15.997 0-4.419-4.417-4.419-11.58 0-15.998C8 4.006 9.431 3.129 11.042 2.559a1 1 0 0 1 1.276 1.277c-1.194 3.372-.394 7.133 2.16 9.69 2.554 2.553 6.317 3.353 9.688 2.16Zm-11.102-.746a11.25 11.25 0 0 1-3.163-9.643c-.61.37-1.17.806-1.673 1.309-3.637 3.637-3.637 9.534 0 13.17a9.311 9.311 0 0 0 13.17-.002 8.75 8.75 0 0 0 1.31-1.671a11.247 11.247 0 0 1-9.644-3.163Z' fill='%232483e4'%3E%3C/path%3E%3C/g%3E%3C/svg%3E ";
-			styleElement.innerHTML = "#inMessage{color:black!important;}#serverSidebar{background-color:#fff;  box-shadow: 0px 9px 10px gray;}.serverMessage > div > a,.dialog > p, .updateAvailable > p, .serverMessage > div > p{color:black!important;} .dialog,.updateAvailable,.serverMessage{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url("+'"'+imageurl+'"'+") 24px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > path:nth-child(3){	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
+			styleElement.innerHTML = ".custom-slider::-webkit-slider-thumb{	  box-shadow: 0px 0px 5px #ccc;}#inMessage{color:black!important;}#serverSidebar{background-color:#fff;  box-shadow: 0px 9px 10px gray;}.serverMessage > div > a,.dialog > p, .updateAvailable > p, .serverMessage > div > p{color:black!important;} .dialog,.updateAvailable,.serverMessage{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url("+'"'+imageurl+'"'+") 4px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > path:nth-child(3){	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
 			document.head.appendChild(styleElement);
 			isThemeChanged = true;
 		}
