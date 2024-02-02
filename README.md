@@ -66,7 +66,7 @@
 </p>
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v2.0/VK.Enhancer.zip">
+<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v2.1/VK.Enhancer.zip">
   <img src="https://maxhack1337.github.io/checker/download.png" width="202" height="83">
 </a></p>
 <div>
