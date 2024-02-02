@@ -2,6 +2,9 @@ console.log('It works!');
 
 var accentC = document.getElementById('oldaccent');
 var msgreact = document.getElementById('messagereactions');
+var recentgroups = document.getElementById('recentgroups');
+var emojistatus = document.getElementById('emojistatus');
+var altscrollbar = document.getElementById('altscrollbar');
 var secretFuncC = document.getElementById('secretfunctions');
 var postReactionsC = document.getElementById('postreactions');
 var hiderC = document.getElementById('hider');
@@ -112,7 +115,7 @@ fetch(url1)
 	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "1.9.1.1")
+		if (version != "2.0")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -465,6 +468,34 @@ msgreact.addEventListener('change', (event) => {
     });
 });
 
+recentgroups.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({ recentGroupsState: checked });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "toggleRecentGroups", isChecked: checked });
+    });
+});
+
+altscrollbar.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({ altSBState: checked });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "toggleAltSB", isChecked: checked });
+    });
+});
+
+emojistatus.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({ emojiStatusState: checked });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "toggleEmojiStatus", isChecked: checked });
+    });
+});
+
+
 secretFuncC.addEventListener('change', (event) => {
     const checked = event.target.checked;
     chrome.storage.local.set({ secretFuncState: checked });
@@ -502,9 +533,12 @@ addSticker.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния из Local Storage
-		chrome.storage.local.get(["issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont"], function(items) {
+		chrome.storage.local.get(["issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState"], function(items) {
 		accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
+		recentgroups.checked = items.recentGroupsState;
+		emojistatus.checked = items.emojiStatusState;
+		altscrollbar.checked = items.altSBState;
         secretFuncC.checked = items.secretFuncState;
         postReactionsC.checked = items.postReactionsState;
         hiderC.checked = items.hiderState;
@@ -532,6 +566,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const activeTabId = tabs[0].id;
             chrome.tabs.sendMessage(activeTabId, { type: "toggleOldAccent", isChecked: items.checkboxState });
             chrome.tabs.sendMessage(activeTabId, { type: "toggleMsgReactions", isChecked: items.checkboxState1 });
+            chrome.tabs.sendMessage(activeTabId, { type: "toggleEmojiStatus", isChecked: items.emojiStatusState });
+            chrome.tabs.sendMessage(activeTabId, { type: "toggleAltSB", isChecked: items.altSBState });
+            chrome.tabs.sendMessage(activeTabId, { type: "toggleRecentGroups", isChecked: items.recentGroupsState });
 			chrome.tabs.sendMessage(activeTabId, { type: "toggleSecretFunctions", isChecked: items.secretFuncState });
 			chrome.tabs.sendMessage(activeTabId, { type: "togglePostReactions", isChecked: items.postReactionsState });
 			chrome.tabs.sendMessage(activeTabId, { type: "toggleHider", isChecked: items.hiderState });

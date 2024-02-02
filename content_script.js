@@ -6,12 +6,56 @@ var isSecretCheck = false;
 function addStyle() {
     const styleElement = document.createElement("style");
     styleElement.id = "removeBadges";
-    styleElement.innerHTML = '.index-module__root--ytXHr {display:none}';
+    styleElement.innerHTML = '.OwnerPageAvatar--nft .OwnerPageAvatar__underlay:not(.OwnerPageAvatar__underlay--outlined) { top: calc(var(--stroke-width, 4px) * -1) !important; bottom: calc(var(--stroke-width, 4px) * -1) !important; left: calc(var(--stroke-width, 4px) * -1) !important; right: calc(var(--stroke-width, 4px) * -1) !important; } .OwnerPageAvatar--nft .OwnerPageAvatar__underlay, .AvatarRich--nft .AvatarRich__img { clip-path: none !important; -webkit-clip-path: none !important; border-radius: 50% !important; } .AvatarRich__heptagonUnderlay { display: none !important; }';
     document.head.appendChild(styleElement);
 }
 
 function removeStyle() {
     const customStyle = document.getElementById("removeBadges");
+    if (customStyle) {
+        customStyle.remove();
+    }
+}
+
+// Функция для добавления стиля
+function emojiRemove() {
+    const styleElement = document.createElement("style");
+    styleElement.id = "removeES";
+    styleElement.innerHTML = '[class*="OwnerNameIcon-module__icon"]:not(.OwnerPageName__esia, .OwnerPageName__prometheus), .image_status__status, .PostHeaderTitle__imageStatus { display: none !important; }';
+    document.head.appendChild(styleElement);
+}
+
+function emojiBack() {
+    const customStyle = document.getElementById("removeES");
+    if (customStyle) {
+        customStyle.remove();
+    }
+}
+
+// Функция для добавления стиля
+function recentRemove() {
+    const styleElement = document.createElement("style");
+    styleElement.id = "removeRecent";
+    styleElement.innerHTML = '#react_rootRecentGroups {display: none !important;}';
+    document.head.appendChild(styleElement);
+}
+
+function recentBack() {
+    const customStyle = document.getElementById("removeRecent");
+    if (customStyle) {
+        customStyle.remove();
+    }
+}
+
+function altSBadd() {
+    const styleElement = document.createElement("style");
+    styleElement.id = "altSB";
+    styleElement.innerHTML = 'body { --scrollbar_thumb:#eee; --vklScroll: var(--scrollbar_background, var(--background_content)); --vklScrollThumb: var(--scrollbar_thumb, var(--button_secondary_background_highlighted)); } ::-webkit-scrollbar { background-color: var(--vklScroll); width: 16px; } ::-webkit-scrollbar-track { background-color: var(--vklScroll); } ::-webkit-scrollbar-thumb { background-color: var(--vklScrollThumb); border-radius: 16px; border: 4px solid var(--vklScroll); } ::-webkit-scrollbar-button { display: none; }';
+    document.head.appendChild(styleElement);
+}
+
+function altSBremove() {
+    const customStyle = document.getElementById("altSB");
     if (customStyle) {
         customStyle.remove();
     }
@@ -46,7 +90,7 @@ function addStyle2() {
     const styleElement = document.createElement("style");
 	const imageUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 0 24 24' width='24'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M0 0h24v24H0z'/%3E%3Cpath xmlns='http://www.w3.org/2000/svg' fill-rule='nonzero' fill='%23e64646' d='M11.95 4.83l-0.09 -0.09c-1.27,-1.23 -2.96,-1.93 -4.73,-1.94 0,0 0,0 0,0 -3.62,0 -6.55,2.93 -6.56,6.54 0,3.52 1.3,5.2 7.07,9.76l3.07 2.4c0.37,0.29 0.8,0.44 1.24,0.45l0 0c0.44,-0.01 0.88,-0.16 1.24,-0.45l3.07 -2.4c5.78,-4.56 7.07,-6.24 7.07,-9.76 -0.01,-3.61 -2.94,-6.54 -6.55,-6.54 0,0 0,0 0,0 -1.77,0.01 -3.47,0.71 -4.73,1.94l-0.1 0.09z'/%3E%3C/g%3E%3C/svg%3E";
     styleElement.id = "postReactions";
-    styleElement.innerHTML = ".PostButtonReactions__icon.PostButtonReactions__icon--custom{background: url(\""+imageUrl+"\")!important;         scale:.85;} .ReactionsMenuPopperTransition-appear-done, .ReactionsMenuPopperTransition-enter-done {          display: none!important;      }                        .ReactionsMenu,    .ReactionsMenu--extraHoverArea,    .ReactionsMenu--extraHoverAreaToTop,    div.ReactionsPreview__items,.PostButtonReactions--post .PostButtonReactions__title--textual,.like_tt_reacted-count,.fans_fanph_reaction,li#likes_tab_reactions_0,    li#likes_tab_reactions_1,    li#likes_tab_reactions_2,    li#likes_tab_reactions_3,    li#likes_tab_reactions_4,    li#likes_tab_reactions_5,.ui_tab.ui_tab_group,.like_tt_reaction {        display: none !important;    }    .PostBottomAction {        --post-bottom-action-background-color: transparent !important;    }    div.ReactionsPreview.ReactionsPreview--active .ReactionsPreview__count._counter_anim_container {        color: #e64646 !important;    }    [dir] .ReactionsPreview {        position: absolute;        margin-top: 14px;        margin-left: 30px;        z-index: 9;    }    .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count {    font-size: 13px;    line-height: 16px;    font-weight: 500;    }    .PostButtonReactionsContainer {        width: auto !important;    }    .PostButtonReactions__iconAnimation svg    {        background: url(\""+imageUrl+"\") no-repeat!important;        margin-top:3px;        margin-left:3px;        scale:.85;    }    .PostButtonReactions__iconAnimation svg g    {        display:none;    }        [dir] .PostActionStatusBar--inPost {        padding-top: 0px !important;        padding-bottom: 0px !important;    }    div.like_cont.PostBottomActionLikeBtns {        border-top: 1px solid transparent !important;    }    .PostButtonReactionsContainer {        width: auto !important;    }        [dir=ltr] .post--withPostBottomAction .PostBottomActionLikeBtns .like_btns {        margin-top: 5px !important;    }    [dir] .PostBottomAction::before {        background-image: none!important;    }    [dir] .like_cont {           }    [dir] .PostBottomActionLikeBtns.like_cont {  padding-bottom:10px!important;   }";
+    styleElement.innerHTML = ".PostButtonReactions__iconAnimation{display:none;}.PostButtonReactions__icon.PostButtonReactions__icon--custom{background: url(\""+imageUrl+"\")!important;         scale:.85;} .ReactionsMenuPopperTransition-appear-done, .ReactionsMenuPopperTransition-enter-done {          display: none!important;      }                        .ReactionsMenu,    .ReactionsMenu--extraHoverArea,    .ReactionsMenu--extraHoverAreaToTop,    div.ReactionsPreview__items,.PostButtonReactions--post .PostButtonReactions__title--textual,.like_tt_reacted-count,.fans_fanph_reaction,li#likes_tab_reactions_0,    li#likes_tab_reactions_1,    li#likes_tab_reactions_2,    li#likes_tab_reactions_3,    li#likes_tab_reactions_4,    li#likes_tab_reactions_5,.ui_tab.ui_tab_group,.like_tt_reaction {        display: none !important;    }    .PostBottomAction {        --post-bottom-action-background-color: transparent !important;    }    div.ReactionsPreview.ReactionsPreview--active .ReactionsPreview__count._counter_anim_container {        color: #e64646 !important;    }    [dir] .ReactionsPreview {        position: absolute;        margin-top: 14px;        margin-left: 30px;        z-index: 9;    }    .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count {    font-size: 13px;    line-height: 16px;    font-weight: 500;    }    .PostButtonReactionsContainer {        width: auto !important;    }    .PostButtonReactions__iconAnimation svg    {        background: url(\""+imageUrl+"\") no-repeat!important;        margin-top:3px;        margin-left:3px;        scale:.85;    }    .PostButtonReactions__iconAnimation svg g    {        display:none;    }        [dir] .PostActionStatusBar--inPost {        padding-top: 0px !important;        padding-bottom: 0px !important;    }    div.like_cont.PostBottomActionLikeBtns {        border-top: 1px solid transparent !important;    }    .PostButtonReactionsContainer {        width: auto !important;    }        [dir=ltr] .post--withPostBottomAction .PostBottomActionLikeBtns .like_btns {        margin-top: 5px !important;    }    [dir] .PostBottomAction::before {        background-image: none!important;    }    [dir] .like_cont {           }    [dir] .PostBottomActionLikeBtns.like_cont {  padding-bottom:10px!important;   }";
     document.head.appendChild(styleElement);
 }
 
@@ -61,7 +105,7 @@ function addStyle4() {
 	console.log("hider executed");
     const styleElement = document.createElement("style");
     styleElement.id = "hider";
-    styleElement.innerHTML = "       .top_profile_name,.im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg,.MEAvatar {    filter: blur(10px) grayscale(1) !important;}";
+    styleElement.innerHTML = ".wall_module .author_highlighted,.deep_active .replies .reply_image,.top_profile_name,.im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg,.MEAvatar {    filter: blur(10px) grayscale(1) !important;}";
 	document.head.appendChild(styleElement);
 }
 
@@ -215,7 +259,7 @@ function addOpacity(sliderValueCount) {
 
 
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked) {
   if (isOldAccentChecked) {
     addStyle();
   } else {
@@ -301,13 +345,37 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
   {
   addColorPicker(cColorValue,cTextValue);
   }
+  if(emojiStatusChecked)
+  {
+	  emojiRemove();
+  }
+  else
+  {
+	  emojiBack();
+  }
+  if(recentGroupsChecked)
+  {
+	  recentRemove();
+  }
+  else
+  {
+	  recentBack();
+  }
+  if(altSBChecked)
+  {
+	  altSBadd();
+  }
+  else
+  {
+	  altSBremove();
+  }
 }
 
 
 
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-  chrome.storage.local.get(["sliderValue","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+  chrome.storage.local.get(["altSBState","recentGroupsState","emojiStatusState","sliderValue","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
     const isOldAccentChecked = items.checkboxState;
     const isMsgReactionsChecked = items.checkboxState1;
 	const isPostReactionsChecked = items.postReactionsState;
@@ -321,7 +389,10 @@ function applySavedStyles() {
 	const cFontValue = items.customFont;
 	const isNameAva = items.checkboxStateAva;
 	const sliderValueCount = items.sliderValue;
-	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount);
+	const emojiStatusChecked = items.emojiStatusState;
+	const recentGroupsChecked = items.recentGroupsState;
+	const altSBChecked = items.altSBState;
+	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked);
   });
 }
 
@@ -330,7 +401,7 @@ document.addEventListener('DOMContentLoaded', applySavedStyles);
 
 // Обработчик сообщений от background.js
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont") {
+if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups"  || message.type === "toggleAltSB"  || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue") {
 	applySavedStyles();
   }
   
