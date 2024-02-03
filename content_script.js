@@ -2,6 +2,15 @@ console.log('Content script is running!');
 
 var isSecretCheck = false;
 
+document.addEventListener('DOMContentLoaded', function () {
+// Проверяем наличие style с class="stylus"
+const stylusInstalled = document.querySelector('style.stylus') !== null;
+
+// Сохраняем результат в кеш браузера
+chrome.storage.local.set({ stylusInstalled }, function () {
+    console.log('Stylus installation status saved to cache.');
+});
+});
 // Функция для добавления стиля
 function addStyle() {
     const styleElement = document.createElement("style");

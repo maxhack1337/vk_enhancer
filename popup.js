@@ -35,6 +35,33 @@ var ID;
 
 
 document.addEventListener('DOMContentLoaded', function () {
+// Получаем значение из кеша браузера
+chrome.storage.local.get(['stylusInstalled'], function (result) {
+    const stylusInstalled = result.stylusInstalled;
+
+    // Находим элемент label
+    const labelElement = document.querySelector('.vkenhancerOldLabel');
+	const warningElement = document.querySelector('.vkenhancerOldWarning');
+
+    // Если расширение "Stylus" установлено, ничего не делаем
+    if (stylusInstalled) {
+		warningElement.style.display = 'none';
+		labelElement.style.pointerEvents = 'auto';
+		labelElement.style.opacity = '1';
+        return;
+    }
+
+    // Если расширение "Stylus" не установлено, делаем label некликабельным и меняем прозрачность
+	warningElement.style.display = 'block';
+    labelElement.style.pointerEvents = 'none';
+    labelElement.style.opacity = '0.5';
+});
+
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
   const slider = document.getElementById('slider');
   const sliderValue = document.getElementById('slider-value');
 
@@ -115,7 +142,7 @@ fetch(url1)
 	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.1")
+		if (version != "2.1.1")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
