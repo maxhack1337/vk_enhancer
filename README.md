@@ -1,6 +1,6 @@
 # VK Enhancer
 ### Наслаждайтесь VK по полной!
-<a href="https://vk.com/vkenhancer"><img style="border-radius:8px;" src="https://maxhack1337.github.io/checker/main.png"></a>
+<a href="https://vk.com/vkenhancer"><img style="border-radius:8px;" src="https://nimble-wisp-54a226.netlify.app/main.png"></a>
 ## Функции расширения
 ```
  * Возможность убрать реакции
@@ -66,8 +66,8 @@
 </p>
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v2.1.1/VK.Enhancer.zip">
-  <img src="https://maxhack1337.github.io/checker/download.png" width="202" height="83">
+<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v2.2/VK.Enhancer.zip">
+  <img src="https://nimble-wisp-54a226.netlify.app/download.png" width="202" height="83">
 </a></p>
 <div>
   
