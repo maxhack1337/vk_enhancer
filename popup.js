@@ -5,6 +5,7 @@ var msgreact = document.getElementById('messagereactions');
 var recentgroups = document.getElementById('recentgroups');
 var emojistatus = document.getElementById('emojistatus');
 var altscrollbar = document.getElementById('altscrollbar');
+var muteCalls = document.getElementById('muteCalls');
 var secretFuncC = document.getElementById('secretfunctions');
 var postReactionsC = document.getElementById('postreactions');
 var hiderC = document.getElementById('hider');
@@ -35,15 +36,13 @@ var ID;
 
 
 document.addEventListener('DOMContentLoaded', function () {
-// Получаем значение из кеша браузера
 chrome.storage.local.get(['stylusInstalled'], function (result) {
     const stylusInstalled = result.stylusInstalled;
 
-    // Находим элемент label
     const labelElement = document.querySelector('.vkenhancerOldLabel');
 	const warningElement = document.querySelector('.vkenhancerOldWarning');
 
-    // Если расширение "Stylus" установлено, ничего не делаем
+    // Если расширение "Stylus" установлено
     if (stylusInstalled) {
 		warningElement.style.display = 'none';
 		labelElement.style.pointerEvents = 'auto';
@@ -51,7 +50,7 @@ chrome.storage.local.get(['stylusInstalled'], function (result) {
         return;
     }
 
-    // Если расширение "Stylus" не установлено, делаем label некликабельным и меняем прозрачность
+    // Если расширение "Stylus" не установлено
 	warningElement.style.display = 'block';
     labelElement.style.pointerEvents = 'none';
     labelElement.style.opacity = '0.5';
@@ -75,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function saveSliderValue(value) {
-    // Сохраняем значение слайдера в кеш браузера
     chrome.storage.local.set({ sliderValue: value });
   }
 
@@ -103,11 +101,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Загружаем значение слайдера из кеша при загрузке расширения
   chrome.storage.local.get(['sliderValue'], function (result) {
     const storedValue = result.sliderValue;
     if (storedValue === undefined) {
-      // Если значение отсутствует, установим значение по умолчанию
       const defaultValue = 100;
       slider.value = defaultValue;
       updateSliderColor(defaultValue);
@@ -125,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-const url1 = 'https://maxhack1337.github.io/checker/';
+const url1 = 'https://nimble-wisp-54a226.netlify.app/';
 fetch(url1)
     .then(response => response.text())
     .then(html => {
@@ -142,7 +138,7 @@ fetch(url1)
 	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.1.1")
+		if (version != "2.2")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -201,11 +197,10 @@ fetch(url1)
     servermessagesButton.addEventListener("click", function () {
         serverSidebar.classList.toggle("serverHidden");
 
-        // После того, как класс serverHidden применен, запускаем анимацию печатания
         if (serverSidebar.classList.contains("serverHidden")) {
             serverMessageTextLow.style.animation = 'typing 5s steps(40, end)';
         } else {
-            // Если боковая панель скрыта, удаляем класс анимации
+
             serverMessageTextLow.style.animation = '';
         }
     });
@@ -240,19 +235,15 @@ document.addEventListener('DOMContentLoaded', function() {
 	yesButton.addEventListener('click', function() {
     const customStyle = document.getElementById("dialogOpen");
 
-    // Анимированное исчезновение
     dialog.style.opacity = '0';
 
-    // Создаем Promise, который будет разрешен по завершении анимации
     const animationPromise = new Promise(resolve => {
         dialog.addEventListener('transitionend', resolve, { once: true });
     });
 
-    // Ждем завершения анимации и устанавливаем visibility: hidden
     animationPromise.then(() => {
         dialog.style.visibility = 'hidden';
         vkebhancerInternalPanel.style.filter = 'blur(0px)';
-        // Удаление стиля
     setTimeout(() => {
         if (customStyle) {
 			vkebhancerInternalPanel.style.filter = '';
@@ -276,19 +267,16 @@ document.addEventListener('DOMContentLoaded', function() {
 noButton.addEventListener('click', function() {
     const customStyle = document.getElementById("dialogOpen");
 
-    // Анимированное исчезновение
     dialog.style.opacity = '0';
 
-    // Создаем Promise, который будет разрешен по завершении анимации
     const animationPromise = new Promise(resolve => {
         dialog.addEventListener('transitionend', resolve, { once: true });
     });
 
-    // Ждем завершения анимации и устанавливаем visibility: hidden
     animationPromise.then(() => {
         dialog.style.visibility = 'hidden';
         vkebhancerInternalPanel.style.filter = 'blur(0px)';
-        // Удаление стиля
+
     setTimeout(() => {
         if (customStyle) {
 			vkebhancerInternalPanel.style.filter = '';
@@ -569,6 +557,15 @@ emojistatus.addEventListener('change', (event) => {
     });
 });
 
+muteCalls.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({ muteCallsState: checked });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "toggleMuteStatus", isChecked: checked });
+    });
+});
+
 
 secretFuncC.addEventListener('change', (event) => {
     const checked = event.target.checked;
@@ -607,12 +604,13 @@ addSticker.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния из Local Storage
-		chrome.storage.local.get(["issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState"], function(items) {
+		chrome.storage.local.get(["issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState","muteCallsState"], function(items) {
 		accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
 		recentgroups.checked = items.recentGroupsState;
 		emojistatus.checked = items.emojiStatusState;
 		altscrollbar.checked = items.altSBState;
+		muteCalls.checked = items.muteCallsState;
         secretFuncC.checked = items.secretFuncState;
         postReactionsC.checked = items.postReactionsState;
         hiderC.checked = items.hiderState;
@@ -642,6 +640,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chrome.tabs.sendMessage(activeTabId, { type: "toggleMsgReactions", isChecked: items.checkboxState1 });
             chrome.tabs.sendMessage(activeTabId, { type: "toggleEmojiStatus", isChecked: items.emojiStatusState });
             chrome.tabs.sendMessage(activeTabId, { type: "toggleAltSB", isChecked: items.altSBState });
+            chrome.tabs.sendMessage(activeTabId, { type: "toggleMuteStatus", isChecked: items.muteCallsState });
             chrome.tabs.sendMessage(activeTabId, { type: "toggleRecentGroups", isChecked: items.recentGroupsState });
 			chrome.tabs.sendMessage(activeTabId, { type: "toggleSecretFunctions", isChecked: items.secretFuncState });
 			chrome.tabs.sendMessage(activeTabId, { type: "togglePostReactions", isChecked: items.postReactionsState });

@@ -11,6 +11,41 @@ chrome.storage.local.set({ stylusInstalled }, function () {
     console.log('Stylus installation status saved to cache.');
 });
 });
+
+
+// Режим "не беспокоить"
+function applyStyleAndMuteSpecificAudio() {
+    const styleElement = document.createElement("style");
+    styleElement.id = "muteCalls";
+    styleElement.innerHTML = '.CallModal.CallModal--isIncoming{display:none;}';
+    document.head.appendChild(styleElement);
+
+    const targetSrc = '/mp3/call_incoming.mp3';
+    const audioElements = document.querySelectorAll('#calls audio');
+    audioElements.forEach(function (audio) {
+        if (audio.src.endsWith(targetSrc)) {
+            audio.muted = true;
+        }
+    });
+}
+
+// Отключение режима "не беспокоить"
+function removeStyleAndUnmuteSpecificAudio() {
+    const customStyle = document.getElementById("muteCalls");
+    if (customStyle) {
+        customStyle.remove();
+    }
+
+    const targetSrc = '/mp3/call_incoming.mp3';
+    const audioElements = document.querySelectorAll('#calls audio');
+    audioElements.forEach(function (audio) {
+        if (audio.src.endsWith(targetSrc)) {
+            audio.muted = false;
+        }
+    });
+}
+
+
 // Функция для добавления стиля
 function addStyle() {
     const styleElement = document.createElement("style");
@@ -268,7 +303,7 @@ function addOpacity(sliderValueCount) {
 
 
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked,muteCallsChecked) {
   if (isOldAccentChecked) {
     addStyle();
   } else {
@@ -378,13 +413,21 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
   {
 	  altSBremove();
   }
+  if(muteCallsChecked)
+  {
+	  applyStyleAndMuteSpecificAudio();
+  }
+  else
+  {
+	  removeStyleAndUnmuteSpecificAudio();
+  }
 }
 
 
 
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-  chrome.storage.local.get(["altSBState","recentGroupsState","emojiStatusState","sliderValue","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+  chrome.storage.local.get(["muteCallsState","altSBState","recentGroupsState","emojiStatusState","sliderValue","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
     const isOldAccentChecked = items.checkboxState;
     const isMsgReactionsChecked = items.checkboxState1;
 	const isPostReactionsChecked = items.postReactionsState;
@@ -401,7 +444,8 @@ function applySavedStyles() {
 	const emojiStatusChecked = items.emojiStatusState;
 	const recentGroupsChecked = items.recentGroupsState;
 	const altSBChecked = items.altSBState;
-	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked);
+	const muteCallsChecked = items.muteCallsState;
+	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked,muteCallsChecked);
   });
 }
 
@@ -410,7 +454,7 @@ document.addEventListener('DOMContentLoaded', applySavedStyles);
 
 // Обработчик сообщений от background.js
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups"  || message.type === "toggleAltSB"  || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue") {
+if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups"  || message.type === "toggleAltSB"  || message.type === "toggleMuteStatus"  || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue") {
 	applySavedStyles();
   }
   
