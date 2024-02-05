@@ -135,10 +135,10 @@ fetch(url1)
 	var ver1 = document.getElementById('version');
 	const styleElement = document.createElement("style");
 	styleElement.id = "version";
-	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
+	styleElement.innerHTML = "#version::after{content:'Версия "+version+" React'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.2")
+		if (version != "2.3")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
