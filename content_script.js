@@ -2,10 +2,11 @@ console.log('Content script is running!');
 
 var isSecretCheck = false;
 var isPostReact = false;
+var isSecretEnabled = false;
 
 /*Фикс маргина для лайков*/
 function updateMarginLeft() {
-    if (window.location.href.includes("wall")) {
+    if (window.location.href.includes("wall") && (isPostReact || isSecretEnabled)) {
 		console.log("Change margin for likes")
         const reactionsPreviewCount = document.querySelector('.ReactionsPreview__count[data-section-ref="like-button-count"]');
         if (reactionsPreviewCount) {
@@ -31,7 +32,7 @@ window.addEventListener('popstate', updateMarginLeft);
 
 function handleWlPostMutation(mutationsList, observer) {
     for (const mutation of mutationsList) {
-        if (mutation.type === 'childList' && mutation.addedNodes.length > 0 && window.location.href.includes("?w=wall")) {
+        if (mutation.type === 'childList' && (isPostReact || isSecretEnabled) && mutation.addedNodes.length > 0 && window.location.href.includes("?w=wall")) {
             const wlPostElement = document.getElementById('wl_post');
             if (wlPostElement) {
                 console.log('Элемент с id "wl_post" появился на странице');
@@ -166,12 +167,14 @@ function removeStyle1() {
 }
 
 function addStyle3() {
+	isSecretEnabled = true;
 setTimeout(() => {
 loadScripts();
 }, "5000");
 }
 
 function removeStyle3() {
+	isSecretEnabled = false;
     console.log("Secret functions are disabled. If you want to enable them - push checkbox and reload page");
 }
 
