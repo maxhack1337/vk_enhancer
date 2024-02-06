@@ -153,10 +153,10 @@ fetch(url1)
 	var ver1 = document.getElementById('version');
 	const styleElement = document.createElement("style");
 	styleElement.id = "version";
-	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
+	styleElement.innerHTML = "#version::after{content:'Версия "+version+" React'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.4")
+		if (version != "2.5")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -617,17 +617,18 @@ hiderC.addEventListener('change', (event) => {
     });
 });
 
-addSticker.addEventListener('click', () => {
-  const stickerId = document.getElementById('addstickertextfield').value;
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    const activeTabId = tabs[0].id;
-    chrome.tabs.sendMessage(activeTabId, { type: "addSticker", stickerId });
-  });
+addSticker.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({ addstickerState: checked });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "addSticker", isChecked: checked });
+    });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния из Local Storage
-		chrome.storage.local.get(["issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState","muteCallsState","customHotbar"], function(items) {
+		chrome.storage.local.get(["addstickerState","issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState","muteCallsState","customHotbar"], function(items) {
 		accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
 		recentgroups.checked = items.recentGroupsState;
@@ -643,6 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		customLogoText.value = items.customLogo;
 		customBgText.value = items.customBg;
 		customFontText.value = items.customFont;
+		addSticker.checked = items.addstickerState;
 		if (items.customHotbar) {
 			addemojitf.value = items.customHotbar;
 		} else {
@@ -673,6 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			chrome.tabs.sendMessage(activeTabId, { type: "toggleSecretFunctions", isChecked: items.secretFuncState });
 			chrome.tabs.sendMessage(activeTabId, { type: "togglePostReactions", isChecked: items.postReactionsState });
 			chrome.tabs.sendMessage(activeTabId, { type: "toggleHider", isChecked: items.hiderState });
+			chrome.tabs.sendMessage(activeTabId, { type: "addSticker", isChecked: items.addstickerState });
 			chrome.tabs.sendMessage(activeTabId, { type: "customAccent", cAccent: items.customAccent });
 			chrome.tabs.sendMessage(activeTabId, { type: "colorPicker", cPicker: items.colorPicker });
 			chrome.tabs.sendMessage(activeTabId, { type: "colorPickerText", cText: items.colorPickerText });
