@@ -5,7 +5,7 @@ var isPostReact = false;
 var isSecretEnabled = false;
 /*хотбар*/
 function HotBarAppear(cHotBarValue) {
-  const chatInputContainer = document.getElementsByClassName("im-chat-input--textarea fl_l _im_text_input _emoji_field_wrap _voice_field_wrap");
+  const chatInputContainer = document.getElementsByClassName("im-chat-input--textarea fl_l _im_text_input _emoji_field_wrap");
   
   // Проверяем, есть ли уже хотбар на странице
   const existingHotbar = document.getElementById('vkenhancerEmojiHotbarID');
@@ -59,8 +59,11 @@ function HotBarAppear(cHotBarValue) {
       aElement.appendChild(imgElement);
       hotbarDiv.appendChild(aElement);
     }
-
+	try{
     chatInputContainer[0].appendChild(hotbarDiv);
+	}
+	catch (error) {
+	}
   }
 }
 
@@ -83,7 +86,7 @@ function getEmojiId(emoji) {
 /*Фикс маргина для лайков*/
 function updateMarginLeft() {
     if (window.location.href.includes("wall") && (isPostReact || isSecretEnabled)) {
-		console.log("Change margin for likes")
+		//console.log("Change margin for likes")
         const reactionsPreviewCount = document.querySelector('.ReactionsPreview__count[data-section-ref="like-button-count"]');
         if (reactionsPreviewCount) {
             const textLength = reactionsPreviewCount.textContent.length;
@@ -111,8 +114,22 @@ function handleWlPostMutation(mutationsList, observer) {
         if (mutation.type === 'childList' && (isPostReact || isSecretEnabled) && mutation.addedNodes.length > 0 && window.location.href.includes("?w=wall")) {
             const wlPostElement = document.getElementById('wl_post');
             if (wlPostElement) {
-                console.log('Элемент с id "wl_post" появился на странице');
+                //console.log('Элемент с id "wl_post" появился на странице');
                 updateMarginLeft()
+            }
+        }
+    }
+}
+
+function handleWlPostMutation1(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0 && window.location.href.includes("im")) {
+            const wlPostElement = document.getElementById('im_editable0');
+            if (wlPostElement) {
+                //console.log('Элемент с id "im_editable0" появился на странице');
+				chrome.storage.local.get(["customHotbar"], function(items) {
+                HotBarAppear(items.customHotbar)
+				});
             }
         }
     }
@@ -123,6 +140,12 @@ const observer = new MutationObserver(handleWlPostMutation);
 const observerOptions = { childList: true, subtree: true };
 
 observer.observe(document, observerOptions);
+
+const observer1 = new MutationObserver(handleWlPostMutation1);
+
+const observerOptions1 = { childList: true, subtree: true };
+
+observer1.observe(document, observerOptions1);
 
 
 
