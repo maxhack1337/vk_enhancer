@@ -32,7 +32,25 @@ var nameAva = document.getElementById('nameava');
 var themeChange = document.getElementById('themechange');
 var isThemeChanged;
 var changerButton = document.getElementById('changerb');
+var addhotbar = document.getElementById('addhotbar');
+var addemojitf = document.getElementById('addemojitf');
+var emojigoDiv = document.getElementById('emojigo');
 var ID;
+
+addhotbar.addEventListener('click', (event) => {
+  event.preventDefault();
+
+  const emojiArray = addemojitf.value.split(',').map(emoji => emoji.trim());
+
+  chrome.storage.local.set({
+    customHotbar: emojiArray,
+  });
+
+  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    const activeTabId = tabs[0].id;
+    chrome.tabs.sendMessage(activeTabId, { type: "customHotbar", cHotbar: emojiArray });
+  });
+});
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -135,10 +153,10 @@ fetch(url1)
 	var ver1 = document.getElementById('version');
 	const styleElement = document.createElement("style");
 	styleElement.id = "version";
-	styleElement.innerHTML = "#version::after{content:'Версия "+version+" React'}";
+	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.3")
+		if (version != "2.4")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -484,6 +502,11 @@ colorPicker.addEventListener('change', saveToCache);
 colorPickerText.addEventListener('change', saveToCache);
 
 
+
+document.querySelector('#emojigo').addEventListener('click', function() {
+  chrome.tabs.create({ url: 'https://nimble-wisp-54a226.netlify.app/emoji.html' });
+});
+
 copyLink.addEventListener('click', (event) => {
 	if(parseId.value != "Данный элемент не является пользователем или группой")
 	{
@@ -604,7 +627,7 @@ addSticker.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния из Local Storage
-		chrome.storage.local.get(["issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState","muteCallsState"], function(items) {
+		chrome.storage.local.get(["issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState","muteCallsState","customHotbar"], function(items) {
 		accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
 		recentgroups.checked = items.recentGroupsState;
@@ -620,6 +643,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		customLogoText.value = items.customLogo;
 		customBgText.value = items.customBg;
 		customFontText.value = items.customFont;
+		if (items.customHotbar) {
+			addemojitf.value = items.customHotbar;
+		} else {
+			addemojitf.value = "";
+		}
 		nameAva.checked = items.checkboxStateAva;
 		if(items.issThemeChanged)
 		{
@@ -649,6 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			chrome.tabs.sendMessage(activeTabId, { type: "colorPicker", cPicker: items.colorPicker });
 			chrome.tabs.sendMessage(activeTabId, { type: "colorPickerText", cText: items.colorPickerText });
 			chrome.tabs.sendMessage(activeTabId, { type: "customLogo", cLogo: items.customLogo });
+			chrome.tabs.sendMessage(activeTabId, { type: "customHotbar", cHotbar: items.customHotbar });
 			chrome.tabs.sendMessage(activeTabId, { type: "customBg", cBg: items.customBg });
 			chrome.tabs.sendMessage(activeTabId, { type: "customFont", cFont: items.customFont });
 			chrome.tabs.sendMessage(activeTabId, { type: "nameAva" });

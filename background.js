@@ -47,7 +47,7 @@ if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.
     });
  }
  
- if(message.type === "customLogo" || message.type === "customBg" || message.type === "customFont")
+ if(message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "customHotbar")
  {
 	 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       if (tabs && tabs.length > 0) {

@@ -3,6 +3,82 @@ console.log('Content script is running!');
 var isSecretCheck = false;
 var isPostReact = false;
 var isSecretEnabled = false;
+/*хотбар*/
+function HotBarAppear(cHotBarValue) {
+  const chatInputContainer = document.getElementsByClassName("im-chat-input--textarea fl_l _im_text_input _emoji_field_wrap _voice_field_wrap");
+  
+  // Проверяем, есть ли уже хотбар на странице
+  const existingHotbar = document.getElementById('vkenhancerEmojiHotbarID');
+  
+  cHotBarValue = cHotBarValue.filter(function(item) {
+    return item !== '' && item !== null && item !== undefined;
+  });
+  
+  if (!existingHotbar && cHotBarValue.length > 0) {
+    const hotbarDiv = document.createElement('div');
+    hotbarDiv.className = 'vkenhancerEmojiHotbar';
+    hotbarDiv.id = 'vkenhancerEmojiHotbarID';
+	
+    hotbarDiv.style.marginTop = '-10px';
+    hotbarDiv.style.marginBottom = '7px';
+    hotbarDiv.style.marginLeft = '9px';
+    hotbarDiv.style.color = '#dee1e6';
+    hotbarDiv.style.textAlign = 'center';
+    hotbarDiv.style.width = '420px';
+
+    for (let i = 0; i < cHotBarValue.length; i++) {
+      const emojiCode = cHotBarValue[i];
+      const emojiImgSrc = `/emoji/e/${emojiCode}.png`;
+
+      const aElement = document.createElement('a');
+      aElement.className = 'emoji_id';
+      aElement.style.display = 'inline-block';
+      aElement.style.position = 'relative';
+      aElement.style.padding = '5px 4px';
+      aElement.style.marginRight = '1px';
+      aElement.style.cursor = 'pointer';
+      aElement.style.zIndex = '10';
+
+      aElement.addEventListener('mouseover', () => {
+        aElement.style.background = '#ebeef2';
+        aElement.style.borderRadius = '3px';
+      });
+      aElement.addEventListener('mouseout', () => {
+        aElement.style.background = 'none';
+        aElement.style.borderRadius = '0';
+      });
+	  
+      aElement.setAttribute('onclick', `Emoji.addEmoji(0, '${emojiCode}', this);`);
+	  
+	  
+
+      const imgElement = document.createElement('img');
+      imgElement.className = 'emoji';
+      imgElement.src = emojiImgSrc;
+
+      aElement.appendChild(imgElement);
+      hotbarDiv.appendChild(aElement);
+    }
+
+    chatInputContainer[0].appendChild(hotbarDiv);
+  }
+}
+
+
+
+// Функция для получения ID эмодзи
+function getEmojiId(emoji) {
+  return emoji.codePointAt(0).toString(16);
+}
+
+
+
+
+
+
+
+
+
 
 /*Фикс маргина для лайков*/
 function updateMarginLeft() {
@@ -353,7 +429,7 @@ function addOpacity(sliderValueCount) {
 
 
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked,muteCallsChecked) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked,muteCallsChecked,cHotBarValue) {
   if (isOldAccentChecked) {
     addStyle();
   } else {
@@ -471,13 +547,17 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
   {
 	  removeStyleAndUnmuteSpecificAudio();
   }
+  if(cHotBarValue)
+  {
+	  HotBarAppear(cHotBarValue);
+  }
 }
 
 
 
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-  chrome.storage.local.get(["muteCallsState","altSBState","recentGroupsState","emojiStatusState","sliderValue","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+  chrome.storage.local.get(["customHotbar","muteCallsState","altSBState","recentGroupsState","emojiStatusState","sliderValue","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
     const isOldAccentChecked = items.checkboxState;
     const isMsgReactionsChecked = items.checkboxState1;
 	const isPostReactionsChecked = items.postReactionsState;
@@ -495,7 +575,8 @@ function applySavedStyles() {
 	const recentGroupsChecked = items.recentGroupsState;
 	const altSBChecked = items.altSBState;
 	const muteCallsChecked = items.muteCallsState;
-	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked,muteCallsChecked);
+	const cHotBarValue = items.customHotbar;
+	applyStyles(isOldAccentChecked, isMsgReactionsChecked,isPostReactionsChecked,isSecretChecked,isHiderChecked,cAccentValue,cColorValue,cTextValue,cLogoValue,cBgValue,cFontValue,isNameAva,sliderValueCount,emojiStatusChecked,recentGroupsChecked,altSBChecked,muteCallsChecked,cHotBarValue);
   });
 }
 
@@ -504,7 +585,7 @@ document.addEventListener('DOMContentLoaded', applySavedStyles);
 
 // Обработчик сообщений от background.js
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups"  || message.type === "toggleAltSB"  || message.type === "toggleMuteStatus"  || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue") {
+if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups"  || message.type === "toggleAltSB"  || message.type === "toggleMuteStatus"  || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue" || message.type === "customHotbar") {
 	applySavedStyles();
   }
   
