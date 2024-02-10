@@ -2,6 +2,7 @@ console.log('Content script is running!');
 var isSecretCheck = false;
 var isPostReact = false;
 var isSecretEnabled = false;
+var old_smile = 0;
 /*хотбар*/
 function HotBarAppear(cHotBarValue) {
     const chatInputContainer = document.getElementsByClassName("im-chat-input--textarea fl_l _im_text_input _emoji_field_wrap");
@@ -10,6 +11,11 @@ function HotBarAppear(cHotBarValue) {
     cHotBarValue = cHotBarValue.filter(function(item) {
         return item !== '' && item !== null && item !== undefined;
     });
+	if(existingHotbar && old_smile + 1 != Number(document.getElementsByClassName("page_progress_preview media_preview clear_fix")[0].id.replace(/\D+/g,"")))
+	{
+		existingHotbar.remove();
+		/*console.log('HotBar removed')*/
+	}
     if (!existingHotbar && cHotBarValue.length > 0) {
         const hotbarDiv = document.createElement('div');
         hotbarDiv.className = 'vkenhancerEmojiHotbar';
@@ -40,7 +46,20 @@ function HotBarAppear(cHotBarValue) {
                 aElement.style.background = 'none';
                 aElement.style.borderRadius = '0';
             });
-            aElement.setAttribute('onclick', `Emoji.addEmoji(0, '${emojiCode}', this);`);
+			var prev = document.getElementsByClassName("page_progress_preview media_preview clear_fix");
+			var v1 = 0;
+			for (j = 0; j <= prev.length-1; j++) { 
+				var last_id = prev[j].id;
+				var last = Number(last_id.replace(/\D+/g,""));
+				if (last>v1) {
+					v1 = last;
+				}
+			}
+			
+			var v_smile = v1-1;
+			old_smile = v_smile;
+			/*console.log(v_smile + " v_smile");*/
+            aElement.setAttribute('onclick', `Emoji.addEmoji(${v_smile}, '${emojiCode}', this); return cancelEvent(event);`);
             const imgElement = document.createElement('img');
             imgElement.className = 'emoji';
             imgElement.src = emojiImgSrc;
@@ -107,6 +126,7 @@ const observerOptions = {
     subtree: true
 };
 observer.observe(document, observerOptions);
+
 const observer1 = new MutationObserver(handleWlPostMutation1);
 const observerOptions1 = {
     childList: true,
@@ -585,6 +605,9 @@ function runStickerAdder() {
             addButton.setAttribute('onclick', command);
             addButton.classList.add('add-button');
             popupContainer.appendChild(addButton);
+			addButton.addEventListener('click', function() {
+				overlay.remove();
+			});
         }
         const closeButton = document.createElement('div');
         closeButton.style.position = 'absolute';
