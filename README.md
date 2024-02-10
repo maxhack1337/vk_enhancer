@@ -71,7 +71,7 @@
 </p>
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v2.5/VK.Enhancer.zip">
+<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v2.5.1/VK.Enhancer.zip">
   <img src="https://nimble-wisp-54a226.netlify.app/download.png" width="202" height="83">
 </a></p>
 <div>
