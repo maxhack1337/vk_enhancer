@@ -120,6 +120,16 @@ function handleWlPostMutation1(mutationsList, observer) {
         }
     }
 }
+
+function handleWlPostMutation2(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+			console.log('Обновляю стили...');
+            applySavedStyles();
+        }
+    }
+}
+
 const observer = new MutationObserver(handleWlPostMutation);
 const observerOptions = {
     childList: true,
@@ -132,13 +142,21 @@ const observerOptions1 = {
     childList: true,
     subtree: true
 };
+
+const observer2 = new MutationObserver(handleWlPostMutation2);
+const observerOptions2 = {
+    childList: true,
+    subtree: true
+};
+
+observer.observe(document, observerOptions1);
 observer1.observe(document, observerOptions1);
 document.addEventListener('DOMContentLoaded', function() {
     const stylusInstalled = document.querySelector('style.stylus') !== null;
     chrome.storage.local.set({
         stylusInstalled
     }, function() {
-        console.log('Stylus installation status saved to cache.');
+        /*console.log('Stylus installation status saved to cache.');*/
     });
 });
 // Режим "не беспокоить"
@@ -168,6 +186,20 @@ function removeStyleAndUnmuteSpecificAudio() {
             audio.muted = false;
         }
     });
+}
+// Функция для добавления стиля
+function cameraPhotoRet() {
+    const styleElement = document.createElement("style");
+    styleElement.id = "cameraPhotoReturn";
+    styleElement.innerHTML = 'span[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],a[style="background-image: url(https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png)"]{background-image: url("https://vk.com/images/camera_a.gif")!important;}    img[src^="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],img[src^="https://pp.userapi.com/dfvmQ4fDCgEfMVVLlOKBUsaUdh7QZww8ME4IHg/2G-nzM7_pH4.png"],img[src^="https://pp.userapi.com/nKpB1Qq39oLk0_S8_C9PolGFFUpM5n8FnzKC7A/ucP1cjlkpZk.png"],img[src^="https://sun1-87.userapi.com/impf/HnDXZID-SDmaVYd91lIag6dSg1lsaXuGBxzR6w/7oh8V3B731U.jpg"]{content:url("https://vk.com/images/camera_a.gif");}';
+    document.head.appendChild(styleElement);
+}
+
+function cameraPhotoDel() {
+    const customStyle = document.getElementById("cameraPhotoReturn");
+    if (customStyle) {
+        customStyle.remove();
+    }
 }
 // Функция для добавления стиля
 function addStyle() {
@@ -270,7 +302,7 @@ function removeStyle2() {
 }
 
 function addStyle4() {
-    console.log("hider executed");
+    /*console.log("hider executed");*/
     const styleElement = document.createElement("style");
     styleElement.id = "hider";
     styleElement.innerHTML = ".bp_thumb,.bp_author,.wall_module .author_highlighted,.deep_active .replies .reply_image,.top_profile_name,.im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg,.MEAvatar {    filter: blur(10px) grayscale(1) !important;}";
@@ -285,7 +317,7 @@ function removeStyle4() {
 }
 
 function addCAccent(cAccentValue) {
-    console.log("Caccent executed");
+    /*console.log("Caccent executed");*/
     const styleElement = document.createElement("style");
     styleElement.id = "CAccentID";
     styleElement.innerHTML = "body{    --accent:" + cAccentValue + "!important;    --blue_400: var(--accent) !important;    --action_sheet_action_foreground: var(--accent) !important;    --attach_picker_tab_active_background: var(--accent) !important;    --attach_picker_tab_active_text: var(--accent) !important;    --cell_button_foreground: var(--accent) !important;    --control_foreground: var(--accent) !important;    --counter_primary_background: var(--accent) !important;    --header_alternate_tab_active_indicator: var(--accent) !important;    --header_tab_active_indicator: var(--accent) !important;    --header_tint: var(--accent) !important;    --header_tint_alternate: var(--accent) !important;    --im_attach_tint: var(--accent) !important;    --im_reply_sender_text: var(--accent) !important;    --im_reply_separator: var(--accent) !important;    --landing_login_button_background: var(--accent) !important;    --landing_primary_button_background: var(--accent) !important;    --landing_tertiary_button_foreground: var(--accent) !important;    --landing_text_title: var(--accent) !important;    --landing_secondary_button_foreground: var(--accent) !important;    --link_alternate: var(--accent) !important;    --loader_track_value_fill: var(--accent) !important;    --feed_recommended_friend_promo_background: var(--accent) !important;    --tabbar_active_icon: var(--accent) !important;    --tabbar_tablet_active_icon: var(--accent) !important;    --text_link: var(--accent) !important;    --text_name: var(--accent) !important;    --writebar_icon: var(--accent) !important;    --dynamic_blue: var(--accent) !important;    --text_link_hightlighted_background: var(--accent) !important;    --im_text_name: var(--accent) !important;    --button-background-color: var(--accent) !important;    --sky_100: var(--accent) !important;    --sky_200: var(--accent) !important;    --light_blue_700: var(--accent) !important;    --blue_bright: var(--accent) !important;    --vkui--color_icon_accent: var(--accent) !important;    --vkui--color_background_accent_themed: var(--accent) !important;    --vkui--color_background_accent: var(--accent) !important;    --vkui--color_background_accent--hover: var(--accent) !important;    --vkui--color_background_accent--active: var(--accent) !important;    --vkui--color_background_accent_themed--hover: var(--accent) !important;    --vkui--color_background_accent_themed--active: var(--accent) !important;    --vkui--color_background_accent_tint--hover: var(--accent) !important;    --vkui--color_background_accent_tint--active: var(--accent) !important;    --vkui--color_background_accent_alternative: var(--accent) !important;    --vkui--color_background_accent_alternative--hover: var(--accent) !important;    --vkui--color_background_accent_alternative--active: var(--accent) !important;    --vkui--color_text_accent: var(--accent) !important;    --vkui--color_text_accent--hover: var(--accent) !important;    --vkui--color_text_accent--active: var(--accent) !important;    --vkui--color_text_accent_themed: var(--accent) !important;    --vkui--color_text_accent_themed--hover: var(--accent) !important;    --vkui--color_text_accent_themed--active: var(--accent) !important;    --vkui--color_text_link: var(--accent) !important;    --vkui--color_text_link--hover: var(--accent) !important;    --vkui--color_text_link--active: var(--accent) !important;    --vkui--color_text_link_themed: var(--accent) !important;    --vkui--color_text_link_themed--hover: var(--accent) !important;    --vkui--color_text_link_themed--active: var(--accent) !important;    --vkui--color_text_link_visited--hover: var(--accent) !important;    --vkui--color_text_link_visited--active: var(--accent) !important;    --blue_a400: var(--accent) !important;    --blue_400_alpha20: var(--accent),0.2 !important;    --blue_400_alpha48: var(--accent),0.48 !important;    --blue_420: var(--accent) !important;    --blue_550: var(--accent) !important;    --blue_600: var(--accent) !important;    --blue_640: var(--accent) !important;    --blue_800: var(--accent) !important;    #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg > g > g > path:nth-child(2){        fill: " + cAccentValue + " !important;    }}";
@@ -295,15 +327,15 @@ function addCAccent(cAccentValue) {
         const svgElement1 = document.querySelector('#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg');
         const pathElement1 = svgElement1.querySelector('g > g > path:nth-child(2)');
         pathElement1.setAttribute('fill', cAccentValue);
-        console.log("logo accepted " + svgElement1);
+        /*console.log("logo accepted " + svgElement1);*/
     } catch (error) {
-        console.log('logo not accepted. Trying to use DOM');
+        /*console.log('logo not accepted. Trying to use DOM');*/
     }
     document.addEventListener('DOMContentLoaded', function() {
         const svgElement = document.querySelector('#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg');
         const pathElement = svgElement.querySelector('g > g > path:nth-child(2)');
         pathElement.setAttribute('fill', cAccentValue);
-        console.log("logo accepted reload" + svgElement);
+        /*console.log("logo accepted reload" + svgElement);*/
     });
 }
 
@@ -393,10 +425,10 @@ function addOpacity(sliderValueCount) {
     styleElement.innerHTML = rule;
     styleElement.id = 'custom-opacity-style';
     document.head.appendChild(styleElement);
-    console.log("Opacity changed to " + opacity);
+    /*console.log("Opacity changed to " + opacity);*/
 }
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked) {
     if (isOldAccentChecked) {
         addStyle();
     } else {
@@ -483,10 +515,16 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
     if (addStickerChecked) {
         runStickerAdder();
     }
+	if (cameraPhotoChecked) {
+		cameraPhotoRet();
+	}
+	else  {
+		cameraPhotoDel();
+	}
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-    chrome.storage.local.get(["addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+    chrome.storage.local.get(["cameraPhotoState","addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
         const isOldAccentChecked = items.checkboxState;
         const isMsgReactionsChecked = items.checkboxState1;
         const isPostReactionsChecked = items.postReactionsState;
@@ -506,14 +544,15 @@ function applySavedStyles() {
         const muteCallsChecked = items.muteCallsState;
         const cHotBarValue = items.customHotbar;
         const addStickerChecked = items.addstickerState;
-        applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked);
+		const cameraPhotoChecked = items.cameraPhotoState;
+        applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked);
     });
 }
 // При загрузке страницы применяем сохраненные стили
 document.addEventListener('DOMContentLoaded', applySavedStyles);
 // Обработчик сообщений от background.js
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups" || message.type === "toggleAltSB" || message.type === "toggleMuteStatus" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue" || message.type === "customHotbar" || message.type === "addSticker") {
+    if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups" || message.type === "toggleAltSB" || message.type === "toggleMuteStatus" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue" || message.type === "customHotbar" || message.type === "addSticker" || message.type === "toggleCameraPhoto") {
         applySavedStyles();
     }
     if (message.type === "checkId") {
@@ -529,7 +568,7 @@ function checkId() {
         username = username.split("?")[0];
     }
     var objectId;
-    console.log("Username:" + username);
+    /*console.log("Username:" + username);*/
     const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.tB9ubsHJxOM__fNHm9JQxarecZlO_LnkXuhVxQekQc7t_4khdCkcXBXQf9Ekk-bIdedbAD6UvqaPxjIhnIYUzUwDIMC3M1f7ZD8YG8D3IxHKkgL7vcRdVlPRPN1BpDsRjmQNMRfZ6reFXu2kw_U1IuwWONdcAvO9Mmm34wgBSxZW3D6iqhzfKktcWjz1Wod-KJcWYis18C9wFAR04mF1EA&request_id=7`;
     fetch(url1).then(response => response.json()).then(data => {
         objectId = data.response.object_id;

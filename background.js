@@ -8,7 +8,7 @@ function sendMessageToContentScript(tabId, message) {
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	
 	
-if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups"  || message.type === "toggleAltSB"  || message.type === "toggleMuteStatus") {
+if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups"  || message.type === "toggleAltSB"  || message.type === "toggleMuteStatus" || message.type === "toggleCameraPhoto") {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       if (tabs && tabs.length > 0) {
         const activeTabId = tabs[0].id;
