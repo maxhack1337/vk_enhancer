@@ -12,7 +12,7 @@ function createReloadButton() {
     reloadButton.innerHTML = `<a class="TopNavBtn"> <div class="TopNavBtn__inner"> <div style="scale: 0.75;" class="TopNavBtn__icon"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"> <path d="M4.73999 6.07473C5.95913 4.57946 7.6098 3.49689 9.46676 2.97477C11.3237 2.45264 13.2965 2.51638 15.1159 3.15729C16.9353 3.7982 18.5127 4.98506 19.6329 6.55591C20.753 8.12676 21.3613 10.0051 21.3748 11.9345C21.3882 13.864 20.8062 15.7507 19.7081 17.337C18.61 18.9233 17.0493 20.1321 15.239 20.7984C13.4288 21.4646 11.4571 21.5559 9.59299 21.0598C8.11906 20.6675 6.73841 19.923 5.62498 18.8979" stroke="#99A2AD" stroke-width="2" stroke-linecap="round"/> <path d="M4.125 3V6.34584C4.125 6.48585 4.125 6.55586 4.15225 6.60934C4.17622 6.65638 4.21446 6.69462 4.2615 6.71859C4.31498 6.74584 4.38499 6.74584 4.525 6.74584H7.875" stroke="#99A2AD" stroke-width="2" stroke-linecap="round"/> </svg> </div> </div> </a>`;
     const tooltip = document.createElement('span');
     tooltip.innerText = 'Перезагрузить функции VK Enhancer';
-    tooltip.style.opacity = '0';
+    tooltip.style.display = 'none';
     tooltip.style.position = 'absolute';
     tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     tooltip.style.color = '#fff';
@@ -22,14 +22,14 @@ function createReloadButton() {
     tooltip.style.top = '100%';
     tooltip.style.transform = 'translateX(-50%)';
     tooltip.style.whiteSpace = 'nowrap';
-    tooltip.style.transition = '0.3s opacity';
+    tooltip.style.transition = '0.3s display';
     tooltip.style.cursor = 'default';
     reloadButton.appendChild(tooltip);
     reloadButton.addEventListener('mouseover', () => {
-        tooltip.style.opacity = '1';
+        tooltip.style.display = 'block';
     });
     reloadButton.addEventListener('mouseout', () => {
-        tooltip.style.opacity = '0';
+        tooltip.style.display = 'none';
     });
     reloadButton.addEventListener('click', (event) => {
         chrome.storage.local.get(["cameraPhotoState", "addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
@@ -131,7 +131,7 @@ function HotBarAppear(cHotBarValue) {
         rebootHotbar.style.transition = '0.3s background'
         const tooltip = document.createElement('span');
         tooltip.innerText = 'Обновить хотбар';
-        tooltip.style.display = 'block';
+        tooltip.style.display = 'none';
         tooltip.style.position = 'absolute';
         tooltip.style.backgroundColor = 'var(--black_alpha72)';
         tooltip.style.borderRadius = '3px';
@@ -146,19 +146,18 @@ function HotBarAppear(cHotBarValue) {
         tooltip.style.boxShadow = '0 1px 3px var(--transparent_black)';
         tooltip.style.zIndex = '11';
         tooltip.style.cursor = 'default';
-        tooltip.style.opacity = '0';
-        tooltip.style.transition = '0.3s opacity';
+        tooltip.style.transition = '0.3s display';
         tooltip.style.fontFamily = 'var(--palette-vk-font,-apple-system,BlinkMacSystemFont,"Roboto","Helvetica Neue",Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)';
         rebootHotbar.appendChild(tooltip);
         rebootHotbar.addEventListener('mouseover', () => {
             rebootHotbar.style.background = 'var(--vkui--color_transparent--active)';
             rebootHotbar.style.borderRadius = '3px';
-            tooltip.style.opacity = '1';
+            tooltip.style.display = 'block';
         });
         rebootHotbar.addEventListener('mouseout', () => {
             rebootHotbar.style.background = 'none';
             rebootHotbar.style.borderRadius = '0';
-            tooltip.style.opacity = '0';
+            tooltip.style.display = 'none';
         });
         const imgElementReboot = document.createElement('img');
         imgElementReboot.className = 'emoji';
@@ -239,14 +238,14 @@ function handleWlPostMutation1(mutationsList, observer) {
     }
 }
 
-function handleWlPostMutation2(mutationsList, observer) {
+/*function handleWlPostMutation2(mutationsList, observer) {
     for (const mutation of mutationsList) {
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
             console.log('Обновляю стили...');
             applySavedStyles();
         }
     }
-}
+}*/
 const observer = new MutationObserver(handleWlPostMutation);
 const observerOptions = {
     childList: true,
@@ -258,11 +257,11 @@ const observerOptions1 = {
     childList: true,
     subtree: true
 };
-const observer2 = new MutationObserver(handleWlPostMutation2);
+/*const observer2 = new MutationObserver(handleWlPostMutation2);
 const observerOptions2 = {
     childList: true,
     subtree: true
-};
+};*/
 observer.observe(document, observerOptions1);
 observer1.observe(document, observerOptions1);
 document.addEventListener('DOMContentLoaded', function() {
@@ -346,7 +345,7 @@ function emojiRemove() {
         styleElement.id = "removeES";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = '[class*="OwnerNameIcon-module__icon"]:not(.OwnerPageName__esia, .OwnerPageName__prometheus), .image_status__status, .PostHeaderTitle__imageStatus { display: none !important; }';
+    styleElement.innerHTML = '[class*="OwnerNameIcon-module__icon"]:not(.OwnerPageName__esia, .OwnerPageName__prometheus), .image_status__status, .PostHeaderTitle__imageStatus,span[class^="UserNameIcon-module__icon"]:has(>img),div[class^="StatusIcon"]:has(>img) { display: none !important; }';
 }
 
 function emojiBack() {
@@ -727,7 +726,7 @@ function checkId() {
     }
     var objectId;
     /*console.log("Username:" + username);*/
-    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.tB9ubsHJxOM__fNHm9JQxarecZlO_LnkXuhVxQekQc7t_4khdCkcXBXQf9Ekk-bIdedbAD6UvqaPxjIhnIYUzUwDIMC3M1f7ZD8YG8D3IxHKkgL7vcRdVlPRPN1BpDsRjmQNMRfZ6reFXu2kw_U1IuwWONdcAvO9Mmm34wgBSxZW3D6iqhzfKktcWjz1Wod-KJcWYis18C9wFAR04mF1EA&request_id=7`;
+    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.C74aRB8WILuow7F9o4WDEPhwNu8GAKqwWIh1z55bOAZQ5NHHwq7yMxetMv9VTbI5xKpAedW2P5X_GO5b9KqUEW0Dl30wsJw4pqH3Jj6FjjkIe9tPfsL-CgAHoboQQRfKe70KOQ9xDJBHU-z29QMRHf3-AgQxvCoBnEsd0pu2EGK_VPFR1vzb_O28fv46x_5o2eJpjN66iNLxMtja0szSnw&request_id=7`;
     fetch(url1).then(response => response.json()).then(data => {
         objectId = data.response.object_id;
         chrome.runtime.sendMessage({
@@ -1165,7 +1164,7 @@ function buttonrun() {
             username = username.split("?")[0];
         }
         var objectId;
-        const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.tB9ubsHJxOM__fNHm9JQxarecZlO_LnkXuhVxQekQc7t_4khdCkcXBXQf9Ekk-bIdedbAD6UvqaPxjIhnIYUzUwDIMC3M1f7ZD8YG8D3IxHKkgL7vcRdVlPRPN1BpDsRjmQNMRfZ6reFXu2kw_U1IuwWONdcAvO9Mmm34wgBSxZW3D6iqhzfKktcWjz1Wod-KJcWYis18C9wFAR04mF1EA&request_id=7`;
+        const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.C74aRB8WILuow7F9o4WDEPhwNu8GAKqwWIh1z55bOAZQ5NHHwq7yMxetMv9VTbI5xKpAedW2P5X_GO5b9KqUEW0Dl30wsJw4pqH3Jj6FjjkIe9tPfsL-CgAHoboQQRfKe70KOQ9xDJBHU-z29QMRHf3-AgQxvCoBnEsd0pu2EGK_VPFR1vzb_O28fv46x_5o2eJpjN66iNLxMtja0szSnw&request_id=7`;
         fetch(url1).then(response => response.json()).then(data => {
             objectId = data.response.object_id;
             console.log("ID fetched succesfully: " + objectId);

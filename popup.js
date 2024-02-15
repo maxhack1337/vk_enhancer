@@ -154,10 +154,10 @@ fetch(url1)
 	var ver1 = document.getElementById('version');
 	const styleElement = document.createElement("style");
 	styleElement.id = "version";
-	styleElement.innerHTML = "#version::after{content:'Версия "+version+" PreOpt'}";
+	styleElement.innerHTML = "#version::after{content:'Версия "+version+" GG VK'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.7")
+		if (version != "2.7.1")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -648,9 +648,39 @@ document.addEventListener('DOMContentLoaded', () => {
         secretFuncC.checked = items.secretFuncState;
         postReactionsC.checked = items.postReactionsState;
         hiderC.checked = items.hiderState;
-		customAccent.value = items.customAccent;
-		colorPicker.value = items.colorPicker;
-		colorPickerText.value = items.colorPickerText;
+		if (typeof items.customAccent === "undefined")
+		{
+				customAccent.value = "#FFFFFF";
+				chrome.storage.local.set({
+				customAccent: customAccent.value,
+			});
+		}
+		else {
+			customAccent.value = items.customAccent;
+		}
+
+		if (typeof items.colorPicker === "undefined")
+		{
+				colorPicker.value = "#3291FF";
+				chrome.storage.local.set({
+				colorPicker: colorPicker.value,
+			});
+		}
+		else {
+			colorPicker.value = items.colorPicker;
+		}
+		
+		if (typeof items.colorPickerText === "undefined")
+		{
+				colorPickerText.value = "#FFFFFF";
+				chrome.storage.local.set({
+				colorPickerText: colorPickerText.value,
+			});
+		}
+		else {
+			colorPickerText.value = items.colorPickerText;
+		}
+
 		customLogoText.value = items.customLogo;
 		customBgText.value = items.customBg;
 		customFontText.value = items.customFont;

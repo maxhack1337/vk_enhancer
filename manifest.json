@@ -5,7 +5,7 @@
       "default_title": "Настройки VK Enhancer"
    },
   "name": "VKEnhancer",
-  "version": "2.7",
+  "version": "2.7.1",
   "icons": {
       "128": "assets/icon128.png",
       "16": "assets/icon16.png",
@@ -19,7 +19,7 @@
   "host_permissions": [
     "*://vk.com/*"
   ],
-  "permissions": [ "webRequest", "webRequestBlocking","*://api.vk.com/*","browsingData","tabs", "*://vk.com/*", "unlimitedStorage", "storage", "declarativeNetRequestWithHostAccess", "scripting", "downloads", "alarms", "activeTab" ],
+  "permissions": [ "webRequest","browsingData","tabs", "unlimitedStorage", "storage", "declarativeNetRequestWithHostAccess", "scripting", "downloads", "alarms", "activeTab" ],
   
   "background": {
     "service_worker": "background.js"
