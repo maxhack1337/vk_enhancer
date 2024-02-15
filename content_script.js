@@ -329,7 +329,7 @@ function addStyle() {
         styleElement.id = "removeBadges";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = '.OwnerPageAvatar--nft .OwnerPageAvatar__underlay:not(.OwnerPageAvatar__underlay--outlined) { top: calc(var(--stroke-width, 4px) * -1) !important; bottom: calc(var(--stroke-width, 4px) * -1) !important; left: calc(var(--stroke-width, 4px) * -1) !important; right: calc(var(--stroke-width, 4px) * -1) !important; } AvatarRich AvatarRich--nft, .OwnerPageAvatar--nft .OwnerPageAvatar__underlay, div[class*="RichAvatar-module__rootNft"] > img,.AvatarRich--nft .AvatarRich__img { clip-path: none !important; -webkit-clip-path: none !important; border-radius: 50% !important; } div[class*="RichAvatar-module__rootNft"] > svg,.AvatarRich__heptagonUnderlay { display: none !important; }';
+    styleElement.innerHTML = '.OwnerPageAvatar--nft .OwnerPageAvatar__underlay:not(.OwnerPageAvatar__underlay--outlined) { top: calc(var(--stroke-width, 4px) * -1) !important; bottom: calc(var(--stroke-width, 4px) * -1) !important; left: calc(var(--stroke-width, 4px) * -1) !important; right: calc(var(--stroke-width, 4px) * -1) !important; } .OwnerPageAvatar--nft .OwnerPageAvatar__underlay, div[class*="RichAvatar-module__rootNft"] > img,.AvatarRich--nft .AvatarRich__img { clip-path: none !important; -webkit-clip-path: none !important; border-radius: 50% !important; } div[class*="RichAvatar-module__rootNft"] > svg,.AvatarRich__heptagonUnderlay { display: none !important; }';
 }
 
 function removeStyle() {
