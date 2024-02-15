@@ -154,10 +154,10 @@ fetch(url1)
 	var ver1 = document.getElementById('version');
 	const styleElement = document.createElement("style");
 	styleElement.id = "version";
-	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
+	styleElement.innerHTML = "#version::after{content:'Версия "+version+" PreOpt'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.6")
+		if (version != "2.7")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';

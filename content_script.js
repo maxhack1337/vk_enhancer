@@ -3,6 +3,62 @@ var isSecretCheck = false;
 var isPostReact = false;
 var isSecretEnabled = false;
 var old_smile = 0;
+// Кнопка релоад функций
+function createReloadButton() {
+    const topNav = document.getElementById('top_nav');
+    if (!topNav) return;
+    const reloadButton = document.createElement('li');
+    reloadButton.className = "HeaderNav__btns";
+    reloadButton.innerHTML = `<a class="TopNavBtn"> <div class="TopNavBtn__inner"> <div style="scale: 0.75;" class="TopNavBtn__icon"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"> <path d="M4.73999 6.07473C5.95913 4.57946 7.6098 3.49689 9.46676 2.97477C11.3237 2.45264 13.2965 2.51638 15.1159 3.15729C16.9353 3.7982 18.5127 4.98506 19.6329 6.55591C20.753 8.12676 21.3613 10.0051 21.3748 11.9345C21.3882 13.864 20.8062 15.7507 19.7081 17.337C18.61 18.9233 17.0493 20.1321 15.239 20.7984C13.4288 21.4646 11.4571 21.5559 9.59299 21.0598C8.11906 20.6675 6.73841 19.923 5.62498 18.8979" stroke="#99A2AD" stroke-width="2" stroke-linecap="round"/> <path d="M4.125 3V6.34584C4.125 6.48585 4.125 6.55586 4.15225 6.60934C4.17622 6.65638 4.21446 6.69462 4.2615 6.71859C4.31498 6.74584 4.38499 6.74584 4.525 6.74584H7.875" stroke="#99A2AD" stroke-width="2" stroke-linecap="round"/> </svg> </div> </div> </a>`;
+    const tooltip = document.createElement('span');
+    tooltip.innerText = 'Перезагрузить функции VK Enhancer';
+    tooltip.style.opacity = '0';
+    tooltip.style.position = 'absolute';
+    tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    tooltip.style.color = '#fff';
+    tooltip.style.padding = '5px';
+    tooltip.style.borderRadius = '3px';
+    tooltip.style.zIndex = '9999';
+    tooltip.style.top = '100%';
+    tooltip.style.transform = 'translateX(-50%)';
+    tooltip.style.whiteSpace = 'nowrap';
+    tooltip.style.transition = '0.3s opacity';
+    tooltip.style.cursor = 'default';
+    reloadButton.appendChild(tooltip);
+    reloadButton.addEventListener('mouseover', () => {
+        tooltip.style.opacity = '1';
+    });
+    reloadButton.addEventListener('mouseout', () => {
+        tooltip.style.opacity = '0';
+    });
+    reloadButton.addEventListener('click', (event) => {
+        chrome.storage.local.get(["cameraPhotoState", "addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+            const isOldAccentChecked = items.checkboxState;
+            const isMsgReactionsChecked = items.checkboxState1;
+            const isPostReactionsChecked = items.postReactionsState;
+            const isSecretChecked = items.secretFuncState;
+            const isHiderChecked = items.hiderState;
+            const cAccentValue = items.customAccent;
+            const cColorValue = items.colorPicker;
+            const cTextValue = items.colorPickerText;
+            const cLogoValue = items.customLogo;
+            const cBgValue = items.customBg;
+            const cFontValue = items.customFont;
+            const isNameAva = items.checkboxStateAva;
+            const sliderValueCount = items.sliderValue;
+            const emojiStatusChecked = items.emojiStatusState;
+            const recentGroupsChecked = items.recentGroupsState;
+            const altSBChecked = items.altSBState;
+            const muteCallsChecked = items.muteCallsState;
+            const cHotBarValue = items.customHotbar;
+            const addStickerChecked = items.addstickerState;
+            const cameraPhotoChecked = items.cameraPhotoState;
+            applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked);
+        });
+    });
+    topNav.appendChild(reloadButton);
+}
+document.addEventListener('DOMContentLoaded', createReloadButton);
 /*хотбар*/
 function HotBarAppear(cHotBarValue) {
     const chatInputContainer = document.getElementsByClassName("im-chat-input--textarea fl_l _im_text_input _emoji_field_wrap");
@@ -11,11 +67,10 @@ function HotBarAppear(cHotBarValue) {
     cHotBarValue = cHotBarValue.filter(function(item) {
         return item !== '' && item !== null && item !== undefined;
     });
-	if(existingHotbar && old_smile + 1 != Number(document.getElementsByClassName("page_progress_preview media_preview clear_fix")[0].id.replace(/\D+/g,"")))
-	{
-		existingHotbar.remove();
-		/*console.log('HotBar removed')*/
-	}
+    if (existingHotbar && old_smile + 1 != Number(document.getElementsByClassName("page_progress_preview media_preview clear_fix")[0].id.replace(/\D+/g, ""))) {
+        existingHotbar.remove();
+        /*console.log('HotBar removed')*/
+    }
     if (!existingHotbar && cHotBarValue.length > 0) {
         const hotbarDiv = document.createElement('div');
         hotbarDiv.className = 'vkenhancerEmojiHotbar';
@@ -46,19 +101,18 @@ function HotBarAppear(cHotBarValue) {
                 aElement.style.background = 'none';
                 aElement.style.borderRadius = '0';
             });
-			var prev = document.getElementsByClassName("page_progress_preview media_preview clear_fix");
-			var v1 = 0;
-			for (j = 0; j <= prev.length-1; j++) { 
-				var last_id = prev[j].id;
-				var last = Number(last_id.replace(/\D+/g,""));
-				if (last>v1) {
-					v1 = last;
-				}
-			}
-			
-			var v_smile = v1-1;
-			old_smile = v_smile;
-			/*console.log(v_smile + " v_smile");*/
+            var prev = document.getElementsByClassName("page_progress_preview media_preview clear_fix");
+            var v1 = 0;
+            for (j = 0; j <= prev.length - 1; j++) {
+                var last_id = prev[j].id;
+                var last = Number(last_id.replace(/\D+/g, ""));
+                if (last > v1) {
+                    v1 = last;
+                }
+            }
+            var v_smile = v1 - 1;
+            old_smile = v_smile;
+            /*console.log(v_smile + " v_smile");*/
             aElement.setAttribute('onclick', `Emoji.addEmoji(${v_smile}, '${emojiCode}', this); return cancelEvent(event);`);
             const imgElement = document.createElement('img');
             imgElement.className = 'emoji';
@@ -66,6 +120,59 @@ function HotBarAppear(cHotBarValue) {
             aElement.appendChild(imgElement);
             hotbarDiv.appendChild(aElement);
         }
+        const rebootHotbar = document.createElement('a');
+        rebootHotbar.className = 'emoji_id';
+        rebootHotbar.style.display = 'inline-block';
+        rebootHotbar.style.position = 'absolute';
+        rebootHotbar.style.padding = '5px 8px';
+        rebootHotbar.style.marginRight = '1px';
+        rebootHotbar.style.cursor = 'pointer';
+        rebootHotbar.style.zIndex = '10';
+        rebootHotbar.style.transition = '0.3s background'
+        const tooltip = document.createElement('span');
+        tooltip.innerText = 'Обновить хотбар';
+        tooltip.style.display = 'block';
+        tooltip.style.position = 'absolute';
+        tooltip.style.backgroundColor = 'var(--black_alpha72)';
+        tooltip.style.borderRadius = '3px';
+        tooltip.style.padding = '5px';
+        tooltip.style.top = '-28.4219px';
+        tooltip.style.left = '50%';
+        tooltip.style.transform = 'translate(-50%, 0)';
+        tooltip.style.whiteSpace = 'nowrap';
+        tooltip.style.color = '#fff';
+        tooltip.style.fontSize = '12.5px';
+        tooltip.style.fontWeight = '400';
+        tooltip.style.boxShadow = '0 1px 3px var(--transparent_black)';
+        tooltip.style.zIndex = '11';
+        tooltip.style.cursor = 'default';
+        tooltip.style.opacity = '0';
+        tooltip.style.transition = '0.3s opacity';
+        tooltip.style.fontFamily = 'var(--palette-vk-font,-apple-system,BlinkMacSystemFont,"Roboto","Helvetica Neue",Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)';
+        rebootHotbar.appendChild(tooltip);
+        rebootHotbar.addEventListener('mouseover', () => {
+            rebootHotbar.style.background = 'var(--vkui--color_transparent--active)';
+            rebootHotbar.style.borderRadius = '3px';
+            tooltip.style.opacity = '1';
+        });
+        rebootHotbar.addEventListener('mouseout', () => {
+            rebootHotbar.style.background = 'none';
+            rebootHotbar.style.borderRadius = '0';
+            tooltip.style.opacity = '0';
+        });
+        const imgElementReboot = document.createElement('img');
+        imgElementReboot.className = 'emoji';
+        imgElementReboot.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='14' viewBox='0 0 13 14' fill='none'%3E%3Cpath d='M1.16003 3.04982C1.97279 2.05297 3.07324 1.33126 4.31122 0.983177C5.54919 0.635091 6.86438 0.677585 8.07732 1.10486C9.29026 1.53213 10.3419 2.32337 11.0886 3.37061C11.8354 4.41784 12.2409 5.67005 12.2499 6.95637C12.2589 8.24268 11.8708 9.50043 11.1388 10.558C10.4067 11.6156 9.36626 12.4214 8.1594 12.8656C6.95255 13.3098 5.63808 13.3706 4.39536 13.0398C3.41275 12.7783 2.49231 12.282 1.75003 11.5986' stroke='%2399A2AD' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M0.75 1V3.09723C0.75 3.23724 0.75 3.30725 0.777248 3.36072C0.801217 3.40776 0.839462 3.44601 0.886502 3.46998C0.93998 3.49723 1.00999 3.49723 1.15 3.49723H3.25' stroke='%2399A2AD' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E";
+        imgElementReboot.style.scale = '0.75';
+        rebootHotbar.appendChild(imgElementReboot);
+        hotbarDiv.appendChild(rebootHotbar);
+        rebootHotbar.addEventListener('click', function() {
+            document.getElementById('vkenhancerEmojiHotbarID').remove();
+            chrome.storage.local.get(["customHotbar"], function(items) {
+                HotBarAppear(items.customHotbar)
+            });
+            return;
+        });
         try {
             chatInputContainer[0].appendChild(hotbarDiv);
         } catch (error) {}
@@ -83,9 +190,20 @@ function updateMarginLeft() {
         if (reactionsPreviewCount) {
             const textLength = reactionsPreviewCount.textContent.length;
             const newMarginLeft = 8 + ((textLength - 1) * 4);
-            const likeBtns = document.querySelectorAll('.PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomAction:not(:first-child), .PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomActionContainer:not(:first-child)');
+            const likeBtns = document.querySelectorAll('.PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomAction:first-child, .PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomActionContainer:first-child');
             likeBtns.forEach(function(element) {
-                element.style.marginLeft = `${newMarginLeft}px`;
+                if (!element.closest('#profile_redesigned')) { // Проверка, что элемент не находится внутри #profile_redesigned
+                    element.style.paddingRight = `${newMarginLeft}px`;
+                }
+            });
+        }
+        const isDonate = document.querySelector('.PostActionStatusBar__rightInner');
+        if (isDonate) {
+            const likeTop = document.querySelectorAll('.ReactionsPreview--isInActionStatusBar');
+            likeTop.forEach(function(element) {
+                if (!element.closest('#profile_redesigned')) { // Проверка, что элемент не находится внутри #profile_redesigned
+                    element.style.marginTop = `25px`;
+                }
             });
         }
     }
@@ -124,31 +242,27 @@ function handleWlPostMutation1(mutationsList, observer) {
 function handleWlPostMutation2(mutationsList, observer) {
     for (const mutation of mutationsList) {
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-			console.log('Обновляю стили...');
+            console.log('Обновляю стили...');
             applySavedStyles();
         }
     }
 }
-
 const observer = new MutationObserver(handleWlPostMutation);
 const observerOptions = {
     childList: true,
     subtree: true
 };
 observer.observe(document, observerOptions);
-
 const observer1 = new MutationObserver(handleWlPostMutation1);
 const observerOptions1 = {
     childList: true,
     subtree: true
 };
-
 const observer2 = new MutationObserver(handleWlPostMutation2);
 const observerOptions2 = {
     childList: true,
     subtree: true
 };
-
 observer.observe(document, observerOptions1);
 observer1.observe(document, observerOptions1);
 document.addEventListener('DOMContentLoaded', function() {
@@ -161,10 +275,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 // Режим "не беспокоить"
 function applyStyleAndMuteSpecificAudio() {
-    const styleElement = document.createElement("style");
-    styleElement.id = "muteCalls";
+    let styleElement = document.getElementById("muteCalls");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "muteCalls";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = '.CallModal.CallModal--isIncoming{display:none;}';
-    document.head.appendChild(styleElement);
     const targetSrc = '/mp3/call_incoming.mp3';
     const audioElements = document.querySelectorAll('#calls audio');
     audioElements.forEach(function(audio) {
@@ -189,10 +306,13 @@ function removeStyleAndUnmuteSpecificAudio() {
 }
 // Функция для добавления стиля
 function cameraPhotoRet() {
-    const styleElement = document.createElement("style");
-    styleElement.id = "cameraPhotoReturn";
-    styleElement.innerHTML = 'span[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],a[style="background-image: url(https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png)"]{background-image: url("https://vk.com/images/camera_a.gif")!important;}    img[src^="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],img[src^="https://pp.userapi.com/dfvmQ4fDCgEfMVVLlOKBUsaUdh7QZww8ME4IHg/2G-nzM7_pH4.png"],img[src^="https://pp.userapi.com/nKpB1Qq39oLk0_S8_C9PolGFFUpM5n8FnzKC7A/ucP1cjlkpZk.png"],img[src^="https://sun1-87.userapi.com/impf/HnDXZID-SDmaVYd91lIag6dSg1lsaXuGBxzR6w/7oh8V3B731U.jpg"]{content:url("https://vk.com/images/camera_a.gif");}';
-    document.head.appendChild(styleElement);
+    let styleElement = document.getElementById("cameraPhotoReturn");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "cameraPhotoReturn";
+        document.head.appendChild(styleElement);
+    }
+    styleElement.innerHTML = 'a[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],span[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],a[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"]{background-image: url("https://vk.com/images/camera_a.gif")!important;}    img[src^="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],img[src^="https://pp.userapi.com/dfvmQ4fDCgEfMVVLlOKBUsaUdh7QZww8ME4IHg/2G-nzM7_pH4.png"],img[src^="https://pp.userapi.com/nKpB1Qq39oLk0_S8_C9PolGFFUpM5n8FnzKC7A/ucP1cjlkpZk.png"],img[src^="https://sun1-87.userapi.com/impf/HnDXZID-SDmaVYd91lIag6dSg1lsaXuGBxzR6w/7oh8V3B731U.jpg"]{content:url("https://vk.com/images/camera_a.gif");}';
 }
 
 function cameraPhotoDel() {
@@ -203,10 +323,13 @@ function cameraPhotoDel() {
 }
 // Функция для добавления стиля
 function addStyle() {
-    const styleElement = document.createElement("style");
-    styleElement.id = "removeBadges";
+    let styleElement = document.getElementById("removeBadges");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "removeBadges";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = '.OwnerPageAvatar--nft .OwnerPageAvatar__underlay:not(.OwnerPageAvatar__underlay--outlined) { top: calc(var(--stroke-width, 4px) * -1) !important; bottom: calc(var(--stroke-width, 4px) * -1) !important; left: calc(var(--stroke-width, 4px) * -1) !important; right: calc(var(--stroke-width, 4px) * -1) !important; } .OwnerPageAvatar--nft .OwnerPageAvatar__underlay, .AvatarRich--nft .AvatarRich__img { clip-path: none !important; -webkit-clip-path: none !important; border-radius: 50% !important; } .AvatarRich__heptagonUnderlay { display: none !important; }';
-    document.head.appendChild(styleElement);
 }
 
 function removeStyle() {
@@ -217,10 +340,13 @@ function removeStyle() {
 }
 // Функция для добавления стиля
 function emojiRemove() {
-    const styleElement = document.createElement("style");
-    styleElement.id = "removeES";
+    let styleElement = document.getElementById("removeES");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "removeES";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = '[class*="OwnerNameIcon-module__icon"]:not(.OwnerPageName__esia, .OwnerPageName__prometheus), .image_status__status, .PostHeaderTitle__imageStatus { display: none !important; }';
-    document.head.appendChild(styleElement);
 }
 
 function emojiBack() {
@@ -231,10 +357,13 @@ function emojiBack() {
 }
 // Функция для добавления стиля
 function recentRemove() {
-    const styleElement = document.createElement("style");
-    styleElement.id = "removeRecent";
+    let styleElement = document.getElementById("removeRecent");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "removeRecent";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = '#react_rootRecentGroups {display: none !important;}';
-    document.head.appendChild(styleElement);
 }
 
 function recentBack() {
@@ -245,10 +374,13 @@ function recentBack() {
 }
 
 function altSBadd() {
-    const styleElement = document.createElement("style");
-    styleElement.id = "altSB";
-    styleElement.innerHTML = 'body { --scrollbar_thumb:#eee; --vklScroll: var(--scrollbar_background, var(--background_content)); --vklScrollThumb: var(--scrollbar_thumb, var(--button_secondary_background_highlighted)); } ::-webkit-scrollbar { background-color: var(--vklScroll); width: 16px; } ::-webkit-scrollbar-track { background-color: var(--vklScroll); } ::-webkit-scrollbar-thumb { background-color: var(--vklScrollThumb); border-radius: 16px; border: 4px solid var(--vklScroll); } ::-webkit-scrollbar-button { display: none; }';
-    document.head.appendChild(styleElement);
+    let styleElement = document.getElementById("altSB");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "altSB";
+        document.head.appendChild(styleElement);
+    }
+    styleElement.innerHTML = '::-webkit-scrollbar { background-color: var(--scrollbar_background, var(--vkui--color_background_content)); width: 16px; } ::-webkit-scrollbar-track { background-color: var(--scrollbar_background, var(--vkui--color_background_content)); } ::-webkit-scrollbar-thumb { background-color: var(--scrollbar_thumb, var(--vkui--color_icon_tertiary)); border-radius: 16px; border: 4px solid var(--scrollbar_background, var(--vkui--color_background_content)); } ::-webkit-scrollbar-button { display: none; }';
 }
 
 function altSBremove() {
@@ -259,10 +391,13 @@ function altSBremove() {
 }
 // Функция для добавления стиля к сообщениям
 function addStyle1() {
-    const styleElement = document.createElement("style");
-    styleElement.id = "msgReactions";
+    let styleElement = document.getElementById("msgReactions");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "msgReactions";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = ".MessageReactionsPanel,.im-mess--reaction,.MessageReactions,MessageReactionsModalButton,.im-mess_reactions:hover .MessageReactionsModalButton,.im-mess .im-mess--reactions,.nim-dialog .nim-dialog--unread-badge_reaction,button.im-navigation.im-navigation--to-reaction._im_to_reaction.im-navigation_shown { display: none!important; }";
-    document.head.appendChild(styleElement);
 }
 
 function removeStyle1() {
@@ -285,12 +420,15 @@ function removeStyle3() {
 }
 
 function addStyle2() {
-    const styleElement = document.createElement("style");
+    let styleElement = document.getElementById("postReactions");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "postReactions";
+        document.head.appendChild(styleElement);
+    }
     const imageUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 0 24 24' width='24'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M0 0h24v24H0z'/%3E%3Cpath xmlns='http://www.w3.org/2000/svg' fill-rule='nonzero' fill='%23e64646' d='M11.95 4.83l-0.09 -0.09c-1.27,-1.23 -2.96,-1.93 -4.73,-1.94 0,0 0,0 0,0 -3.62,0 -6.55,2.93 -6.56,6.54 0,3.52 1.3,5.2 7.07,9.76l3.07 2.4c0.37,0.29 0.8,0.44 1.24,0.45l0 0c0.44,-0.01 0.88,-0.16 1.24,-0.45l3.07 -2.4c5.78,-4.56 7.07,-6.24 7.07,-9.76 -0.01,-3.61 -2.94,-6.54 -6.55,-6.54 0,0 0,0 0,0 -1.77,0.01 -3.47,0.71 -4.73,1.94l-0.1 0.09z'/%3E%3C/g%3E%3C/svg%3E";
-    styleElement.id = "postReactions";
     isPostReact = true;
     styleElement.innerHTML = ".PostButtonReactions__iconAnimation{display:none;}.PostButtonReactions__icon.PostButtonReactions__icon--custom{background: url(\"" + imageUrl + "\")!important;         scale:.85;} .ReactionsMenuPopperTransition-appear-done, .ReactionsMenuPopperTransition-enter-done {          display: none!important;      }                        .ReactionsMenu,    .ReactionsMenu--extraHoverArea,    .ReactionsMenu--extraHoverAreaToTop,    div.ReactionsPreview__items,.PostButtonReactions--post .PostButtonReactions__title--textual,.like_tt_reacted-count,.fans_fanph_reaction,li#likes_tab_reactions_0,    li#likes_tab_reactions_1,    li#likes_tab_reactions_2,    li#likes_tab_reactions_3,    li#likes_tab_reactions_4,    li#likes_tab_reactions_5,.ui_tab.ui_tab_group,.like_tt_reaction {        display: none !important;    }    .PostBottomAction {        --post-bottom-action-background-color: transparent !important;    }    div.ReactionsPreview.ReactionsPreview--active .ReactionsPreview__count._counter_anim_container {        color: #e64646 !important;    }   .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count{color:var(--vkui--color_text_subhead);} [dir] .ReactionsPreview {        position: absolute;        margin-top: 14px;        margin-left: 30px;        z-index: 9;    }    .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count {    font-size: 13px;    line-height: 16px;    font-weight: 500;    }    .PostButtonReactionsContainer {        width: auto !important;    }    .PostButtonReactions__iconAnimation svg    {        background: url(\"" + imageUrl + "\") no-repeat!important;        margin-top:3px;        margin-left:3px;        scale:.85;    }    .PostButtonReactions__iconAnimation svg g    {        display:none;    }        [dir] .PostActionStatusBar--inPost {        padding-top: 0px !important;        padding-bottom: 0px !important;    }    div.like_cont.PostBottomActionLikeBtns {        border-top: 1px solid transparent !important;    }    .PostButtonReactionsContainer {        width: auto !important;    }        [dir=ltr] .post--withPostBottomAction .PostBottomActionLikeBtns .like_btns {        margin-top: 5px !important;    }    [dir] .PostBottomAction::before {        background-image: none!important;    }    [dir] .like_cont {           }    [dir] .PostBottomActionLikeBtns.like_cont {  padding-bottom:10px!important;   }";
-    document.head.appendChild(styleElement);
 }
 
 function removeStyle2() {
@@ -302,11 +440,13 @@ function removeStyle2() {
 }
 
 function addStyle4() {
-    /*console.log("hider executed");*/
-    const styleElement = document.createElement("style");
-    styleElement.id = "hider";
+    let styleElement = document.getElementById("hider");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "hider";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = ".bp_thumb,.bp_author,.wall_module .author_highlighted,.deep_active .replies .reply_image,.top_profile_name,.im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg,.MEAvatar {    filter: blur(10px) grayscale(1) !important;}";
-    document.head.appendChild(styleElement);
 }
 
 function removeStyle4() {
@@ -318,10 +458,13 @@ function removeStyle4() {
 
 function addCAccent(cAccentValue) {
     /*console.log("Caccent executed");*/
-    const styleElement = document.createElement("style");
-    styleElement.id = "CAccentID";
+    let styleElement = document.getElementById("CAccentID");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "CAccentID";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = "body{    --accent:" + cAccentValue + "!important;    --blue_400: var(--accent) !important;    --action_sheet_action_foreground: var(--accent) !important;    --attach_picker_tab_active_background: var(--accent) !important;    --attach_picker_tab_active_text: var(--accent) !important;    --cell_button_foreground: var(--accent) !important;    --control_foreground: var(--accent) !important;    --counter_primary_background: var(--accent) !important;    --header_alternate_tab_active_indicator: var(--accent) !important;    --header_tab_active_indicator: var(--accent) !important;    --header_tint: var(--accent) !important;    --header_tint_alternate: var(--accent) !important;    --im_attach_tint: var(--accent) !important;    --im_reply_sender_text: var(--accent) !important;    --im_reply_separator: var(--accent) !important;    --landing_login_button_background: var(--accent) !important;    --landing_primary_button_background: var(--accent) !important;    --landing_tertiary_button_foreground: var(--accent) !important;    --landing_text_title: var(--accent) !important;    --landing_secondary_button_foreground: var(--accent) !important;    --link_alternate: var(--accent) !important;    --loader_track_value_fill: var(--accent) !important;    --feed_recommended_friend_promo_background: var(--accent) !important;    --tabbar_active_icon: var(--accent) !important;    --tabbar_tablet_active_icon: var(--accent) !important;    --text_link: var(--accent) !important;    --text_name: var(--accent) !important;    --writebar_icon: var(--accent) !important;    --dynamic_blue: var(--accent) !important;    --text_link_hightlighted_background: var(--accent) !important;    --im_text_name: var(--accent) !important;    --button-background-color: var(--accent) !important;    --sky_100: var(--accent) !important;    --sky_200: var(--accent) !important;    --light_blue_700: var(--accent) !important;    --blue_bright: var(--accent) !important;    --vkui--color_icon_accent: var(--accent) !important;    --vkui--color_background_accent_themed: var(--accent) !important;    --vkui--color_background_accent: var(--accent) !important;    --vkui--color_background_accent--hover: var(--accent) !important;    --vkui--color_background_accent--active: var(--accent) !important;    --vkui--color_background_accent_themed--hover: var(--accent) !important;    --vkui--color_background_accent_themed--active: var(--accent) !important;    --vkui--color_background_accent_tint--hover: var(--accent) !important;    --vkui--color_background_accent_tint--active: var(--accent) !important;    --vkui--color_background_accent_alternative: var(--accent) !important;    --vkui--color_background_accent_alternative--hover: var(--accent) !important;    --vkui--color_background_accent_alternative--active: var(--accent) !important;    --vkui--color_text_accent: var(--accent) !important;    --vkui--color_text_accent--hover: var(--accent) !important;    --vkui--color_text_accent--active: var(--accent) !important;    --vkui--color_text_accent_themed: var(--accent) !important;    --vkui--color_text_accent_themed--hover: var(--accent) !important;    --vkui--color_text_accent_themed--active: var(--accent) !important;    --vkui--color_text_link: var(--accent) !important;    --vkui--color_text_link--hover: var(--accent) !important;    --vkui--color_text_link--active: var(--accent) !important;    --vkui--color_text_link_themed: var(--accent) !important;    --vkui--color_text_link_themed--hover: var(--accent) !important;    --vkui--color_text_link_themed--active: var(--accent) !important;    --vkui--color_text_link_visited--hover: var(--accent) !important;    --vkui--color_text_link_visited--active: var(--accent) !important;    --blue_a400: var(--accent) !important;    --blue_400_alpha20: var(--accent),0.2 !important;    --blue_400_alpha48: var(--accent),0.48 !important;    --blue_420: var(--accent) !important;    --blue_550: var(--accent) !important;    --blue_600: var(--accent) !important;    --blue_640: var(--accent) !important;    --blue_800: var(--accent) !important;    #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg > g > g > path:nth-child(2){        fill: " + cAccentValue + " !important;    }}";
-    document.head.appendChild(styleElement);
     // Получаем элемент SVG
     try {
         const svgElement1 = document.querySelector('#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg');
@@ -352,17 +495,23 @@ function removeCAccent() {
 }
 
 function addColorPicker(cColorValue, cTextValue) {
-    const styleElement = document.createElement("style");
-    styleElement.id = "selections";
+    let styleElement = document.getElementById("selections");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "selections";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = "::selection {                background-color: " + cColorValue + ";                color: " + cTextValue + ";                    }";
-    document.head.appendChild(styleElement);
 }
 
 function addLogo(cLogoValue) {
-    const styleElement = document.createElement("style");
-    styleElement.id = "logos";
+    let styleElement = document.getElementById("logos");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "logos";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = "#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink {          background:url(" + "'" + cLogoValue + "'" + ") no-repeat;          background-size: contain;          background-position: center;      }      #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg{          display:none;      }";
-    document.head.appendChild(styleElement);
 }
 
 function removeLogo() {
@@ -373,10 +522,13 @@ function removeLogo() {
 }
 
 function addBg(cBgValue) {
-    const styleElement = document.createElement("style");
-    styleElement.id = "custombg";
+    let styleElement = document.getElementById("custombg");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "custombg";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = ':root,.vknBgWrapper,.scroll_fix {          background-image:url(' + cBgValue + ')!important;          background-size: contain;          background-position: center;          background-attachment: fixed;      }                        #side_bar {              background-color:var(--vkui--color_background_content);              width:15%;              margin-left:-20px!important;              border-radius:12px;              padding-left:12px;          }    .body_im .side_bar {        background-color:var(--vkui--color_background_content);       visibility:visible;        padding-right:0;    }    [scheme="vkcom_dark"] #side_bar {       background-color:var(--vkui--color_background_content);             width:15%;              margin-left:-20px!important;              border-radius:12px;              padding-left:12px;    }        [scheme="vkcom_dark"] .body_im .side_bar {        background-color:var(--vkui--color_background_content);       visibility:visible;        padding-right:0;    }.vkui--sizeX-regular{background:transparent!important;}.MarketplaceCatalogHeaderMenu{border-radius:12px!important;}';
-    document.head.appendChild(styleElement);
 }
 
 function removeBg() {
@@ -387,10 +539,13 @@ function removeBg() {
 }
 
 function addFont(cFontValue) {
-    const styleElement = document.createElement("style");
-    styleElement.id = "customfont";
+    let styleElement = document.getElementById("customfont");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "customfont";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = "html, body, p, h1, h2, h3, h4, h5, h6, span, div, a, ul, ol, li,input,button {  font-family: " + cFontValue + "!important;}";
-    document.head.appendChild(styleElement);
 }
 
 function removeFont() {
@@ -401,10 +556,13 @@ function removeFont() {
 }
 
 function removeNameAva() {
-    const styleElement = document.createElement("style");
-    styleElement.id = "removeNA";
+    let styleElement = document.getElementById("removeNA");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "removeNA";
+        document.head.appendChild(styleElement);
+    }
     styleElement.innerHTML = ".top_profile_name {display:none!important;}";
-    document.head.appendChild(styleElement);
 }
 
 function addOpacity(sliderValueCount) {
@@ -461,6 +619,7 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
     } else {
         removeStyle3();
     }
+    /*console.log("isHiderChecked now " + isHiderChecked)*/
     if (isHiderChecked) {
         addStyle4();
     } else {
@@ -515,16 +674,15 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
     if (addStickerChecked) {
         runStickerAdder();
     }
-	if (cameraPhotoChecked) {
-		cameraPhotoRet();
-	}
-	else  {
-		cameraPhotoDel();
-	}
+    if (cameraPhotoChecked) {
+        cameraPhotoRet();
+    } else {
+        cameraPhotoDel();
+    }
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-    chrome.storage.local.get(["cameraPhotoState","addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+    chrome.storage.local.get(["cameraPhotoState", "addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
         const isOldAccentChecked = items.checkboxState;
         const isMsgReactionsChecked = items.checkboxState1;
         const isPostReactionsChecked = items.postReactionsState;
@@ -544,7 +702,7 @@ function applySavedStyles() {
         const muteCallsChecked = items.muteCallsState;
         const cHotBarValue = items.customHotbar;
         const addStickerChecked = items.addstickerState;
-		const cameraPhotoChecked = items.cameraPhotoState;
+        const cameraPhotoChecked = items.cameraPhotoState;
         applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked);
     });
 }
@@ -585,10 +743,14 @@ function runStickerAdder() {
     if (existingStickerLink) {
         return;
     }
-    const styleElement = document.createElement("style");
+    let styleElement = document.getElementById("vken_box_sticker");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "vken_box_sticker";
+        document.head.appendChild(styleElement);
+    }
     styleElement.id = "vken_box_sticker";
     styleElement.innerHTML = `#vken_box_layer_bg {    top: 0;    left: 0;    width: 100%;    overflow: hidden;}#vken_box_layer_bg > div > div:nth-child(3) > svg{    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' aria-hidden='true' display='block' class='vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20' viewBox='0 0 20 20' width='20' height='20' style='width: 20px; height: 20px;'%3E%3Cpath fill='%23e1e3e6' fill-rule='evenodd' d='M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06' clip-rule='evenodd'%3E%3C/path%3E%3C/svg%3E") no-repeat;}#vken_box_layer_bg > div > div:nth-child(3){    right:-40px!important;    background-color:rgba(0, 0, 0, 0.44);    border-radius:999px;    padding:4px;    cursor:pointer;}#vken_box_layer_bg > div > button{    color:var(--vkui--color_text_contrast_themed);    background-color:var(--vkui--color_background_accent_themed);    border:0px;    border-radius:5px;    padding:6px 12px 6px 12px;    cursor:pointer;}#vken_box_layer_bg > div > button:hover{    background-color:var(--vkui--color_background_accent_themed--hover);}#vken_box_layer_bg > div > input[type=text]{    background: 0 0;    padding: 8px 4px 8px 4px;    color: var(--vkui--color_text_primary);        font-size: var(--vkui--font_text--font_size--compact);    font-family: var(--palette-vk-font, -apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif);    outline: 0;    box-shadow: none;    border: 1px solid var(--vkui--vkontakte_color_input_border);    border-radius: 6px;    overflow: hidden;    position: relative;}#vken_box_layer_bg > div > div.box_title{    padding-left:0px!important;    font-size: 14px;    color: var(--vkui--color_text_primary);    line-height: 32px;    height:32px;    margin-bottom:8px;    overflow: hidden;    text-overflow: ellipsis;    white-space: nowrap;}`;
-    document.head.appendChild(styleElement);
     const moreItemsContainer = document.querySelector('.ms_items_more._more_items');
     if (!moreItemsContainer) {
         console.error('Контейнер не найден');
@@ -644,9 +806,9 @@ function runStickerAdder() {
             addButton.setAttribute('onclick', command);
             addButton.classList.add('add-button');
             popupContainer.appendChild(addButton);
-			addButton.addEventListener('click', function() {
-				overlay.remove();
-			});
+            addButton.addEventListener('click', function() {
+                overlay.remove();
+            });
         }
         const closeButton = document.createElement('div');
         closeButton.style.position = 'absolute';
