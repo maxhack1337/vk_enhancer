@@ -61,6 +61,23 @@ function createReloadButton() {
 document.addEventListener('DOMContentLoaded', createReloadButton);
 /*хотбар*/
 function HotBarAppear(cHotBarValue) {
+	if (cHotBarValue.includes('ВТриптакте'))
+	{
+		let styleElement = document.getElementById("tripndrip");
+		if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = "tripndrip";
+			document.head.appendChild(styleElement);
+		}
+		styleElement.innerHTML = 'body{filter: invert(100%);}';
+	}
+	else
+	{
+		const customStyle = document.getElementById("tripndrip");
+		if (customStyle) {
+			customStyle.remove();
+		}
+	}
     const chatInputContainer = document.getElementsByClassName("im-chat-input--textarea fl_l _im_text_input _emoji_field_wrap");
     // Проверяем, есть ли уже хотбар на странице
     const existingHotbar = document.getElementById('vkenhancerEmojiHotbarID');
@@ -328,7 +345,7 @@ function addStyle() {
         styleElement.id = "removeBadges";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = '.OwnerPageAvatar--nft .OwnerPageAvatar__underlay:not(.OwnerPageAvatar__underlay--outlined) { top: calc(var(--stroke-width, 4px) * -1) !important; bottom: calc(var(--stroke-width, 4px) * -1) !important; left: calc(var(--stroke-width, 4px) * -1) !important; right: calc(var(--stroke-width, 4px) * -1) !important; } .OwnerPageAvatar--nft .OwnerPageAvatar__underlay, div[class*="RichAvatar-module__rootNft"] > img,.AvatarRich--nft .AvatarRich__img { clip-path: none !important; -webkit-clip-path: none !important; border-radius: 50% !important; } div[class*="RichAvatar-module__rootNft"] > svg,.AvatarRich__heptagonUnderlay { display: none !important; }';
+    styleElement.innerHTML = '.OwnerPageAvatar--nft .OwnerPageAvatar__underlay:not(.OwnerPageAvatar__underlay--outlined) { top: calc(var(--stroke-width, 4px) * -1) !important; bottom: calc(var(--stroke-width, 4px) * -1) !important; left: calc(var(--stroke-width, 4px) * -1) !important; right: calc(var(--stroke-width, 4px) * -1) !important; } .OwnerPageAvatar--nft .OwnerPageAvatar__underlay, .AvatarRich--nft .AvatarRich__img, .OwnerPageAvatar--nft .vkuiImageBase__img, div[class*="RichAvatar-module__rootNft"] > img { clip-path: none !important; -webkit-clip-path: none !important; border-radius: 50% !important; } .OwnerPageAvatar--nft .vkuiAvatar svg, .AvatarRich__heptagonUnderlay,div[class*="RichAvatar-module__rootNft"] > svg { display: none !important; }';
 }
 
 function removeStyle() {
