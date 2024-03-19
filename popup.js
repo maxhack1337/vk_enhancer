@@ -36,6 +36,7 @@ var addhotbar = document.getElementById('addhotbar');
 var addemojitf = document.getElementById('addemojitf');
 var emojigoDiv = document.getElementById('emojigo');
 var cameraphoto = document.getElementById('cameraphoto');
+var hidebutton = document.getElementById('hidebutton');
 var ID;
 
 addhotbar.addEventListener('click', (event) => {
@@ -154,10 +155,10 @@ fetch(url1)
 	var ver1 = document.getElementById('version');
 	const styleElement = document.createElement("style");
 	styleElement.id = "version";
-	styleElement.innerHTML = "#version::after{content:'Версия "+version+" SS'}";
+	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.7.1.1")
+		if (version != "2.8.0")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -355,6 +356,15 @@ cameraphoto.addEventListener('change', (event) => {
 	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, { type: "toggleCameraPhoto", isChecked: checked });
+    });
+});
+
+hidebutton.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({ hideButtonState: checked });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "toggleHideButton", isChecked: checked });
     });
 });
 
@@ -638,7 +648,7 @@ addSticker.addEventListener('change', (event) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния из Local Storage
-		chrome.storage.local.get(["cameraPhotoState","addstickerState","issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState","muteCallsState","customHotbar"], function(items) {
+		chrome.storage.local.get(["hideButtonState","cameraPhotoState","addstickerState","issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState","muteCallsState","customHotbar"], function(items) {
 		accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
 		recentgroups.checked = items.recentGroupsState;
@@ -686,6 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		customFontText.value = items.customFont;
 		addSticker.checked = items.addstickerState;
 		cameraphoto.checked = items.cameraPhotoState;
+		hidebutton.checked = items.hideButtonState;
 		if (items.customHotbar) {
 			addemojitf.value = items.customHotbar;
 		} else {
@@ -711,6 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chrome.tabs.sendMessage(activeTabId, { type: "toggleMsgReactions", isChecked: items.checkboxState1 });
             chrome.tabs.sendMessage(activeTabId, { type: "toggleEmojiStatus", isChecked: items.emojiStatusState });
             chrome.tabs.sendMessage(activeTabId, { type: "toggleAltSB", isChecked: items.altSBState });
+			chrome.tabs.sendMessage(activeTabId, { type: "toggleHideButton", isChecked: items.hideButtonState });
 			chrome.tabs.sendMessage(activeTabId, { type: "toggleCameraPhoto", isChecked: items.cameraPhotoState });
             chrome.tabs.sendMessage(activeTabId, { type: "toggleMuteStatus", isChecked: items.muteCallsState });
             chrome.tabs.sendMessage(activeTabId, { type: "toggleRecentGroups", isChecked: items.recentGroupsState });

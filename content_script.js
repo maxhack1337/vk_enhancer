@@ -2,14 +2,16 @@ console.log('Content script is running!');
 var isSecretCheck = false;
 var isPostReact = false;
 var isSecretEnabled = false;
-var old_smile = 0;
+var muteCallsBool = false;
+var isCallsMuted = false;
 // Кнопка релоад функций
 function createReloadButton() {
     const topNav = document.getElementById('top_nav');
     if (!topNav) return;
     const reloadButton = document.createElement('li');
     reloadButton.className = "HeaderNav__btns";
-    reloadButton.innerHTML = `<a class="TopNavBtn"> <div class="TopNavBtn__inner"> <div style="scale: 0.75;" class="TopNavBtn__icon"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"> <path d="M4.73999 6.07473C5.95913 4.57946 7.6098 3.49689 9.46676 2.97477C11.3237 2.45264 13.2965 2.51638 15.1159 3.15729C16.9353 3.7982 18.5127 4.98506 19.6329 6.55591C20.753 8.12676 21.3613 10.0051 21.3748 11.9345C21.3882 13.864 20.8062 15.7507 19.7081 17.337C18.61 18.9233 17.0493 20.1321 15.239 20.7984C13.4288 21.4646 11.4571 21.5559 9.59299 21.0598C8.11906 20.6675 6.73841 19.923 5.62498 18.8979" stroke="#99A2AD" stroke-width="2" stroke-linecap="round"/> <path d="M4.125 3V6.34584C4.125 6.48585 4.125 6.55586 4.15225 6.60934C4.17622 6.65638 4.21446 6.69462 4.2615 6.71859C4.31498 6.74584 4.38499 6.74584 4.525 6.74584H7.875" stroke="#99A2AD" stroke-width="2" stroke-linecap="round"/> </svg> </div> </div> </a>`;
+	reloadButton.id = "vkEnhancerReboot";
+    reloadButton.innerHTML = `<a class="TopNavBtn"> <div class="TopNavBtn__inner"> <div style="scale: 0.75;" class="TopNavBtn__icon"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="22" viewBox="0 0 20 22" fill="currentColor"><path d="M11.7422 3.21838C10.1412 2.65442 8.40531 2.59833 6.77131 3.05777C5.66909 3.36769 4.64943 3.902 3.7732 4.62084H4.87502C5.49634 4.62084 6.00002 5.12452 6.00002 5.74584C6.00002 6.36716 5.49634 6.87084 4.87502 6.87084L1.70519 6.87085C1.61913 6.87091 1.49731 6.871 1.38711 6.86199C1.25501 6.8512 1.04417 6.82206 0.819035 6.70735C0.536792 6.56354 0.307321 6.33407 0.163511 6.05182C0.0487986 5.82669 0.0196589 5.61585 0.00886567 5.48375C-0.000138422 5.37354 -5.10709e-05 5.25173 1.07093e-05 5.16567L2.03652e-05 2C2.03652e-05 1.37868 0.5037 0.875 1.12502 0.875C1.74634 0.875 2.25002 1.37868 2.25002 2V2.96111C3.38657 2.00587 4.71877 1.29764 6.16229 0.891762C8.24222 0.306941 10.4519 0.378336 12.4897 1.0962C14.5276 1.81406 16.2943 3.1434 17.5489 4.90275C18.8034 6.6621 19.4847 8.76577 19.4998 10.9267C19.5149 13.0876 18.863 15.2006 17.6331 16.9773C16.4033 18.754 14.6553 20.1079 12.6276 20.8541C10.6 21.6004 8.39155 21.7026 6.30367 21.1469C4.6601 20.7095 3.11556 19.8787 1.86301 18.7255C1.40593 18.3047 1.37655 17.5929 1.79739 17.1359C2.21824 16.6788 2.92994 16.6494 3.38703 17.0702C4.36132 17.9673 5.57811 18.6255 6.88238 18.9726C8.52263 19.4092 10.2576 19.3289 11.8505 18.7426C13.4435 18.1563 14.8168 17.0927 15.7831 15.6967C16.7495 14.3007 17.2617 12.6404 17.2498 10.9424C17.238 9.24439 16.7026 7.59142 15.7169 6.20907C14.7312 4.82672 13.3431 3.78234 11.7422 3.21838Z"/></svg> </div> </div> </a>`;
     const tooltip = document.createElement('span');
     tooltip.innerText = 'Перезагрузить функции VK Enhancer';
     tooltip.style.display = 'none';
@@ -78,13 +80,23 @@ function HotBarAppear(cHotBarValue) {
 			customStyle.remove();
 		}
 	}
-    const chatInputContainer = document.getElementsByClassName("im-chat-input--textarea fl_l _im_text_input _emoji_field_wrap");
+	
+	let hotbarb = document.getElementById("hotbarnew");
+	if (!hotbarb) {
+		hotbarb = document.createElement("style");
+		hotbarb.id = "hotbarnew";
+		document.head.appendChild(hotbarb);
+	}
+	hotbarb.innerHTML = '.ConvoMain__composer{padding-bottom:8px!important;display:flex;flex-direction: column;align-items: center;}';
+	
+    //const chatInputContainer = document.getElementsByClassName("im-chat-input--textarea fl_l _im_text_input _emoji_field_wrap");
+	const chatInputContainer = document.getElementsByClassName("ConvoMain__composer");
     // Проверяем, есть ли уже хотбар на странице
     const existingHotbar = document.getElementById('vkenhancerEmojiHotbarID');
     cHotBarValue = cHotBarValue.filter(function(item) {
         return item !== '' && item !== null && item !== undefined;
     });
-    if (existingHotbar && old_smile + 1 != Number(document.getElementsByClassName("page_progress_preview media_preview clear_fix")[0].id.replace(/\D+/g, ""))) {
+    if (false /*existingHotbar && old_smile + 1 != Number(document.getElementsByClassName("page_progress_preview media_preview clear_fix")[0].id.replace(/\D+/g, ""))*/) {
         existingHotbar.remove();
         /*console.log('HotBar removed')*/
     }
@@ -92,14 +104,17 @@ function HotBarAppear(cHotBarValue) {
         const hotbarDiv = document.createElement('div');
         hotbarDiv.className = 'vkenhancerEmojiHotbar';
         hotbarDiv.id = 'vkenhancerEmojiHotbarID';
-        hotbarDiv.style.marginTop = '-10px';
-        hotbarDiv.style.marginBottom = '7px';
+        hotbarDiv.style.marginTop = '6px';//-10px
+        //hotbarDiv.style.marginBottom = '7px';
         hotbarDiv.style.marginLeft = '9px';
         hotbarDiv.style.color = '#dee1e6';
         hotbarDiv.style.textAlign = 'center';
         hotbarDiv.style.width = '420px';
         for (let i = 0; i < cHotBarValue.length; i++) {
-            const emojiCode = cHotBarValue[i];
+            const emoji = cHotBarValue[i];
+			const matches = emoji.match(/([a-fA-F0-9]+)\(([^)]+)\)/);
+			const emojiCode = matches[1];
+			const emojiUnicode = matches[2];
             const emojiImgSrc = `/emoji/e/${emojiCode}.png`;
             const aElement = document.createElement('a');
             aElement.className = 'emoji_id';
@@ -110,6 +125,7 @@ function HotBarAppear(cHotBarValue) {
             aElement.style.cursor = 'pointer';
             aElement.style.zIndex = '10';
             aElement.style.transition = '0.3s background'
+			aElement.setAttribute('textmoji',emojiUnicode);
             aElement.addEventListener('mouseover', () => {
                 aElement.style.background = 'var(--vkui--color_transparent--active)';
                 aElement.style.borderRadius = '3px';
@@ -118,7 +134,7 @@ function HotBarAppear(cHotBarValue) {
                 aElement.style.background = 'none';
                 aElement.style.borderRadius = '0';
             });
-            var prev = document.getElementsByClassName("page_progress_preview media_preview clear_fix");
+            /*var prev = document.getElementsByClassName("page_progress_preview media_preview clear_fix");
             var v1 = 0;
             for (j = 0; j <= prev.length - 1; j++) {
                 var last_id = prev[j].id;
@@ -128,9 +144,36 @@ function HotBarAppear(cHotBarValue) {
                 }
             }
             var v_smile = v1 - 1;
-            old_smile = v_smile;
+            old_smile = v_smile;*/
             /*console.log(v_smile + " v_smile");*/
-            aElement.setAttribute('onclick', `Emoji.addEmoji(${v_smile}, '${emojiCode}', this); return cancelEvent(event);`);
+            //aElement.setAttribute('onclick', `Emoji.addEmoji(${v_smile}, '${emojiCode}', this); return cancelEvent(event);`);
+			/*aElement.addEventListener('click', function() {
+				const textmoji = aElement.getAttribute('textmoji');
+				const composerInput = document.querySelector('.ComposerInput__input.ConvoComposer__input');
+    
+				if (composerInput) {
+					composerInput.textContent = textmoji;
+				}
+			});*/ //старая добавлялка
+			aElement.addEventListener('click', function() {
+				const emojiCodeAdd = emojiCode; // Ваш emojiCode
+				const textmoji = aElement.getAttribute('textmoji');
+
+				// Создаем новый элемент <img>
+				const imgElement = document.createElement('img');
+				imgElement.className = 'Emoji @' + emojiCodeAdd;
+				imgElement.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+				imgElement.alt = textmoji;
+
+				// Находим div, в который будем добавлять элемент
+				const divElement = document.querySelector('.ComposerInput__input.ConvoComposer__input');
+    
+				// Добавляем imgElement внутрь div
+				if (divElement) {
+					divElement.appendChild(imgElement);
+					divElement.focus();
+				}
+			});
             const imgElement = document.createElement('img');
             imgElement.className = 'emoji';
             imgElement.src = emojiImgSrc;
@@ -238,49 +281,38 @@ function handleWlPostMutation(mutationsList, observer) {
                 updateMarginLeft()
             }
         }
-    }
-}
-
-function handleWlPostMutation1(mutationsList, observer) {
-    for (const mutation of mutationsList) {
-        if (mutation.type === 'childList' && mutation.addedNodes.length > 0 && window.location.href.includes("im")) {
-            const wlPostElement = document.getElementById('im_editable0');
+        if (!document.getElementsByClassName('VKCOMMessenger__skeletonContent').length > 0 && mutation.type === 'childList' && mutation.addedNodes.length > 0 && window.location.href.includes("im")) {
+            const wlPostElement = document.getElementsByClassName('ComposerInput__placeholder');
             if (wlPostElement) {
-                //console.log('Элемент с id "im_editable0" появился на странице');
+                //console.log('Элемент с id "ComposerInput__placeholder" появился на странице');
                 chrome.storage.local.get(["customHotbar"], function(items) {
-                    HotBarAppear(items.customHotbar)
+                    try {
+						HotBarAppear(items.customHotbar);
+					}
+					catch {
+						/*console.log("default HotBar error");*/
+					}
                 });
+            }
+        }
+        if (mutation.type === 'childList' && muteCallsBool && mutation.addedNodes.length > 0) {
+            const wlPostElement = document.querySelectorAll('#calls audio');
+            if (!isCallsMuted && wlPostElement.length > 0) {
+                console.log('Замутил звонки');
+				isCallsMuted = true;
+                applyStyleAndMuteSpecificAudio()
             }
         }
     }
 }
 
-/*function handleWlPostMutation2(mutationsList, observer) {
-    for (const mutation of mutationsList) {
-        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-            console.log('Обновляю стили...');
-            applySavedStyles();
-        }
-    }
-}*/
+
 const observer = new MutationObserver(handleWlPostMutation);
 const observerOptions = {
     childList: true,
     subtree: true
 };
 observer.observe(document, observerOptions);
-const observer1 = new MutationObserver(handleWlPostMutation1);
-const observerOptions1 = {
-    childList: true,
-    subtree: true
-};
-/*const observer2 = new MutationObserver(handleWlPostMutation2);
-const observerOptions2 = {
-    childList: true,
-    subtree: true
-};*/
-observer.observe(document, observerOptions1);
-observer1.observe(document, observerOptions1);
 document.addEventListener('DOMContentLoaded', function() {
     const stylusInstalled = document.querySelector('style.stylus') !== null;
     chrome.storage.local.set({
@@ -297,14 +329,20 @@ function applyStyleAndMuteSpecificAudio() {
         styleElement.id = "muteCalls";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = '.CallModal.CallModal--isIncoming{display:none;}';
+    styleElement.innerHTML = '.AttachFinishedCall{pointer-events:none!important;}button[aria-label="Звонки"],.CallModal.CallModal--isIncoming{display:none;} #l_ca,button[aria-label="Позвонить"],.im-page--header-call,.im-page--dialogs-call-wrap,div.BaseModal.CallModal.CallModal--withAnimation {display:none!important;})';
+	document.addEventListener('DOMContentLoaded', function() {
     const targetSrc = '/mp3/call_incoming.mp3';
+    const targetSrcEnd = '/mp3/call_end.mp3';
     const audioElements = document.querySelectorAll('#calls audio');
+	console.log("Audio muted! Lenght = " + audioElements.length);
     audioElements.forEach(function(audio) {
-        if (audio.src.endsWith(targetSrc)) {
+        if (/*audio.src.endsWith(targetSrc) || audio.src.endsWith(targetSrcEnd)*/true) {
             audio.muted = true;
         }
     });
+});
+
+
 }
 // Отключение режима "не беспокоить"
 function removeStyleAndUnmuteSpecificAudio() {
@@ -315,8 +353,10 @@ function removeStyleAndUnmuteSpecificAudio() {
     const targetSrc = '/mp3/call_incoming.mp3';
     const audioElements = document.querySelectorAll('#calls audio');
     audioElements.forEach(function(audio) {
-        if (audio.src.endsWith(targetSrc)) {
+        if (/*audio.src.endsWith(targetSrc)*/true) {
             audio.muted = false;
+			isCallsMuted = false;
+			console.log("Размутил звонки");
         }
     });
 }
@@ -328,7 +368,7 @@ function cameraPhotoRet() {
         styleElement.id = "cameraPhotoReturn";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = 'a[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],span[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],a[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"]{background-image: url("https://vk.com/images/camera_a.gif")!important;}    img[src^="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],img[src^="https://pp.userapi.com/dfvmQ4fDCgEfMVVLlOKBUsaUdh7QZww8ME4IHg/2G-nzM7_pH4.png"],img[src^="https://pp.userapi.com/nKpB1Qq39oLk0_S8_C9PolGFFUpM5n8FnzKC7A/ucP1cjlkpZk.png"],img[src^="https://sun1-87.userapi.com/impf/HnDXZID-SDmaVYd91lIag6dSg1lsaXuGBxzR6w/7oh8V3B731U.jpg"]{content:url("https://vk.com/images/camera_a.gif");}';
+    styleElement.innerHTML = 'div[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],a[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],span[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],a[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"]{background-image: url("https://vk.com/images/camera_a.gif")!important;}    img[src^="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],img[src^="https://pp.userapi.com/dfvmQ4fDCgEfMVVLlOKBUsaUdh7QZww8ME4IHg/2G-nzM7_pH4.png"],img[src^="https://pp.userapi.com/nKpB1Qq39oLk0_S8_C9PolGFFUpM5n8FnzKC7A/ucP1cjlkpZk.png"],img[src^="https://sun1-87.userapi.com/impf/HnDXZID-SDmaVYd91lIag6dSg1lsaXuGBxzR6w/7oh8V3B731U.jpg"]{content:url("https://vk.com/images/camera_a.gif");}';
 }
 
 function cameraPhotoDel() {
@@ -413,7 +453,7 @@ function addStyle1() {
         styleElement.id = "msgReactions";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = ".MessageReactionsPanel,.im-mess--reaction,.MessageReactions,MessageReactionsModalButton,.im-mess_reactions:hover .MessageReactionsModalButton,.im-mess .im-mess--reactions,.nim-dialog .nim-dialog--unread-badge_reaction,button.im-navigation.im-navigation--to-reaction._im_to_reaction.im-navigation_shown { display: none!important; }";
+    styleElement.innerHTML = ".ConvoListItem__icon:not([aria-label]),button[aria-label^='Перейти к новым реакциям на ваши сообщения.'],.ConvoMessageWithoutBubble__reactions,.MessageActionsContent__reactions,.MessageReactionsPanel,.im-mess--reaction,.MessageReactions,MessageReactionsModalButton,.im-mess_reactions:hover .MessageReactionsModalButton,.im-mess .im-mess--reactions,.nim-dialog .nim-dialog--unread-badge_reaction,button.im-navigation.im-navigation--to-reaction._im_to_reaction.im-navigation_shown { display: none!important; }";
 }
 
 function removeStyle1() {
@@ -462,7 +502,7 @@ function addStyle4() {
         styleElement.id = "hider";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = ".bp_thumb,.bp_author,.wall_module .author_highlighted,.deep_active .replies .reply_image,.top_profile_name,.im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg,.MEAvatar {    filter: blur(10px) grayscale(1) !important;}";
+    styleElement.innerHTML = ".bp_thumb,.bp_author,.wall_module .author_highlighted,.deep_active .replies .reply_image,.top_profile_name,.im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg {    filter: blur(10px) grayscale(1) !important;} .MEAvatar,.ConvoTitle__title,.ConvoMessageAuthor,.ConvoListItem__author {filter: blur(5px) grayscale(1)!important}";
 }
 
 function removeStyle4() {
@@ -472,6 +512,25 @@ function removeStyle4() {
     }
 }
 
+
+function hideEnButton() {
+    let styleElement = document.getElementById("enbutton");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "enbutton";
+        document.head.appendChild(styleElement);
+    }
+    styleElement.innerHTML = "#vkEnhancerReboot {display:none;}";
+}
+
+function backEnButton() {
+    const customStyle = document.getElementById("enbutton");
+    if (customStyle) {
+        customStyle.remove();
+    }
+}
+
+
 function addCAccent(cAccentValue) {
     /*console.log("Caccent executed");*/
     let styleElement = document.getElementById("CAccentID");
@@ -480,7 +539,7 @@ function addCAccent(cAccentValue) {
         styleElement.id = "CAccentID";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = "body{    --accent:" + cAccentValue + "!important;    --blue_400: var(--accent) !important;    --action_sheet_action_foreground: var(--accent) !important;    --attach_picker_tab_active_background: var(--accent) !important;    --attach_picker_tab_active_text: var(--accent) !important;    --cell_button_foreground: var(--accent) !important;    --control_foreground: var(--accent) !important;    --counter_primary_background: var(--accent) !important;    --header_alternate_tab_active_indicator: var(--accent) !important;    --header_tab_active_indicator: var(--accent) !important;    --header_tint: var(--accent) !important;    --header_tint_alternate: var(--accent) !important;    --im_attach_tint: var(--accent) !important;    --im_reply_sender_text: var(--accent) !important;    --im_reply_separator: var(--accent) !important;    --landing_login_button_background: var(--accent) !important;    --landing_primary_button_background: var(--accent) !important;    --landing_tertiary_button_foreground: var(--accent) !important;    --landing_text_title: var(--accent) !important;    --landing_secondary_button_foreground: var(--accent) !important;    --link_alternate: var(--accent) !important;    --loader_track_value_fill: var(--accent) !important;    --feed_recommended_friend_promo_background: var(--accent) !important;    --tabbar_active_icon: var(--accent) !important;    --tabbar_tablet_active_icon: var(--accent) !important;    --text_link: var(--accent) !important;    --text_name: var(--accent) !important;    --writebar_icon: var(--accent) !important;    --dynamic_blue: var(--accent) !important;    --text_link_hightlighted_background: var(--accent) !important;    --im_text_name: var(--accent) !important;    --button-background-color: var(--accent) !important;    --sky_100: var(--accent) !important;    --sky_200: var(--accent) !important;    --light_blue_700: var(--accent) !important;    --blue_bright: var(--accent) !important;    --vkui--color_icon_accent: var(--accent) !important;    --vkui--color_background_accent_themed: var(--accent) !important;    --vkui--color_background_accent: var(--accent) !important;    --vkui--color_background_accent--hover: var(--accent) !important;    --vkui--color_background_accent--active: var(--accent) !important;    --vkui--color_background_accent_themed--hover: var(--accent) !important;    --vkui--color_background_accent_themed--active: var(--accent) !important;    --vkui--color_background_accent_tint--hover: var(--accent) !important;    --vkui--color_background_accent_tint--active: var(--accent) !important;    --vkui--color_background_accent_alternative: var(--accent) !important;    --vkui--color_background_accent_alternative--hover: var(--accent) !important;    --vkui--color_background_accent_alternative--active: var(--accent) !important;    --vkui--color_text_accent: var(--accent) !important;    --vkui--color_text_accent--hover: var(--accent) !important;    --vkui--color_text_accent--active: var(--accent) !important;    --vkui--color_text_accent_themed: var(--accent) !important;    --vkui--color_text_accent_themed--hover: var(--accent) !important;    --vkui--color_text_accent_themed--active: var(--accent) !important;    --vkui--color_text_link: var(--accent) !important;    --vkui--color_text_link--hover: var(--accent) !important;    --vkui--color_text_link--active: var(--accent) !important;    --vkui--color_text_link_themed: var(--accent) !important;    --vkui--color_text_link_themed--hover: var(--accent) !important;    --vkui--color_text_link_themed--active: var(--accent) !important;    --vkui--color_text_link_visited--hover: var(--accent) !important;    --vkui--color_text_link_visited--active: var(--accent) !important;    --blue_a400: var(--accent) !important;    --blue_400_alpha20: var(--accent),0.2 !important;    --blue_400_alpha48: var(--accent),0.48 !important;    --blue_420: var(--accent) !important;    --blue_550: var(--accent) !important;    --blue_600: var(--accent) !important;    --blue_640: var(--accent) !important;    --blue_800: var(--accent) !important;    #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg > g > g > path:nth-child(2){        fill: " + cAccentValue + " !important;    }}";
+    styleElement.innerHTML = "body{    --accent:" + cAccentValue + "!important; --vkui--color_icon_accent_themed: var(--accent) !important;  --blue_400: var(--accent) !important;    --action_sheet_action_foreground: var(--accent) !important;    --attach_picker_tab_active_background: var(--accent) !important;    --attach_picker_tab_active_text: var(--accent) !important;    --cell_button_foreground: var(--accent) !important;    --control_foreground: var(--accent) !important;    --counter_primary_background: var(--accent) !important;    --header_alternate_tab_active_indicator: var(--accent) !important;    --header_tab_active_indicator: var(--accent) !important;    --header_tint: var(--accent) !important;    --header_tint_alternate: var(--accent) !important;    --im_attach_tint: var(--accent) !important;    --im_reply_sender_text: var(--accent) !important;    --im_reply_separator: var(--accent) !important;    --landing_login_button_background: var(--accent) !important;    --landing_primary_button_background: var(--accent) !important;    --landing_tertiary_button_foreground: var(--accent) !important;    --landing_text_title: var(--accent) !important;    --landing_secondary_button_foreground: var(--accent) !important;    --link_alternate: var(--accent) !important;    --loader_track_value_fill: var(--accent) !important;    --feed_recommended_friend_promo_background: var(--accent) !important;    --tabbar_active_icon: var(--accent) !important;    --tabbar_tablet_active_icon: var(--accent) !important;    --text_link: var(--accent) !important;    --text_name: var(--accent) !important;    --writebar_icon: var(--accent) !important;    --dynamic_blue: var(--accent) !important;    --text_link_hightlighted_background: var(--accent) !important;    --im_text_name: var(--accent) !important;    --button-background-color: var(--accent) !important;    --sky_100: var(--accent) !important;    --sky_200: var(--accent) !important;    --light_blue_700: var(--accent) !important;    --blue_bright: var(--accent) !important;    --vkui--color_icon_accent: var(--accent) !important;    --vkui--color_background_accent_themed: var(--accent) !important;    --vkui--color_background_accent: var(--accent) !important;    --vkui--color_background_accent--hover: var(--accent) !important;    --vkui--color_background_accent--active: var(--accent) !important;    --vkui--color_background_accent_themed--hover: var(--accent) !important;    --vkui--color_background_accent_themed--active: var(--accent) !important;    --vkui--color_background_accent_tint--hover: var(--accent) !important;    --vkui--color_background_accent_tint--active: var(--accent) !important;    --vkui--color_background_accent_alternative: var(--accent) !important;    --vkui--color_background_accent_alternative--hover: var(--accent) !important;    --vkui--color_background_accent_alternative--active: var(--accent) !important;    --vkui--color_text_accent: var(--accent) !important;    --vkui--color_text_accent--hover: var(--accent) !important;    --vkui--color_text_accent--active: var(--accent) !important;    --vkui--color_text_accent_themed: var(--accent) !important;    --vkui--color_text_accent_themed--hover: var(--accent) !important;    --vkui--color_text_accent_themed--active: var(--accent) !important;    --vkui--color_text_link: var(--accent) !important;    --vkui--color_text_link--hover: var(--accent) !important;    --vkui--color_text_link--active: var(--accent) !important;    --vkui--color_text_link_themed: var(--accent) !important;    --vkui--color_text_link_themed--hover: var(--accent) !important;    --vkui--color_text_link_themed--active: var(--accent) !important;    --vkui--color_text_link_visited--hover: var(--accent) !important;    --vkui--color_text_link_visited--active: var(--accent) !important;    --blue_a400: var(--accent) !important;    --blue_400_alpha20: var(--accent),0.2 !important;    --blue_400_alpha48: var(--accent),0.48 !important;    --blue_420: var(--accent) !important;    --blue_550: var(--accent) !important;    --blue_600: var(--accent) !important;    --blue_640: var(--accent) !important;    --blue_800: var(--accent) !important;    #top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg > g > g > path:nth-child(2){        fill: " + cAccentValue + " !important;    }}";
     // Получаем элемент SVG
     try {
         const svgElement1 = document.querySelector('#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg');
@@ -586,9 +645,11 @@ function addOpacity(sliderValueCount) {
     const alphaHex = Math.floor(opacity * 255).toString(16).padStart(2, '0');
     let rule;
     if (document.querySelector('[scheme=vkcom_light]')) {
-        rule = `.im-page .im-page--history-new-bar,.im-page_classic.im-page .im-page--header::before,.im-page_classic.im-page .im-page--dialogs,GamesCatalogNav,.audio_page_layout .audio_search_wrapper,.GamesCatalogHalfBlock .GamesCatalogCardsBlock__header{background:transparent!important} .im-page_classic.im-page .im-page--chat-body-wrap-inner,.im-page.im-page_classic.im-page_group .im-group-online .im-group-online--inner,.im-page_classic.im-page .im-page--dcontent,.PageBlock,.MarketplaceCatalogBlockListFiltersLayout__block,.MarketplaceCatalogHeaderMenu,.GamesCatalogProfileBlock__header,.GamesCatalogProfileBlock__content,.GamesCatalogSearchMainContent,.page_block_header,.ui_tabs_new.ui_tabs_header,.CatalogBlock--divided,.ui_search.ui_search_old,.im-page .im-page--dialogs-footer,.im-page .im-page--header, .im-page .im-page--search-header,.redesigned-group-info,.ProfileHeader, .page_block, .vkuiGroup--mode-card,.wall_module .reply_box{background: rgba(255, 255, 255, ${opacity})!important;}`;
+        rule = '.vkui--vkBase--light,[scheme=vkcom_light]{ --vkui--color_background_content: rgba(255, 255, 255, '+opacity+')!important;} :is( .VKCOMMessenger__integrationRoot .MEAppConfig, .VKCOMMessenger__integrationRoot.MEAppConfig ).MEAppConfig__withoutBubbles.MEAppConfig__withoutBubbles{--convoHistoryBackgroundColor:rgba(255, 255, 255, '+opacity+')!important;} .ConvoMain__rightPanelContainer,.MEApp{background-color:rgba(237,238,240,'+opacity+')!important;} .TopNavBtn .TopNavBtn__notifyCount{border:2px solid rgb(255,255,255)!important;} .UnreadCounter.UnreadCounter--muted{color:rgb(255,255,255)!important}'
+		//rule = `.im-page .im-page--history-new-bar,.im-page_classic.im-page .im-page--header::before,.im-page_classic.im-page .im-page--dialogs,GamesCatalogNav,.audio_page_layout .audio_search_wrapper,.GamesCatalogHalfBlock .GamesCatalogCardsBlock__header{background:transparent!important} .im-page_classic.im-page .im-page--chat-body-wrap-inner,.im-page.im-page_classic.im-page_group .im-group-online .im-group-online--inner,.im-page_classic.im-page .im-page--dcontent,.PageBlock,.MarketplaceCatalogBlockListFiltersLayout__block,.MarketplaceCatalogHeaderMenu,.GamesCatalogProfileBlock__header,.GamesCatalogProfileBlock__content,.GamesCatalogSearchMainContent,.page_block_header,.ui_tabs_new.ui_tabs_header,.CatalogBlock--divided,.ui_search.ui_search_old,.im-page .im-page--dialogs-footer,.im-page .im-page--header, .im-page .im-page--search-header,.redesigned-group-info,.ProfileHeader, .page_block, .vkuiGroup--mode-card,.wall_module .reply_box{background: rgba(255, 255, 255, ${opacity})!important;}`;
     } else {
-        rule = `.im-page .im-page--history-new-bar,.im-page_classic.im-page .im-page--header::before,.im-page_classic.im-page .im-page--dialogs,GamesCatalogNav,.audio_page_layout .audio_search_wrapper,.GamesCatalogHalfBlock .GamesCatalogCardsBlock__header{background:transparent!important} .im-page_classic.im-page .im-page--chat-body-wrap-inner,.im-page.im-page_classic.im-page_group .im-group-online .im-group-online--inner,.im-page_classic.im-page .im-page--dcontent,.PageBlock,.MarketplaceCatalogBlockListFiltersLayout__block,.MarketplaceCatalogHeaderMenu,.GamesCatalogProfileBlock__header,.GamesCatalogProfileBlock__content,.GamesCatalogSearchMainContent,.page_block_header,.ui_tabs_new.ui_tabs_header,.CatalogBlock--divided,.ui_search.ui_search_old,.im-page .im-page--dialogs-footer,.im-page .im-page--header, .im-page .im-page--search-header,.redesigned-group-info,.ProfileHeader, .page_block, .vkuiGroup--mode-card,.wall_module .reply_box{background: rgba(25, 25, 26, ${opacity})!important;}`;
+		rule = '.vkui--vkBase--dark,[scheme=vkcom_dark]{ --vkui--color_background_content: rgba(25, 25, 26, '+opacity+')!important;} :is( .VKCOMMessenger__integrationRoot .MEAppConfig, .VKCOMMessenger__integrationRoot.MEAppConfig ).MEAppConfig__withoutBubbles.MEAppConfig__withoutBubbles{--convoHistoryBackgroundColor:rgba(25, 25, 26, '+opacity+')!important;} .ConvoMain__rightPanelContainer,.MEApp{background-color:rgba(20,20,20,'+opacity+')!important; .TopNavBtn .TopNavBtn__notifyCount{border:2px solid rgb(25,25,26)!important;}} .UnreadCounter.UnreadCounter--muted{color:rgb(25,25,26)!important}'
+        //rule = `.im-page .im-page--history-new-bar,.im-page_classic.im-page .im-page--header::before,.im-page_classic.im-page .im-page--dialogs,GamesCatalogNav,.audio_page_layout .audio_search_wrapper,.GamesCatalogHalfBlock .GamesCatalogCardsBlock__header{background:transparent!important} .im-page_classic.im-page .im-page--chat-body-wrap-inner,.im-page.im-page_classic.im-page_group .im-group-online .im-group-online--inner,.im-page_classic.im-page .im-page--dcontent,.PageBlock,.MarketplaceCatalogBlockListFiltersLayout__block,.MarketplaceCatalogHeaderMenu,.GamesCatalogProfileBlock__header,.GamesCatalogProfileBlock__content,.GamesCatalogSearchMainContent,.page_block_header,.ui_tabs_new.ui_tabs_header,.CatalogBlock--divided,.ui_search.ui_search_old,.im-page .im-page--dialogs-footer,.im-page .im-page--header, .im-page .im-page--search-header,.redesigned-group-info,.ProfileHeader, .page_block, .vkuiGroup--mode-card,.wall_module .reply_box{background: rgba(25, 25, 26, ${opacity})!important;}`;
     }
     const existingStyle = document.getElementById('custom-opacity-style');
     if (existingStyle) {
@@ -601,8 +662,27 @@ function addOpacity(sliderValueCount) {
     document.head.appendChild(styleElement);
     /*console.log("Opacity changed to " + opacity);*/
 }
+//анимация стикеров(не работает)
+function stopStickerAnimations()
+{
+    let styleElement = document.getElementById("stickerAnimations");
+    if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "stickerAnimations";
+        document.head.appendChild(styleElement);
+    }
+    styleElement.innerHTML = ".top_profile_name {}";
+}
+
+function rebootStickerAnimations()
+{
+    const customStyle = document.getElementById("stickerAnimations");
+    if (customStyle) {
+        customStyle.remove();
+    }
+}
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked, hideButtonChecked) {
     if (isOldAccentChecked) {
         addStyle();
     } else {
@@ -680,25 +760,36 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
         altSBremove();
     }
     if (muteCallsChecked) {
+		muteCallsBool = true;
         applyStyleAndMuteSpecificAudio();
     } else {
+		muteCallsBool = false;
         removeStyleAndUnmuteSpecificAudio();
     }
     if (cHotBarValue) {
         HotBarAppear(cHotBarValue);
     }
     if (addStickerChecked) {
-        runStickerAdder();
-    }
+        //runStickerAdder();
+		stopStickerAnimations();
+    } else {
+		rebootStickerAnimations();
+	}
     if (cameraPhotoChecked) {
         cameraPhotoRet();
     } else {
         cameraPhotoDel();
     }
+	
+	if (hideButtonChecked) {
+		backEnButton();
+	} else {
+		hideEnButton();
+	}
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-    chrome.storage.local.get(["cameraPhotoState", "addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+    chrome.storage.local.get(["hideButtonState","cameraPhotoState", "addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
         const isOldAccentChecked = items.checkboxState;
         const isMsgReactionsChecked = items.checkboxState1;
         const isPostReactionsChecked = items.postReactionsState;
@@ -719,14 +810,15 @@ function applySavedStyles() {
         const cHotBarValue = items.customHotbar;
         const addStickerChecked = items.addstickerState;
         const cameraPhotoChecked = items.cameraPhotoState;
-        applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked);
+        const hideButtonChecked = items.hideButtonState;
+        applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked, hideButtonChecked);
     });
 }
 // При загрузке страницы применяем сохраненные стили
 document.addEventListener('DOMContentLoaded', applySavedStyles);
 // Обработчик сообщений от background.js
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups" || message.type === "toggleAltSB" || message.type === "toggleMuteStatus" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue" || message.type === "customHotbar" || message.type === "addSticker" || message.type === "toggleCameraPhoto") {
+    if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups" || message.type === "toggleAltSB" || message.type === "toggleMuteStatus" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue" || message.type === "customHotbar" || message.type === "addSticker" || message.type === "toggleCameraPhoto" || message.type === "toggleHideButton") {
         applySavedStyles();
     }
     if (message.type === "checkId") {
@@ -769,7 +861,7 @@ function runStickerAdder() {
     styleElement.innerHTML = `#vken_box_layer_bg {    top: 0;    left: 0;    width: 100%;    overflow: hidden;}#vken_box_layer_bg > div > div:nth-child(3) > svg{    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' aria-hidden='true' display='block' class='vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20' viewBox='0 0 20 20' width='20' height='20' style='width: 20px; height: 20px;'%3E%3Cpath fill='%23e1e3e6' fill-rule='evenodd' d='M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06' clip-rule='evenodd'%3E%3C/path%3E%3C/svg%3E") no-repeat;}#vken_box_layer_bg > div > div:nth-child(3){    right:-40px!important;    background-color:rgba(0, 0, 0, 0.44);    border-radius:999px;    padding:4px;    cursor:pointer;}#vken_box_layer_bg > div > button{    color:var(--vkui--color_text_contrast_themed);    background-color:var(--vkui--color_background_accent_themed);    border:0px;    border-radius:5px;    padding:6px 12px 6px 12px;    cursor:pointer;}#vken_box_layer_bg > div > button:hover{    background-color:var(--vkui--color_background_accent_themed--hover);}#vken_box_layer_bg > div > input[type=text]{    background: 0 0;    padding: 8px 4px 8px 4px;    color: var(--vkui--color_text_primary);        font-size: var(--vkui--font_text--font_size--compact);    font-family: var(--palette-vk-font, -apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif);    outline: 0;    box-shadow: none;    border: 1px solid var(--vkui--vkontakte_color_input_border);    border-radius: 6px;    overflow: hidden;    position: relative;}#vken_box_layer_bg > div > div.box_title{    padding-left:0px!important;    font-size: 14px;    color: var(--vkui--color_text_primary);    line-height: 32px;    height:32px;    margin-bottom:8px;    overflow: hidden;    text-overflow: ellipsis;    white-space: nowrap;}`;
     const moreItemsContainer = document.querySelector('.ms_items_more._more_items');
     if (!moreItemsContainer) {
-        console.error('Контейнер не найден');
+        /*console.error('Контейнер не найден');*/
         return;
     }
     const stickerLink = document.createElement('a');

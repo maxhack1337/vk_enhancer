@@ -2,6 +2,18 @@
 
 <head>
   <style>
+  #stickeranimations
+  {
+  display:none;
+  }
+  .vkenhancerEmoji
+  {
+	background-color:transparent!important;
+  }
+  .newFire
+  {
+	display:none;
+  }
   .newSpan img
   {
 	width:14px;
@@ -2225,7 +2237,7 @@
                             <div id="scrollableBlock" style="position: absolute; inset: 0px; margin-right: -17px; margin-bottom: -17px;">
                               <label class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
                                 <div class="vkenhancerChoosePicker">
-                                  <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed"><span class="newSpan"><img src="assets/new.png"></span>Вернуть "фотоаппарат"</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"></div></span></div>
+                                  <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed"><span class="newSpan"><img class="newFire" src="assets/new.png"></span>Вернуть "фотоаппарат"</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"></div></span></div>
                                 </div>
                                 <div class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
                                   <label class="vkenhancerCheckBoxLabel vkenhancerCheckBoxLabel__in">
@@ -2293,10 +2305,10 @@
                             <label class="vkenhancerChooseLabel vkenhancerStandartLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
 
                               <div class="vkenhancerChoosePicker">
-                                <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Режим "не беспокоить"</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"><span class="emptyt"></span></div>
+                                <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Отключить звонки</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"><span class="emptyt"></span></div>
                                 </span>
                               </div>
-                              <div class="vkenhancerChoosePickerText"><span class="vkenhancerStandartWarning vkenhancerWarning vkenhancerWarningBox vkenhancerWarningBox__in">Данный режим отключает входящие звонки, при этом, звонящий пользователь не будет знать, что его звонок не виден</span></div>
+                              <div class="vkenhancerChoosePickerText"><span class="vkenhancerStandartWarning vkenhancerWarning vkenhancerWarningBox vkenhancerWarningBox__in">Данная функция отключает все звонки(входящие и исходящие). Если вы захотите кому-то позвонить, то отключите эту функцию</span></div>
                           </div>
                           <div class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
                             <label class="vkenhancerCheckBoxLabel vkenhancerCheckBoxLabel__in">
@@ -2312,9 +2324,9 @@
                                     <input type="checkbox" id="altscrollbar" class="vkenhancerCheckBoxClass vkenhancerCheckBoxClass__in"><span aria-hidden="true" class="vkenhancerCB"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerCBHidden__in"></span></label>
                                 </div><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></label>
                               
-								<label class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
+								<label id="stickeranimations" class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
                                 <div class="vkenhancerChoosePicker">
-                                  <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Добавление стикера во вложения</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"></div></span></div>
+                                  <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Отключить анимацию стикеров</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"></div></span></div>
                                 </div>
                                 <div class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
                                   <label class="vkenhancerCheckBoxLabel vkenhancerCheckBoxLabel__in">
@@ -2324,7 +2336,7 @@
 							  
 							  <div id="bottomPadding" class="vkenhancerLowText vkenhancerInternalFormItem vkenhancerLowTextItem vkenhancerLowTextItem__in vkenhancerInternalFormItem--withTop" style="width: 50%;">
                                 <h5 id="addstickertext" class="vkenhancerLowTextInner vkenhancerLowTextInnerH5 vkenhancerLowTextInnerStyle vkenhancerLowTextStyle">Эмодзи-хотбар</h5><span id="textfieldprotip" class="textfieldpro">​ Нажмите на смайлик ниже, чтобы выбрать нужные эмодзи для хотбара, затем, вставьте сформированную строку сюда. Если хотите отключить хотбар - очистите поле ввода. Далее нажмите кнопку "Обновить хотбар" и перезагрузите страницу</span>
-                                <div class="emptyplace"></div><span class="vkenhancerInput vkenhancerInput__in vkenhancerInput--withPH vkenhancerInput--withPH--ios vkenhancerTextInput vkenhancerPlaceHolder"><input placeholder="Введите строку с кодами эмодзи..." type="text" id="addemojitf" class="vkenhancerPlaceHolder__in" value=""><div id="emojigo" class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after"><button type="button" class="vkenhancerButton1 vkenhancerButton2 vkenhancerButton3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7 vkenhancerButton8"><svg class=" vkuiIcon vkuiIcon--24 vkuiIcon--w-24 vkuiIcon--h-24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M8.44 14.3a.9.9 0 0 1 1.26.13c.01.02.2.22.53.43.38.24.97.49 1.77.49a3.3 3.3 0 0 0 1.77-.49c.2-.12.39-.26.53-.43a.9.9 0 0 1 1.4 1.13 4.04 4.04 0 0 1-.97.83 5.1 5.1 0 0 1-2.73.76 5.1 5.1 0 0 1-2.73-.76 3.99 3.99 0 0 1-.97-.83.9.9 0 0 1 .14-1.26Zm1.81-4.05a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0ZM15 11.5A1.25 1.25 0 1 0 15 9a1.25 1.25 0 0 0 0 2.5Zm-3-9.4a9.9 9.9 0 1 0 0 19.8 9.9 9.9 0 0 0 0-19.8ZM3.9 12a8.1 8.1 0 1 1 16.2 0 8.1 8.1 0 0 1-16.2 0Z" clip-rule="evenodd"></path></svg><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></button>
+                                <div class="emptyplace"></div><span class="vkenhancerInput vkenhancerInput__in vkenhancerInput--withPH vkenhancerInput--withPH--ios vkenhancerTextInput vkenhancerPlaceHolder"><input placeholder="Введите строку с кодами эмодзи..." type="text" id="addemojitf" class="vkenhancerPlaceHolder__in" value=""><div id="emojigo" class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after"><button type="button" class="vkenhancerButton1 vkenhancerButton2 vkenhancerButton3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7 vkenhancerButton8 vkenhancerEmoji"><svg class=" vkuiIcon vkuiIcon--24 vkuiIcon--w-24 vkuiIcon--h-24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M8.44 14.3a.9.9 0 0 1 1.26.13c.01.02.2.22.53.43.38.24.97.49 1.77.49a3.3 3.3 0 0 0 1.77-.49c.2-.12.39-.26.53-.43a.9.9 0 0 1 1.4 1.13 4.04 4.04 0 0 1-.97.83 5.1 5.1 0 0 1-2.73.76 5.1 5.1 0 0 1-2.73-.76 3.99 3.99 0 0 1-.97-.83.9.9 0 0 1 .14-1.26Zm1.81-4.05a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0ZM15 11.5A1.25 1.25 0 1 0 15 9a1.25 1.25 0 0 0 0 2.5Zm-3-9.4a9.9 9.9 0 1 0 0 19.8 9.9 9.9 0 0 0 0-19.8ZM3.9 12a8.1 8.1 0 1 1 16.2 0 8.1 8.1 0 0 1-16.2 0Z" clip-rule="evenodd"></path></svg><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></button>
 								</div><span aria-hidden="true" class="vkenhancerPlaceHolderEmpty"></span></span>
 								</div>
                               <div id="padding" class="vkenhancerLowText vkenhancerInternalFormItem vkenhancerLowTextItem">
@@ -2421,6 +2433,16 @@
                               </svg>
                             </a>
                           </div>
+						  
+								<label class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
+                                <div class="vkenhancerChoosePicker">
+                                  <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Кнопка перезагрузки функций</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"></div></span></div>
+                                </div>
+                                <div class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
+                                  <label class="vkenhancerCheckBoxLabel vkenhancerCheckBoxLabel__in">
+                                    <input type="checkbox" id="hidebutton" class="vkenhancerCheckBoxClass vkenhancerCheckBoxClass__in"><span aria-hidden="true" class="vkenhancerCB"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerCBHidden__in"></span></label>
+                                </div><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></label>
+						  
                           <div aria-hidden="true" class="vkenhancerSep1 vkenhancerSep2" role="separator"> </div>
                           <div aria-hidden="true" class="vkenhancerHiddenSep" style="height: 12px; padding: 6px 0px;">
                             <div aria-hidden="true" class="vkenhancerSep1 vkenhancerSep3" role="separator">
