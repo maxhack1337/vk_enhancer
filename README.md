@@ -75,7 +75,7 @@
 <a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v2.8/VK.Enhancer.zip">
   <img src="https://nimble-wisp-54a226.netlify.app/download.png" width="202" height="83">
 </a></p>
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v1.0/VK.Enhancer.Legacy.zip">Установить legacy-версию расширения(для старого вида мессенджера)</a>
+<p align="center"><a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v1.0/VK.Enhancer.Legacy.zip">Установить legacy-версию расширения(для старого вида мессенджера)</a></p>
 <div>
   
 <div>
