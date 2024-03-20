@@ -37,6 +37,7 @@ var addemojitf = document.getElementById('addemojitf');
 var emojigoDiv = document.getElementById('emojigo');
 var cameraphoto = document.getElementById('cameraphoto');
 var hidebutton = document.getElementById('hidebutton');
+var newdesign = document.getElementById('newdesign');
 var ID;
 
 addhotbar.addEventListener('click', (event) => {
@@ -158,7 +159,7 @@ fetch(url1)
 	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.8.0")
+		if (version != "2.9.0")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -365,6 +366,15 @@ hidebutton.addEventListener('change', (event) => {
 	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, { type: "toggleHideButton", isChecked: checked });
+    });
+});
+
+newdesign.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({ newDesignState: checked });
+	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, { type: "toggleNewDesign", isChecked: checked });
     });
 });
 
@@ -648,7 +658,7 @@ addSticker.addEventListener('change', (event) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния из Local Storage
-		chrome.storage.local.get(["hideButtonState","cameraPhotoState","addstickerState","issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState","muteCallsState","customHotbar"], function(items) {
+		chrome.storage.local.get(["newDesignState","hideButtonState","cameraPhotoState","addstickerState","issThemeChanged","checkboxStateAva","checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText","customLogo","customBg","customFont","emojiStatusState","recentGroupsState","altSBState","muteCallsState","customHotbar"], function(items) {
 		accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
 		recentgroups.checked = items.recentGroupsState;
@@ -697,6 +707,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		addSticker.checked = items.addstickerState;
 		cameraphoto.checked = items.cameraPhotoState;
 		hidebutton.checked = items.hideButtonState;
+		newdesign.checked = items.newDesignState;
 		if (items.customHotbar) {
 			addemojitf.value = items.customHotbar;
 		} else {

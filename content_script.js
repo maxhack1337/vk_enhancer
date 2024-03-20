@@ -1,4 +1,45 @@
 console.log('Content script is running!');
+newDesignBool = false;
+chrome.storage.local.get(["newDesignState"], function(items) {
+if(items.newDesignState) {
+var newobserver = new MutationObserver(function(mutationsList, observer) {
+    for(var mutation of mutationsList) {
+        if (mutation.type === 'childList' && mutation.addedNodes) {
+            for(var node of mutation.addedNodes) {
+                if (node.nodeName === 'BODY') {
+					
+					
+					console.log("Новый дизайн активирован!");
+                    document.body.setAttribute('onmouseover', 'window.vk = window.vk || {}; window.vk.pe = window.vk.pe || {}; window.vk.pe.vkm_reforged_in_vkcom = 1;');
+					
+                    //console.log("Onmouseover executed");
+                    observer.disconnect();
+                    break;
+                }
+            }
+        }
+    }
+});
+
+newobserver.observe(document.documentElement, { childList: true, subtree: true });
+}
+else {
+console.log("Старый дизайн активирован. Если новый дизайн всё еще активен, значит ВК отключили вам старый дизайн навсегда.");	
+}
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+	if(newDesignBool) {
+    const body = document.querySelector('body[data-vkmodule="im"]');
+    if (body) {
+        const e = document.getElementById("wrap3");
+        if (e)
+            e.remove();
+    }}
+});
+
+
+
 var isSecretCheck = false;
 var isPostReact = false;
 var isSecretEnabled = false;
@@ -10,7 +51,7 @@ function createReloadButton() {
     if (!topNav) return;
     const reloadButton = document.createElement('li');
     reloadButton.className = "HeaderNav__btns";
-	reloadButton.id = "vkEnhancerReboot";
+    reloadButton.id = "vkEnhancerReboot";
     reloadButton.innerHTML = `<a class="TopNavBtn"> <div class="TopNavBtn__inner"> <div style="scale: 0.75;" class="TopNavBtn__icon"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="22" viewBox="0 0 20 22" fill="currentColor"><path d="M11.7422 3.21838C10.1412 2.65442 8.40531 2.59833 6.77131 3.05777C5.66909 3.36769 4.64943 3.902 3.7732 4.62084H4.87502C5.49634 4.62084 6.00002 5.12452 6.00002 5.74584C6.00002 6.36716 5.49634 6.87084 4.87502 6.87084L1.70519 6.87085C1.61913 6.87091 1.49731 6.871 1.38711 6.86199C1.25501 6.8512 1.04417 6.82206 0.819035 6.70735C0.536792 6.56354 0.307321 6.33407 0.163511 6.05182C0.0487986 5.82669 0.0196589 5.61585 0.00886567 5.48375C-0.000138422 5.37354 -5.10709e-05 5.25173 1.07093e-05 5.16567L2.03652e-05 2C2.03652e-05 1.37868 0.5037 0.875 1.12502 0.875C1.74634 0.875 2.25002 1.37868 2.25002 2V2.96111C3.38657 2.00587 4.71877 1.29764 6.16229 0.891762C8.24222 0.306941 10.4519 0.378336 12.4897 1.0962C14.5276 1.81406 16.2943 3.1434 17.5489 4.90275C18.8034 6.6621 19.4847 8.76577 19.4998 10.9267C19.5149 13.0876 18.863 15.2006 17.6331 16.9773C16.4033 18.754 14.6553 20.1079 12.6276 20.8541C10.6 21.6004 8.39155 21.7026 6.30367 21.1469C4.6601 20.7095 3.11556 19.8787 1.86301 18.7255C1.40593 18.3047 1.37655 17.5929 1.79739 17.1359C2.21824 16.6788 2.92994 16.6494 3.38703 17.0702C4.36132 17.9673 5.57811 18.6255 6.88238 18.9726C8.52263 19.4092 10.2576 19.3289 11.8505 18.7426C13.4435 18.1563 14.8168 17.0927 15.7831 15.6967C16.7495 14.3007 17.2617 12.6404 17.2498 10.9424C17.238 9.24439 16.7026 7.59142 15.7169 6.20907C14.7312 4.82672 13.3431 3.78234 11.7422 3.21838Z"/></svg> </div> </div> </a>`;
     const tooltip = document.createElement('span');
     tooltip.innerText = 'Перезагрузить функции VK Enhancer';
@@ -61,42 +102,37 @@ function createReloadButton() {
     topNav.appendChild(reloadButton);
 }
 document.addEventListener('DOMContentLoaded', createReloadButton);
-/*хотбар*/
+//Эмодзи-хотбар
 function HotBarAppear(cHotBarValue) {
-	if (cHotBarValue.includes('ВТриптакте'))
-	{
-		let styleElement = document.getElementById("tripndrip");
-		if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "tripndrip";
-			document.head.appendChild(styleElement);
-		}
-		styleElement.innerHTML = 'body{filter: invert(100%);}';
-	}
-	else
-	{
-		const customStyle = document.getElementById("tripndrip");
-		if (customStyle) {
-			customStyle.remove();
-		}
-	}
-	
-	let hotbarb = document.getElementById("hotbarnew");
-	if (!hotbarb) {
-		hotbarb = document.createElement("style");
-		hotbarb.id = "hotbarnew";
-		document.head.appendChild(hotbarb);
-	}
-	hotbarb.innerHTML = '.ConvoMain__composer{padding-bottom:8px!important;display:flex;flex-direction: column;align-items: center;}';
-	
+    if (cHotBarValue.includes('ВТриптакте')) {
+        let styleElement = document.getElementById("tripndrip");
+        if (!styleElement) {
+            styleElement = document.createElement("style");
+            styleElement.id = "tripndrip";
+            document.head.appendChild(styleElement);
+        }
+        styleElement.innerHTML = 'body{filter: invert(100%);}';
+    } else {
+        const customStyle = document.getElementById("tripndrip");
+        if (customStyle) {
+            customStyle.remove();
+        }
+    }
+    let hotbarb = document.getElementById("hotbarnew");
+    if (!hotbarb) {
+        hotbarb = document.createElement("style");
+        hotbarb.id = "hotbarnew";
+        document.head.appendChild(hotbarb);
+    }
+    hotbarb.innerHTML = '.ConvoMain__composer{padding-bottom:8px!important;display:flex;flex-direction: column;align-items: center;}';
     //const chatInputContainer = document.getElementsByClassName("im-chat-input--textarea fl_l _im_text_input _emoji_field_wrap");
-	const chatInputContainer = document.getElementsByClassName("ConvoMain__composer");
+    const chatInputContainer = document.getElementsByClassName("ConvoMain__composer");
     // Проверяем, есть ли уже хотбар на странице
     const existingHotbar = document.getElementById('vkenhancerEmojiHotbarID');
     cHotBarValue = cHotBarValue.filter(function(item) {
         return item !== '' && item !== null && item !== undefined;
     });
-    if (false /*existingHotbar && old_smile + 1 != Number(document.getElementsByClassName("page_progress_preview media_preview clear_fix")[0].id.replace(/\D+/g, ""))*/) {
+    if (false /*existingHotbar && old_smile + 1 != Number(document.getElementsByClassName("page_progress_preview media_preview clear_fix")[0].id.replace(/\D+/g, ""))*/ ) {
         existingHotbar.remove();
         /*console.log('HotBar removed')*/
     }
@@ -104,7 +140,7 @@ function HotBarAppear(cHotBarValue) {
         const hotbarDiv = document.createElement('div');
         hotbarDiv.className = 'vkenhancerEmojiHotbar';
         hotbarDiv.id = 'vkenhancerEmojiHotbarID';
-        hotbarDiv.style.marginTop = '6px';//-10px
+        hotbarDiv.style.marginTop = '6px'; //-10px
         //hotbarDiv.style.marginBottom = '7px';
         hotbarDiv.style.marginLeft = '9px';
         hotbarDiv.style.color = '#dee1e6';
@@ -112,9 +148,9 @@ function HotBarAppear(cHotBarValue) {
         hotbarDiv.style.width = '420px';
         for (let i = 0; i < cHotBarValue.length; i++) {
             const emoji = cHotBarValue[i];
-			const matches = emoji.match(/([a-fA-F0-9]+)\(([^)]+)\)/);
-			const emojiCode = matches[1];
-			const emojiUnicode = matches[2];
+            const matches = emoji.match(/([a-fA-F0-9]+)\(([^)]+)\)/);
+            const emojiCode = matches[1];
+            const emojiUnicode = matches[2];
             const emojiImgSrc = `/emoji/e/${emojiCode}.png`;
             const aElement = document.createElement('a');
             aElement.className = 'emoji_id';
@@ -125,7 +161,7 @@ function HotBarAppear(cHotBarValue) {
             aElement.style.cursor = 'pointer';
             aElement.style.zIndex = '10';
             aElement.style.transition = '0.3s background'
-			aElement.setAttribute('textmoji',emojiUnicode);
+            aElement.setAttribute('textmoji', emojiUnicode);
             aElement.addEventListener('mouseover', () => {
                 aElement.style.background = 'var(--vkui--color_transparent--active)';
                 aElement.style.borderRadius = '3px';
@@ -147,7 +183,7 @@ function HotBarAppear(cHotBarValue) {
             old_smile = v_smile;*/
             /*console.log(v_smile + " v_smile");*/
             //aElement.setAttribute('onclick', `Emoji.addEmoji(${v_smile}, '${emojiCode}', this); return cancelEvent(event);`);
-			/*aElement.addEventListener('click', function() {
+            /*aElement.addEventListener('click', function() {
 				const textmoji = aElement.getAttribute('textmoji');
 				const composerInput = document.querySelector('.ComposerInput__input.ConvoComposer__input');
     
@@ -155,25 +191,24 @@ function HotBarAppear(cHotBarValue) {
 					composerInput.textContent = textmoji;
 				}
 			});*/ //старая добавлялка
-			aElement.addEventListener('click', function() {
-				const emojiCodeAdd = emojiCode; // Ваш emojiCode
-				const textmoji = aElement.getAttribute('textmoji');
-
-				// Создаем новый элемент <img>
-				const imgElement = document.createElement('img');
-				imgElement.className = 'Emoji @' + emojiCodeAdd;
-				imgElement.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-				imgElement.alt = textmoji;
-
-				// Находим div, в который будем добавлять элемент
-				const divElement = document.querySelector('.ComposerInput__input.ConvoComposer__input');
-    
-				// Добавляем imgElement внутрь div
-				if (divElement) {
-					divElement.appendChild(imgElement);
-					divElement.focus();
+            aElement.addEventListener('click', function() {
+                const emojiCodeAdd = emojiCode; // Ваш emojiCode
+                const textmoji = aElement.getAttribute('textmoji');
+                const imgElement = document.createElement('img');
+                imgElement.className = 'Emoji @' + emojiCodeAdd;
+                imgElement.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+                imgElement.alt = textmoji;
+                const divElement = document.querySelector('.ComposerInput__input.ConvoComposer__input');
+				const divElement1 = document.querySelector('.Composer__input');
+                if (divElement) {
+                    divElement.appendChild(imgElement);
+                    divElement.focus();
+                }
+				if (divElement1) {
+					divElement1.innerHTML += textmoji;
+					divElement1.focus();
 				}
-			});
+            });
             const imgElement = document.createElement('img');
             imgElement.className = 'emoji';
             imgElement.src = emojiImgSrc;
@@ -271,9 +306,12 @@ document.addEventListener('DOMContentLoaded', updateMarginLeft);
 window.addEventListener('hashchange', updateMarginLeft);
 window.addEventListener('load', updateMarginLeft);
 window.addEventListener('popstate', updateMarginLeft);
-
+//Мутейшн обсервер для хотбара, маргина, звонков
 function handleWlPostMutation(mutationsList, observer) {
     for (const mutation of mutationsList) {
+		/*const e = document.getElementById("wrap3");
+            if (e)
+                for (const t of e.childNodes) e.removeChild(t)*/
         if (mutation.type === 'childList' && (isPostReact || isSecretEnabled) && mutation.addedNodes.length > 0 && window.location.href.includes("?w=wall")) {
             const wlPostElement = document.getElementById('wl_post');
             if (wlPostElement) {
@@ -283,15 +321,15 @@ function handleWlPostMutation(mutationsList, observer) {
         }
         if (!document.getElementsByClassName('VKCOMMessenger__skeletonContent').length > 0 && mutation.type === 'childList' && mutation.addedNodes.length > 0 && window.location.href.includes("im")) {
             const wlPostElement = document.getElementsByClassName('ComposerInput__placeholder');
-            if (wlPostElement) {
+			const wlPostElement1 = document.getElementsByClassName('Composer__input');
+            if (wlPostElement || wlPostElement1) {
                 //console.log('Элемент с id "ComposerInput__placeholder" появился на странице');
                 chrome.storage.local.get(["customHotbar"], function(items) {
                     try {
-						HotBarAppear(items.customHotbar);
-					}
-					catch {
-						/*console.log("default HotBar error");*/
-					}
+                        HotBarAppear(items.customHotbar);
+                    } catch {
+                        /*console.log("default HotBar error");*/
+                    }
                 });
             }
         }
@@ -299,14 +337,12 @@ function handleWlPostMutation(mutationsList, observer) {
             const wlPostElement = document.querySelectorAll('#calls audio');
             if (!isCallsMuted && wlPostElement.length > 0) {
                 console.log('Замутил звонки');
-				isCallsMuted = true;
+                isCallsMuted = true;
                 applyStyleAndMuteSpecificAudio()
             }
         }
     }
 }
-
-
 const observer = new MutationObserver(handleWlPostMutation);
 const observerOptions = {
     childList: true,
@@ -330,21 +366,19 @@ function applyStyleAndMuteSpecificAudio() {
         document.head.appendChild(styleElement);
     }
     styleElement.innerHTML = '.AttachFinishedCall{pointer-events:none!important;}button[aria-label="Звонки"],.CallModal.CallModal--isIncoming{display:none;} #l_ca,button[aria-label="Позвонить"],.im-page--header-call,.im-page--dialogs-call-wrap,div.BaseModal.CallModal.CallModal--withAnimation {display:none!important;})';
-	document.addEventListener('DOMContentLoaded', function() {
-    const targetSrc = '/mp3/call_incoming.mp3';
-    const targetSrcEnd = '/mp3/call_end.mp3';
-    const audioElements = document.querySelectorAll('#calls audio');
-	console.log("Audio muted! Lenght = " + audioElements.length);
-    audioElements.forEach(function(audio) {
-        if (/*audio.src.endsWith(targetSrc) || audio.src.endsWith(targetSrcEnd)*/true) {
-            audio.muted = true;
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const targetSrc = '/mp3/call_incoming.mp3';
+        const targetSrcEnd = '/mp3/call_end.mp3';
+        const audioElements = document.querySelectorAll('#calls audio');
+        console.log("Audio muted! Lenght = " + audioElements.length);
+        audioElements.forEach(function(audio) {
+            if ( /*audio.src.endsWith(targetSrc) || audio.src.endsWith(targetSrcEnd)*/ true) {
+                audio.muted = true;
+            }
+        });
     });
-});
-
-
 }
-// Отключение режима "не беспокоить"
+
 function removeStyleAndUnmuteSpecificAudio() {
     const customStyle = document.getElementById("muteCalls");
     if (customStyle) {
@@ -353,14 +387,14 @@ function removeStyleAndUnmuteSpecificAudio() {
     const targetSrc = '/mp3/call_incoming.mp3';
     const audioElements = document.querySelectorAll('#calls audio');
     audioElements.forEach(function(audio) {
-        if (/*audio.src.endsWith(targetSrc)*/true) {
+        if ( /*audio.src.endsWith(targetSrc)*/ true) {
             audio.muted = false;
-			isCallsMuted = false;
-			console.log("Размутил звонки");
+            isCallsMuted = false;
+            console.log("Размутил звонки");
         }
     });
 }
-// Функция для добавления стиля
+//Возвращение фотоаппарата для пустых аватарок
 function cameraPhotoRet() {
     let styleElement = document.getElementById("cameraPhotoReturn");
     if (!styleElement) {
@@ -377,24 +411,24 @@ function cameraPhotoDel() {
         customStyle.remove();
     }
 }
-// Функция для добавления стиля
-function addStyle() {
-    let styleElement = document.getElementById("removeBadges");
+//Убрать NFT-Аватарки
+function hideNFT_Avatars() {
+    let styleElement = document.getElementById("nftavatars");
     if (!styleElement) {
         styleElement = document.createElement("style");
-        styleElement.id = "removeBadges";
+        styleElement.id = "nftavatars";
         document.head.appendChild(styleElement);
     }
     styleElement.innerHTML = '.OwnerPageAvatar--nft .OwnerPageAvatar__underlay:not(.OwnerPageAvatar__underlay--outlined) { top: calc(var(--stroke-width, 4px) * -1) !important; bottom: calc(var(--stroke-width, 4px) * -1) !important; left: calc(var(--stroke-width, 4px) * -1) !important; right: calc(var(--stroke-width, 4px) * -1) !important; } .OwnerPageAvatar--nft .OwnerPageAvatar__underlay, .AvatarRich--nft .AvatarRich__img, .OwnerPageAvatar--nft .vkuiImageBase__img, div[class*="RichAvatar-module__rootNft"] > img { clip-path: none !important; -webkit-clip-path: none !important; border-radius: 50% !important; } .OwnerPageAvatar--nft .vkuiAvatar svg, .AvatarRich__heptagonUnderlay,div[class*="RichAvatar-module__rootNft"] > svg { display: none !important; }';
 }
 
-function removeStyle() {
-    const customStyle = document.getElementById("removeBadges");
+function backNFT_Avatars() {
+    const customStyle = document.getElementById("nftavatars");
     if (customStyle) {
         customStyle.remove();
     }
 }
-// Функция для добавления стиля
+//Эмодзи-статусы
 function emojiRemove() {
     let styleElement = document.getElementById("removeES");
     if (!styleElement) {
@@ -411,7 +445,7 @@ function emojiBack() {
         customStyle.remove();
     }
 }
-// Функция для добавления стиля
+//Недавно посещенные в группах
 function recentRemove() {
     let styleElement = document.getElementById("removeRecent");
     if (!styleElement) {
@@ -428,7 +462,7 @@ function recentBack() {
         customStyle.remove();
     }
 }
-
+//Альтернативный скроллбар
 function altSBadd() {
     let styleElement = document.getElementById("altSB");
     if (!styleElement) {
@@ -445,8 +479,8 @@ function altSBremove() {
         customStyle.remove();
     }
 }
-// Функция для добавления стиля к сообщениям
-function addStyle1() {
+//Реакции сообщений
+function removeMessageReactions() {
     let styleElement = document.getElementById("msgReactions");
     if (!styleElement) {
         styleElement = document.createElement("style");
@@ -456,26 +490,26 @@ function addStyle1() {
     styleElement.innerHTML = ".ConvoListItem__icon:not([aria-label]),button[aria-label^='Перейти к новым реакциям на ваши сообщения.'],.ConvoMessageWithoutBubble__reactions,.MessageActionsContent__reactions,.MessageReactionsPanel,.im-mess--reaction,.MessageReactions,MessageReactionsModalButton,.im-mess_reactions:hover .MessageReactionsModalButton,.im-mess .im-mess--reactions,.nim-dialog .nim-dialog--unread-badge_reaction,button.im-navigation.im-navigation--to-reaction._im_to_reaction.im-navigation_shown { display: none!important; }";
 }
 
-function removeStyle1() {
+function backMessageReactions() {
     const customStyle = document.getElementById("msgReactions");
     if (customStyle) {
         customStyle.remove();
     }
 }
-
-function addStyle3() {
+//Дополнительные функции VK Enhancer
+function secretFunctionsEnabled() {
     isSecretEnabled = true;
     setTimeout(() => {
         loadScripts();
     }, "5000");
 }
 
-function removeStyle3() {
+function secretFunctionsDisabled() {
     isSecretEnabled = false;
     console.log("Secret functions are disabled. If you want to enable them - push checkbox and reload page");
 }
-
-function addStyle2() {
+//Реакции к постам
+function removePostReactions() {
     let styleElement = document.getElementById("postReactions");
     if (!styleElement) {
         styleElement = document.createElement("style");
@@ -487,15 +521,15 @@ function addStyle2() {
     styleElement.innerHTML = ".PostButtonReactions__iconAnimation{display:none;}.PostButtonReactions__icon.PostButtonReactions__icon--custom{background: url(\"" + imageUrl + "\")!important;         scale:.85;} .ReactionsMenuPopperTransition-appear-done, .ReactionsMenuPopperTransition-enter-done {          display: none!important;      }                        .ReactionsMenu,    .ReactionsMenu--extraHoverArea,    .ReactionsMenu--extraHoverAreaToTop,    div.ReactionsPreview__items,.PostButtonReactions--post .PostButtonReactions__title--textual,.like_tt_reacted-count,.fans_fanph_reaction,li#likes_tab_reactions_0,    li#likes_tab_reactions_1,    li#likes_tab_reactions_2,    li#likes_tab_reactions_3,    li#likes_tab_reactions_4,    li#likes_tab_reactions_5,.ui_tab.ui_tab_group,.like_tt_reaction {        display: none !important;    }    .PostBottomAction {        --post-bottom-action-background-color: transparent !important;    }    div.ReactionsPreview.ReactionsPreview--active .ReactionsPreview__count._counter_anim_container {        color: #e64646 !important;    }   .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count{color:var(--vkui--color_text_subhead);} [dir] .ReactionsPreview {        position: absolute;        margin-top: 14px;        margin-left: 30px;        z-index: 9;    }    .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count {    font-size: 13px;    line-height: 16px;    font-weight: 500;    }    .PostButtonReactionsContainer {        width: auto !important;    }    .PostButtonReactions__iconAnimation svg    {        background: url(\"" + imageUrl + "\") no-repeat!important;        margin-top:3px;        margin-left:3px;        scale:.85;    }    .PostButtonReactions__iconAnimation svg g    {        display:none;    }        [dir] .PostActionStatusBar--inPost {        padding-top: 0px !important;        padding-bottom: 0px !important;    }    div.like_cont.PostBottomActionLikeBtns {        border-top: 1px solid transparent !important;    }    .PostButtonReactionsContainer {        width: auto !important;    }        [dir=ltr] .post--withPostBottomAction .PostBottomActionLikeBtns .like_btns {        margin-top: 5px !important;    }    [dir] .PostBottomAction::before {        background-image: none!important;    }    [dir] .like_cont {           }    [dir] .PostBottomActionLikeBtns.like_cont {  padding-bottom:10px!important;   }";
 }
 
-function removeStyle2() {
+function backPostReactions() {
     const customStyle = document.getElementById("postReactions");
     if (customStyle) {
         customStyle.remove();
     }
     isPostReact = false;
 }
-
-function addStyle4() {
+//Скрыть имена и аватарки
+function addBlur() {
     let styleElement = document.getElementById("hider");
     if (!styleElement) {
         styleElement = document.createElement("style");
@@ -505,14 +539,13 @@ function addStyle4() {
     styleElement.innerHTML = ".bp_thumb,.bp_author,.wall_module .author_highlighted,.deep_active .replies .reply_image,.top_profile_name,.im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg {    filter: blur(10px) grayscale(1) !important;} .MEAvatar,.ConvoTitle__title,.ConvoMessageAuthor,.ConvoListItem__author {filter: blur(5px) grayscale(1)!important}";
 }
 
-function removeStyle4() {
+function removeBlur() {
     const customStyle = document.getElementById("hider");
     if (customStyle) {
         customStyle.remove();
     }
 }
-
-
+//Скрыть кнопку VK Enhancer 
 function hideEnButton() {
     let styleElement = document.getElementById("enbutton");
     if (!styleElement) {
@@ -529,8 +562,7 @@ function backEnButton() {
         customStyle.remove();
     }
 }
-
-
+//Кастомный акцент
 function addCAccent(cAccentValue) {
     /*console.log("Caccent executed");*/
     let styleElement = document.getElementById("CAccentID");
@@ -568,7 +600,7 @@ function removeCAccent() {
         pathElement.setAttribute('fill', '#07F');
     }
 }
-
+//Цвета выделения текста
 function addColorPicker(cColorValue, cTextValue) {
     let styleElement = document.getElementById("selections");
     if (!styleElement) {
@@ -578,7 +610,7 @@ function addColorPicker(cColorValue, cTextValue) {
     }
     styleElement.innerHTML = "::selection {                background-color: " + cColorValue + ";                color: " + cTextValue + ";                    }";
 }
-
+//Кастомный логотип
 function addLogo(cLogoValue) {
     let styleElement = document.getElementById("logos");
     if (!styleElement) {
@@ -595,7 +627,7 @@ function removeLogo() {
         customStyle.remove();
     }
 }
-
+//Кастомный фон
 function addBg(cBgValue) {
     let styleElement = document.getElementById("custombg");
     if (!styleElement) {
@@ -612,7 +644,7 @@ function removeBg() {
         customStyle.remove();
     }
 }
-
+//Кастомный шрифт
 function addFont(cFontValue) {
     let styleElement = document.getElementById("customfont");
     if (!styleElement) {
@@ -629,7 +661,7 @@ function removeFont() {
         customStyle.remove();
     }
 }
-
+//Убрать имя возле аватарки VK ID
 function removeNameAva() {
     let styleElement = document.getElementById("removeNA");
     if (!styleElement) {
@@ -639,17 +671,17 @@ function removeNameAva() {
     }
     styleElement.innerHTML = ".top_profile_name {display:none!important;}";
 }
-
+//Прозрачность блоков
 function addOpacity(sliderValueCount) {
     const opacity = sliderValueCount / 100;
     const alphaHex = Math.floor(opacity * 255).toString(16).padStart(2, '0');
     let rule;
     if (document.querySelector('[scheme=vkcom_light]')) {
-        rule = '.vkui--vkBase--light,[scheme=vkcom_light]{ --vkui--color_background_content: rgba(255, 255, 255, '+opacity+')!important;} :is( .VKCOMMessenger__integrationRoot .MEAppConfig, .VKCOMMessenger__integrationRoot.MEAppConfig ).MEAppConfig__withoutBubbles.MEAppConfig__withoutBubbles{--convoHistoryBackgroundColor:rgba(255, 255, 255, '+opacity+')!important;} .ConvoMain__rightPanelContainer,.MEApp{background-color:rgba(237,238,240,'+opacity+')!important;} .TopNavBtn .TopNavBtn__notifyCount{border:2px solid rgb(255,255,255)!important;} .UnreadCounter.UnreadCounter--muted{color:rgb(255,255,255)!important}'
-		//rule = `.im-page .im-page--history-new-bar,.im-page_classic.im-page .im-page--header::before,.im-page_classic.im-page .im-page--dialogs,GamesCatalogNav,.audio_page_layout .audio_search_wrapper,.GamesCatalogHalfBlock .GamesCatalogCardsBlock__header{background:transparent!important} .im-page_classic.im-page .im-page--chat-body-wrap-inner,.im-page.im-page_classic.im-page_group .im-group-online .im-group-online--inner,.im-page_classic.im-page .im-page--dcontent,.PageBlock,.MarketplaceCatalogBlockListFiltersLayout__block,.MarketplaceCatalogHeaderMenu,.GamesCatalogProfileBlock__header,.GamesCatalogProfileBlock__content,.GamesCatalogSearchMainContent,.page_block_header,.ui_tabs_new.ui_tabs_header,.CatalogBlock--divided,.ui_search.ui_search_old,.im-page .im-page--dialogs-footer,.im-page .im-page--header, .im-page .im-page--search-header,.redesigned-group-info,.ProfileHeader, .page_block, .vkuiGroup--mode-card,.wall_module .reply_box{background: rgba(255, 255, 255, ${opacity})!important;}`;
+        rule = '.vkui--vkBase--light,[scheme=vkcom_light]{ --vkui--color_background_content: rgba(255, 255, 255, ' + opacity + ')!important;} :is( .VKCOMMessenger__integrationRoot .MEAppConfig, .VKCOMMessenger__integrationRoot.MEAppConfig ).MEAppConfig__withoutBubbles.MEAppConfig__withoutBubbles{--convoHistoryBackgroundColor:rgba(255, 255, 255, ' + opacity + ')!important;} .ConvoMain__rightPanelContainer,.MEApp{background-color:rgba(237,238,240,' + opacity + ')!important;} .TopNavBtn .TopNavBtn__notifyCount{border:2px solid rgb(255,255,255)!important;} .UnreadCounter.UnreadCounter--muted{color:rgb(255,255,255)!important}'
+            //rule = `.im-page .im-page--history-new-bar,.im-page_classic.im-page .im-page--header::before,.im-page_classic.im-page .im-page--dialogs,GamesCatalogNav,.audio_page_layout .audio_search_wrapper,.GamesCatalogHalfBlock .GamesCatalogCardsBlock__header{background:transparent!important} .im-page_classic.im-page .im-page--chat-body-wrap-inner,.im-page.im-page_classic.im-page_group .im-group-online .im-group-online--inner,.im-page_classic.im-page .im-page--dcontent,.PageBlock,.MarketplaceCatalogBlockListFiltersLayout__block,.MarketplaceCatalogHeaderMenu,.GamesCatalogProfileBlock__header,.GamesCatalogProfileBlock__content,.GamesCatalogSearchMainContent,.page_block_header,.ui_tabs_new.ui_tabs_header,.CatalogBlock--divided,.ui_search.ui_search_old,.im-page .im-page--dialogs-footer,.im-page .im-page--header, .im-page .im-page--search-header,.redesigned-group-info,.ProfileHeader, .page_block, .vkuiGroup--mode-card,.wall_module .reply_box{background: rgba(255, 255, 255, ${opacity})!important;}`;
     } else {
-		rule = '.vkui--vkBase--dark,[scheme=vkcom_dark]{ --vkui--color_background_content: rgba(25, 25, 26, '+opacity+')!important;} :is( .VKCOMMessenger__integrationRoot .MEAppConfig, .VKCOMMessenger__integrationRoot.MEAppConfig ).MEAppConfig__withoutBubbles.MEAppConfig__withoutBubbles{--convoHistoryBackgroundColor:rgba(25, 25, 26, '+opacity+')!important;} .ConvoMain__rightPanelContainer,.MEApp{background-color:rgba(20,20,20,'+opacity+')!important; .TopNavBtn .TopNavBtn__notifyCount{border:2px solid rgb(25,25,26)!important;}} .UnreadCounter.UnreadCounter--muted{color:rgb(25,25,26)!important}'
-        //rule = `.im-page .im-page--history-new-bar,.im-page_classic.im-page .im-page--header::before,.im-page_classic.im-page .im-page--dialogs,GamesCatalogNav,.audio_page_layout .audio_search_wrapper,.GamesCatalogHalfBlock .GamesCatalogCardsBlock__header{background:transparent!important} .im-page_classic.im-page .im-page--chat-body-wrap-inner,.im-page.im-page_classic.im-page_group .im-group-online .im-group-online--inner,.im-page_classic.im-page .im-page--dcontent,.PageBlock,.MarketplaceCatalogBlockListFiltersLayout__block,.MarketplaceCatalogHeaderMenu,.GamesCatalogProfileBlock__header,.GamesCatalogProfileBlock__content,.GamesCatalogSearchMainContent,.page_block_header,.ui_tabs_new.ui_tabs_header,.CatalogBlock--divided,.ui_search.ui_search_old,.im-page .im-page--dialogs-footer,.im-page .im-page--header, .im-page .im-page--search-header,.redesigned-group-info,.ProfileHeader, .page_block, .vkuiGroup--mode-card,.wall_module .reply_box{background: rgba(25, 25, 26, ${opacity})!important;}`;
+        rule = '.vkui--vkBase--dark,[scheme=vkcom_dark]{ --vkui--color_background_content: rgba(25, 25, 26, ' + opacity + ')!important;} :is( .VKCOMMessenger__integrationRoot .MEAppConfig, .VKCOMMessenger__integrationRoot.MEAppConfig ).MEAppConfig__withoutBubbles.MEAppConfig__withoutBubbles{--convoHistoryBackgroundColor:rgba(25, 25, 26, ' + opacity + ')!important;} .ConvoMain__rightPanelContainer,.MEApp{background-color:rgba(20,20,20,' + opacity + ')!important; .TopNavBtn .TopNavBtn__notifyCount{border:2px solid rgb(25,25,26)!important;}} .UnreadCounter.UnreadCounter--muted{color:rgb(25,25,26)!important}'
+            //rule = `.im-page .im-page--history-new-bar,.im-page_classic.im-page .im-page--header::before,.im-page_classic.im-page .im-page--dialogs,GamesCatalogNav,.audio_page_layout .audio_search_wrapper,.GamesCatalogHalfBlock .GamesCatalogCardsBlock__header{background:transparent!important} .im-page_classic.im-page .im-page--chat-body-wrap-inner,.im-page.im-page_classic.im-page_group .im-group-online .im-group-online--inner,.im-page_classic.im-page .im-page--dcontent,.PageBlock,.MarketplaceCatalogBlockListFiltersLayout__block,.MarketplaceCatalogHeaderMenu,.GamesCatalogProfileBlock__header,.GamesCatalogProfileBlock__content,.GamesCatalogSearchMainContent,.page_block_header,.ui_tabs_new.ui_tabs_header,.CatalogBlock--divided,.ui_search.ui_search_old,.im-page .im-page--dialogs-footer,.im-page .im-page--header, .im-page .im-page--search-header,.redesigned-group-info,.ProfileHeader, .page_block, .vkuiGroup--mode-card,.wall_module .reply_box{background: rgba(25, 25, 26, ${opacity})!important;}`;
     }
     const existingStyle = document.getElementById('custom-opacity-style');
     if (existingStyle) {
@@ -662,44 +694,42 @@ function addOpacity(sliderValueCount) {
     document.head.appendChild(styleElement);
     /*console.log("Opacity changed to " + opacity);*/
 }
-//анимация стикеров(не работает)
-function stopStickerAnimations()
-{
-    let styleElement = document.getElementById("stickerAnimations");
+//Индикатор реконнекта
+function removeReconnectIndicator() {
+    let styleElement = document.getElementById("reconnectIndicator");
     if (!styleElement) {
         styleElement = document.createElement("style");
-        styleElement.id = "stickerAnimations";
+        styleElement.id = "reconnectIndicator";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = ".top_profile_name {}";
+    styleElement.innerHTML = ".ConnectionIndicator,.MEApp__reconnecting {	display: none !important;}";
 }
 
-function rebootStickerAnimations()
-{
-    const customStyle = document.getElementById("stickerAnimations");
+function backReconnectIndicator() {
+    const customStyle = document.getElementById("reconnectIndicator");
     if (customStyle) {
         customStyle.remove();
     }
 }
 // Функция для добавления стилей
-function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked, hideButtonChecked) {
+function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked, hideButtonChecked, newDesignChecked) {
     if (isOldAccentChecked) {
-        addStyle();
+        hideNFT_Avatars();
     } else {
-        removeStyle();
+        backNFT_Avatars();
     }
     if (sliderValueCount) {
         addOpacity(sliderValueCount);
     }
     if (isMsgReactionsChecked) {
-        addStyle1();
+        removeMessageReactions();
     } else {
-        removeStyle1();
+        backMessageReactions();
     }
     if (isPostReactionsChecked) {
-        addStyle2();
+        removePostReactions();
     } else {
-        removeStyle2();
+        backPostReactions();
     }
     if (isNameAva) {
         const customStyle = document.getElementById("removeNA");
@@ -711,15 +741,15 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
         removeNameAva();
     }
     if (isSecretChecked) {
-        addStyle3();
+        secretFunctionsEnabled();
     } else {
-        removeStyle3();
+        secretFunctionsDisabled();
     }
     /*console.log("isHiderChecked now " + isHiderChecked)*/
     if (isHiderChecked) {
-        addStyle4();
+        addBlur();
     } else {
-        removeStyle4();
+        removeBlur();
     }
     if (cAccentValue != "#FFFFFF" && cAccentValue != "#ffffff" && cAccentValue != undefined) {
         addCAccent(cAccentValue);
@@ -760,10 +790,10 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
         altSBremove();
     }
     if (muteCallsChecked) {
-		muteCallsBool = true;
+        muteCallsBool = true;
         applyStyleAndMuteSpecificAudio();
     } else {
-		muteCallsBool = false;
+        muteCallsBool = false;
         removeStyleAndUnmuteSpecificAudio();
     }
     if (cHotBarValue) {
@@ -771,25 +801,31 @@ function applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsC
     }
     if (addStickerChecked) {
         //runStickerAdder();
-		stopStickerAnimations();
+        removeReconnectIndicator();
     } else {
-		rebootStickerAnimations();
-	}
+        backReconnectIndicator();
+    }
     if (cameraPhotoChecked) {
         cameraPhotoRet();
     } else {
         cameraPhotoDel();
     }
-	
-	if (hideButtonChecked) {
-		backEnButton();
-	} else {
-		hideEnButton();
+    if (hideButtonChecked) {
+        backEnButton();
+    } else {
+        hideEnButton();
+    }
+	if (newDesignChecked) {
+		console.log("New design checked!");
+		newDesignBool = true;
+	}
+	else {
+		newDesignBool = false;
 	}
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
-    chrome.storage.local.get(["hideButtonState","cameraPhotoState", "addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
+    chrome.storage.local.get(["newDesignState","hideButtonState", "cameraPhotoState", "addstickerState", "customHotbar", "muteCallsState", "altSBState", "recentGroupsState", "emojiStatusState", "sliderValue", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont"], function(items) {
         const isOldAccentChecked = items.checkboxState;
         const isMsgReactionsChecked = items.checkboxState1;
         const isPostReactionsChecked = items.postReactionsState;
@@ -811,14 +847,15 @@ function applySavedStyles() {
         const addStickerChecked = items.addstickerState;
         const cameraPhotoChecked = items.cameraPhotoState;
         const hideButtonChecked = items.hideButtonState;
-        applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked, hideButtonChecked);
+		const newDesignChecked = items.newDesignState;
+        applyStyles(isOldAccentChecked, isMsgReactionsChecked, isPostReactionsChecked, isSecretChecked, isHiderChecked, cAccentValue, cColorValue, cTextValue, cLogoValue, cBgValue, cFontValue, isNameAva, sliderValueCount, emojiStatusChecked, recentGroupsChecked, altSBChecked, muteCallsChecked, cHotBarValue, addStickerChecked, cameraPhotoChecked, hideButtonChecked, newDesignChecked);
     });
 }
 // При загрузке страницы применяем сохраненные стили
 document.addEventListener('DOMContentLoaded', applySavedStyles);
 // Обработчик сообщений от background.js
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups" || message.type === "toggleAltSB" || message.type === "toggleMuteStatus" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue" || message.type === "customHotbar" || message.type === "addSticker" || message.type === "toggleCameraPhoto" || message.type === "toggleHideButton") {
+    if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups" || message.type === "toggleAltSB" || message.type === "toggleMuteStatus" || message.type === "customAccent" || message.type === "colorPicker" || message.type === "colorPickerText" || message.type === "customLogo" || message.type === "customBg" || message.type === "customFont" || message.type === "sliderValue" || message.type === "customHotbar" || message.type === "addSticker" || message.type === "toggleCameraPhoto" || message.type === "toggleHideButton" || message.type === "toggleNewDesign") {
         applySavedStyles();
     }
     if (message.type === "checkId") {
@@ -845,7 +882,7 @@ function checkId() {
         console.error('Ошибка:', error);
     });
 }
-//Добавление стикера во вложения ВК
+//Добавление стикера во вложения ВК(старый мессенджер, в новом не работает)
 function runStickerAdder() {
     const existingStickerLink = document.querySelector('.ms_item_sticker');
     if (existingStickerLink) {
@@ -952,7 +989,7 @@ function runStickerAdder() {
         document.body.appendChild(overlay);
     });
 }
-
+//Функция копирования в буфер обмена
 function copyToClipboard(text) {
     const textarea = document.createElement('textarea');
     textarea.value = text;
@@ -961,7 +998,7 @@ function copyToClipboard(text) {
     document.execCommand('copy');
     document.body.removeChild(textarea);
 }
-
+//Загрузка скриптов из доп. функций - ниже тоже
 function loadScripts() {
     if (document.querySelector("#NNVAFTTSLJUUDLPQ")) {
         console.log('Элемент NNVAFTTSLJUUDLPQ найден на странице. Нет смысла запускать скрипты');
