@@ -366,7 +366,13 @@ function applyStyleAndMuteSpecificAudio() {
         document.head.appendChild(styleElement);
     }
     styleElement.innerHTML = '.AttachFinishedCall{pointer-events:none!important;}button[aria-label="Звонки"],.CallModal.CallModal--isIncoming{display:none;} #l_ca,button[aria-label="Позвонить"],.im-page--header-call,.im-page--dialogs-call-wrap,div.BaseModal.CallModal.CallModal--withAnimation {display:none!important;})';
-    document.addEventListener('DOMContentLoaded', function() {
+    try {
+		document.getElementById("calls").remove(); 
+	}
+	catch {
+		
+	}
+	document.addEventListener('DOMContentLoaded', function() {
         const targetSrc = '/mp3/call_incoming.mp3';
         const targetSrcEnd = '/mp3/call_end.mp3';
         const audioElements = document.querySelectorAll('#calls audio');
@@ -872,7 +878,7 @@ function checkId() {
     }
     var objectId;
     /*console.log("Username:" + username);*/
-    const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.C74aRB8WILuow7F9o4WDEPhwNu8GAKqwWIh1z55bOAZQ5NHHwq7yMxetMv9VTbI5xKpAedW2P5X_GO5b9KqUEW0Dl30wsJw4pqH3Jj6FjjkIe9tPfsL-CgAHoboQQRfKe70KOQ9xDJBHU-z29QMRHf3-AgQxvCoBnEsd0pu2EGK_VPFR1vzb_O28fv46x_5o2eJpjN66iNLxMtja0szSnw&request_id=7`;
+    const url1 = `https://vkenhancer-api.vercel.app/getId?username=${username}`;
     fetch(url1).then(response => response.json()).then(data => {
         objectId = data.response.object_id;
         chrome.runtime.sendMessage({
@@ -1310,7 +1316,7 @@ function buttonrun() {
             username = username.split("?")[0];
         }
         var objectId;
-        const url1 = `https://api.vk.com/method/utils.resolveScreenName?api_id=6798836&method=utils.resolveScreenName&format=json&v=5.131&screen_name=${username}&lang=ru&access_token=vk1.a.C74aRB8WILuow7F9o4WDEPhwNu8GAKqwWIh1z55bOAZQ5NHHwq7yMxetMv9VTbI5xKpAedW2P5X_GO5b9KqUEW0Dl30wsJw4pqH3Jj6FjjkIe9tPfsL-CgAHoboQQRfKe70KOQ9xDJBHU-z29QMRHf3-AgQxvCoBnEsd0pu2EGK_VPFR1vzb_O28fv46x_5o2eJpjN66iNLxMtja0szSnw&request_id=7`;
+        const url1 = `https://vkenhancer-api.vercel.app/getId?username=${username}`;
         fetch(url1).then(response => response.json()).then(data => {
             objectId = data.response.object_id;
             console.log("ID fetched succesfully: " + objectId);

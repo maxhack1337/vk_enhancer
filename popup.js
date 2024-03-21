@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-const url1 = 'https://nimble-wisp-54a226.netlify.app/';
+const url1 = 'https://vkenhancer-api.vercel.app/getLatestRelease';
 fetch(url1)
     .then(response => response.text())
     .then(html => {
@@ -159,7 +159,7 @@ fetch(url1)
 	styleElement.innerHTML = "#version::after{content:'Версия "+version+" Release'}";
 	document.head.appendChild(styleElement);
 	
-		if (version != "2.9.0")
+		if (version != "2.9.1")
 		{
 			var dialog = document.getElementById('updateAvailable');
 			dialog.style.display = 'block';
@@ -235,7 +235,7 @@ fetch(url1)
   });
 
 document.querySelector('#updatenow').addEventListener('click', function() {
-  chrome.tabs.create({ url: 'https://github.com/maxhack1337/vk_enhancer' });
+  chrome.tabs.create({ url: 'https://vkenhancer-api.vercel.app/downloadLatestRelease' });
 });
 
 document.addEventListener('DOMContentLoaded', function() {
