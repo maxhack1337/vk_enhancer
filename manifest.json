@@ -1,0 +1,84 @@
+{
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Настройки VK Enhancer"
+  },
+  "name": "VKEnhancer",
+  "version": "3.0.0",
+  "icons": {
+    "128": "assets/icon128.png",
+    "16": "assets/icon16.png",
+    "24": "assets/icon24.png",
+    "300": "assets/icon300.png",
+    "32": "assets/icon32.png",
+    "36": "assets/icon36.png",
+    "48": "assets/icon48.png"
+  },
+  "description": "Enjoy your experience with VK Enhancer!",
+  "host_permissions": [
+    "*://vk.com/*"
+  ],
+  "permissions": [
+    "webRequest",
+    "browsingData",
+    "tabs",
+    "unlimitedStorage",
+    "storage",
+    "declarativeNetRequestWithHostAccess",
+    "scripting",
+    "downloads",
+    "alarms",
+    "activeTab",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "management",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "js/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://vk.com/*"
+      ],
+      "js": [
+        "js/content_script.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ads_request",
+        "enabled": true,
+        "path": "ads_rules/ads.json"
+      }
+    ]
+  },
+  "commands": {
+    "Ctrl+M": {
+      "suggested_key": {
+        "default": "Ctrl+M",
+        "mac": "Command+M"
+      },
+      "description": "Ctrl+M."
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "js/main.js",
+        "js/modules/arrive.js",
+        "js/modules/hls.js",
+	"js/vkm_reforged_in_vkcom.js",
+	"js/legacy_in_vkcom.js"
+      ],
+      "matches": [
+        "*://vk.com/*"
+      ]
+    }
+  ]
+}

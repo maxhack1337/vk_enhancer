@@ -1,0 +1,361 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "stats.vk-portal.net",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "ping"
+            ]
+        }
+    },
+    {
+        "id": 2,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "ad.mail.ru",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "script",
+                "xmlhttprequest"
+            ]
+        }
+    },
+    {
+        "id": 3,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "vk.*/al_video.php?act=ads_stat",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "xmlhttprequest"
+            ]
+        }
+    },
+    {
+        "id": 4,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "vk.*/css/al/ads_light.",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "stylesheet"
+            ]
+        }
+    },
+    {
+        "id": 5,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "vk.*/dist/web/ads_light.",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "script"
+            ]
+        }
+    },
+    {
+        "id": 6,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "vk.*/dist/web/performance_observers.",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "script"
+            ]
+        }
+    },
+    {
+        "id": 7,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "vk.*/dist/web/jobs_devtools_notification.",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "script"
+            ]
+        }
+    },
+    {
+        "id": 8,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*.ms.vk.*",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "xmlhttprequest"
+            ]
+        }
+    },
+    {
+        "id": 9,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "tns-counter.ru",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "media",
+                "image"
+            ]
+        }
+    },
+    {
+        "id": 10,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "mail.ru/k?",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "media",
+                "image"
+            ]
+        }
+    },
+    {
+        "id": 11,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "top-fwz1.mail.ru",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "media",
+                "image",
+                "script"
+            ]
+        }
+    },
+    {
+        "id": 12,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "^(mc|an).yandex.ru$",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "media",
+                "image",
+                "script"
+            ]
+        }
+    },
+    {
+        "id": 13,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "vk.*/ads_rotate",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "xmlhttprequest",
+                "media",
+                "image",
+                "script"
+            ]
+        }
+    },
+    {
+        "id": 14,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "https://vk.*/rtrg?",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "xmlhttprequest",
+                "media",
+                "image",
+                "script"
+            ]
+        }
+    },
+    {
+        "id": 15,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "vk.*/al_feed.php?ads_section",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "xmlhttprequest",
+                "media",
+                "image",
+                "script"
+            ]
+        }
+    },
+    {
+        "id": 16,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "vk.*/upload_fails.php",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "xmlhttprequest"
+            ]
+        }
+    },
+    {
+        "id": 17,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "vk.*/errors.php",
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru",
+                "m.vk.com",
+                "m.vk.ru"
+            ],
+            "resourceTypes": [
+                "xmlhttprequest"
+            ]
+        }
+    },
+    {
+        "action": {
+            "requestHeaders": [
+                {
+                    "header": "User-Agent",
+                    "operation": "set",
+                    "value": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+                }
+            ],
+            "type": "modifyHeaders"
+        },
+        "condition": {
+            "initiatorDomains": [
+                "vk.com",
+                "vk.ru"
+            ],
+            "urlFilter": "/al_login.php?*classic_flow=1"
+        },
+        "id": 999
+    }
+]
