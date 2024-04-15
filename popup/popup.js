@@ -331,9 +331,9 @@ fetch(url1).then(response => response.text()).then(html => {
     var ver1 = document.getElementById('version');
     const styleElement = document.createElement("style");
     styleElement.id = "version";
-    styleElement.innerHTML = "#version::after{content:'Версия " + version + " Hotfix'}";
+    styleElement.innerHTML = "#version::after{content:'Версия " + version + " Release'}";
     document.head.appendChild(styleElement);
-    if (version != "3.1.1") {
+    if (version != "3.1.2") {
         var dialog = document.getElementById('updateAvailable');
         dialog.style.display = 'block';
         const styleElement = document.createElement("style");
