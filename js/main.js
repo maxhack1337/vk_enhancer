@@ -231,7 +231,7 @@ document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
   changeDesign.classList.add("ActionsMenuAction");
   changeDesign.classList.add("ActionsMenuAction--secondary");
   changeDesign.classList.add("ActionsMenuAction--size-regular");
-  const isCentralDesign = localStorage.getItem("isCentralDesign") || false;
+  const isCentralDesign = localStorage.getItem("isCentralDesign") || "false";
   const newInterfaceSVG =
     '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"><path fill-rule="evenodd" d="M4.01 2.53C4.66 2.18 5.31 2 7.08 2h5.84c1.77 0 2.42.18 3.07.53.64.34 1.14.84 1.48 1.48.35.65.53 1.3.53 3.07v5.84c0 1.77-.18 2.42-.53 3.07A3.57 3.57 0 0116 17.47c-.65.35-1.3.53-3.07.53H7.08c-1.77 0-2.42-.18-3.07-.53A3.57 3.57 0 012.53 16c-.35-.65-.53-1.3-.53-3.07V7.08c0-1.77.18-2.42.53-3.07.34-.64.84-1.14 1.48-1.48zm11.27 13.62c-.34.18-.7.35-2.36.35H9v-13h3.92c1.66 0 2.02.17 2.36.35.38.2.67.5.87.87.18.34.35.7.35 2.36v5.84c0 1.66-.17 2.02-.35 2.36-.2.38-.5.67-.87.87zM7.08 3.5c-1.66 0-2.02.17-2.36.35-.38.2-.67.5-.87.87-.18.34-.35.7-.35 2.36v5.84c0 1.66.17 2.02.35 2.36.2.38.5.67.87.87.34.18.7.35 2.36.35h.42v-13h-.42z"/></svg>';
   const classicInterfaceSVG =
@@ -242,7 +242,12 @@ document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
     isCentralDesign === "true" ? newInterfaceSVG : classicInterfaceSVG;
   changeDesign.innerHTML = `<i class="ActionsMenuAction__icon">${designSVG}</i><span class="ActionsMenuAction__title">${designText}</span>`;
   burgerim.appendChild(changeDesign);
-  burgerim.addEventListener("click", function () {
+  if(isCentralDesign == "true") {
+  document.querySelectorAll('.ActionsMenuAction__title')[3].addEventListener("click", function () {
+    window.location.href = '/im/settings';
+  });
+  }
+  changeDesign.addEventListener("click", function () {
     const currentValue = localStorage.getItem("isCentralDesign") === "true";
     localStorage.setItem("isCentralDesign", currentValue ? "false" : "true");
     location.reload();
@@ -269,7 +274,7 @@ document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
 
 deferredCallback(
   () => {
-    if (JSON.parse(localStorage.getItem("isCentralDesign")) && JSON.parse(localStorage.getItem("isVKMReforgedDesign"))) {
+    if (JSON.parse(localStorage.getItem("isCentralDesign")) && JSON.parse(localStorage.getItem("isVKMReforgedDesign")) && !window.location.href.includes("vk.com/im/settings")) {
       //console.log("Classical design activated");
       const cssLink = document.createElement("link");
       cssLink.rel = "stylesheet";
@@ -431,6 +436,7 @@ deferredCallback(
         "#spa_root > .vkui__root",
         { existing: false, fireOnAttributesModification: true },
         async function (e) {
+		  
           const vkuiRoot = e;
 
           const currentURL = window.location.href;
@@ -500,7 +506,7 @@ deferredCallback(
           nestedDiv.appendChild(section);
 
           // Добавляем созданный элемент в DOM
-          vkuiRoot.appendChild(container);
+		  vkuiRoot.appendChild(container);
 
           let simplebarContentDiv =
             document.querySelector(".simplebar-content");
@@ -564,9 +570,12 @@ deferredCallback(
               closeButtons();
             }
           }
-        }
+	}
       );
     }
+	else {
+		localStorage.setItem("isCentralDesign", "false");
+	}
   },
   { variable: "urls" }
 );
@@ -575,7 +584,7 @@ document.arrive(
   ".ConvoComposer__inputWrapper",
   { existing: true },
   function (e) {
-	console.log(globalThis.HotBarAppearVAL);
+	//console.log(globalThis.HotBarAppearVAL);
     const container = document.querySelector(".ConvoMain__composer");
     if (container && document.getElementById("vkenhancerEmojiHotbarID")) {
       const emojiHotbar = document.getElementById("vkenhancerEmojiHotbarID");
@@ -635,6 +644,7 @@ function newDesign() {
       const e = document.querySelector(".body_im #wrap3");
       if (e) for (const t of e.childNodes) e.removeChild(t);
 	  if (new URL(window.location.href).searchParams.get("sel") || new URL(window.location.href).searchParams.get("peers")) {
+		console.log(new URL(window.location.href).searchParams);
         const t = { ...window.nav.objLoc };
 		window.location.href = '/im';
       }
