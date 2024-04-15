@@ -378,11 +378,13 @@ deferredCallback(
               addConvoItem(ConvoTitle__title, ConvoHref, true, unread, muted)
             );
             closeButtons();
+			checkPickerOfIm();
           } else {
             simplebarContentDiv.appendChild(
               addConvoItem(ConvoTitle__title, ConvoHref, false, unread, muted)
             );
             closeButtons();
+			checkPickerOfIm();
           }
         }
         deferredCallback(
@@ -563,11 +565,13 @@ deferredCallback(
                 addConvoItem(item.name, item.href, true, unread, muted)
               );
               closeButtons();
+			  checkPickerOfIm();
             } else {
               simplebarContentDiv.appendChild(
                 addConvoItem(item.name, item.href, false, unread, muted)
               );
               closeButtons();
+			  checkPickerOfIm();
             }
           }
 	}
@@ -632,10 +636,37 @@ deferredCallback(
 			customStyle.remove();
 		}
 	  }
+		checkPickerOfIm();
+
     });
   },
   { variable: "nav" }
 );
+
+function checkPickerOfIm() {
+		const currentPath = window.location.href;
+		const links = document.querySelectorAll('a.ARightRoot5');
+		let styleElement = fromId("aHoverRightRoot");
+		if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = "aHoverRightRoot";
+			document.head.appendChild(styleElement);
+			}
+			styleElement.innerHTML = "a.ARightRoot1:hover{background-color:var(--vkui--vkontakte_background_hover_alpha)!important;}";
+
+		links.forEach(link => {
+			const href = link.getAttribute('href');
+			if (currentPath.includes(href)) {
+				link.style.backgroundColor = 'var(--vkui--vkontakte_background_hover_alpha)';
+			}
+			else {
+				link.style.backgroundColor = 'transparent';
+			}
+			if (currentPath != 'https://vk.com/im') {
+				links[0].style.backgroundColor = 'transparent';
+			}
+		});	
+}
 
 function newDesign() {
   return new Promise((resolve, reject) => {
