@@ -243,7 +243,7 @@ document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
   changeDesign.innerHTML = `<i class="ActionsMenuAction__icon">${designSVG}</i><span class="ActionsMenuAction__title">${designText}</span>`;
   burgerim.appendChild(changeDesign);
   if(isCentralDesign == "true") {
-  document.querySelectorAll('.ActionsMenuAction__title')[3].addEventListener("click", function () {
+  document.querySelector('.ActionsMenuAction:has(>i>svg.vkuiIcon--gear_outline_20)').addEventListener("click", function () {
     window.location.href = '/im/settings';
   });
   }
