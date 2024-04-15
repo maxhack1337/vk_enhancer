@@ -38,6 +38,8 @@ var cameraphoto = document.getElementById('cameraphoto');
 var hidebutton = document.getElementById('hidebutton');
 var newdesign = document.getElementById('newdesign');
 var integrationmedia = document.getElementById('integrationmedia');
+var nechitalka = document.getElementById('nechitalka');
+var nepisalka = document.getElementById('nepisalka');
 var tab1 = document.getElementById('tab1');
 var tab2 = document.getElementById('tab2');
 var tab3 = document.getElementById('tab3');
@@ -110,7 +112,7 @@ function defaultTab2() {
         styleElement.id = "tabs2";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = '#tab2,#tab2>div>.vkuiTabbarItem__icon{color:var(--vkenhancer--chosen_tab)!important}#MediaViewer,#NewMessenger,#msgR,#ReconnectInd{display:flex!important;}[aria-hotbar="true"]{display:block!important}';
+    styleElement.innerHTML = '#tab2,#tab2>div>.vkuiTabbarItem__icon{color:var(--vkenhancer--chosen_tab)!important}#Chitalka,#Pisalka,#MediaViewer,#NewMessenger,#msgR,#ReconnectInd{display:flex!important;}[aria-hotbar="true"]{display:block!important}';
     chrome.storage.local.set({
         defaultTab: "2",
     });
@@ -170,6 +172,40 @@ tab3.addEventListener('click', (event) => {
 });
 tab4.addEventListener('click', (event) => {
     defaultTab4();
+});
+
+nepisalka.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({
+        nepisalkaState: checked
+    });
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, {
+            type: "toggleNepisalka",
+            isChecked: checked
+        });
+    });
+});
+
+nechitalka.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({
+        nechitalkaState: checked
+    });
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, {
+            type: "toggleNechitalka",
+            isChecked: checked
+        });
+    });
 });
 
 integrationmedia.addEventListener('change', (event) => {
@@ -297,7 +333,7 @@ fetch(url1).then(response => response.text()).then(html => {
     styleElement.id = "version";
     styleElement.innerHTML = "#version::after{content:'Версия " + version + " Release'}";
     document.head.appendChild(styleElement);
-    if (version != "3.0.0") {
+    if (version != "3.1.0") {
         var dialog = document.getElementById('updateAvailable');
         dialog.style.display = 'block';
         const styleElement = document.createElement("style");
@@ -914,7 +950,7 @@ addSticker.addEventListener('change', (event) => {
 });
 document.addEventListener('DOMContentLoaded', () => {
     // Получение состояния из Local Storage
-    chrome.storage.local.get(["integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
+    chrome.storage.local.get(["nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
         accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
         recentgroups.checked = items.recentGroupsState;
@@ -925,6 +961,8 @@ document.addEventListener('DOMContentLoaded', () => {
         postReactionsC.checked = items.postReactionsState;
         hiderC.checked = items.hiderState;
 		integrationmedia.checked = items.integrationMediaState;
+		nechitalka.checked = items.nechitalkaState;
+		nepisalka.checked = items.nepisalkaState;
         if (typeof items.customAccent === "undefined") {
             customAccent.value = "#FFFFFF";
             chrome.storage.local.set({
@@ -982,11 +1020,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const activeTabId = tabs[0].id;
 			chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleNewDesign",
-                isChecked: items.checkboxState
+                isChecked: items.newDesignState
             });
 			chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleIntegrationMedia",
-                isChecked: items.checkboxState
+                isChecked: items.integrationMediaState
+            });
+			chrome.tabs.sendMessage(activeTabId, {
+                type: "toggleNepisalka",
+                isChecked: items.nepisalkaState
+            });
+			chrome.tabs.sendMessage(activeTabId, {
+                type: "toggleNechitalka",
+                isChecked: items.nechitalkaState
             });
             chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleOldAccent",
