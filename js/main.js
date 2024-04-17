@@ -55,7 +55,6 @@ const adsSelector = [
   ".page_block.apps_feedRightAppsBlock.apps_feedRightAppsBlock_single_app--",
   ".ads_ad_box.ver.repeat_ver.size_site.adaptive_ad",
   ".profile_rate_warning",
-  ".Post--copyright",
   ".post_marked_as_ads",
   ".post[data-ad-block-uid]",
   ".apps_feedRightAppsBlock__row",
@@ -72,6 +71,7 @@ const createTextNode = document.createTextNode.bind(document);
 const fromId = document.getElementById.bind(document);
 
 let intMedia = false;
+var pollResultsValue = false;
 var nechitalkaValue = false;
 var nepisalkaValue = false;
 let ajax_replaced = null;
@@ -150,6 +150,11 @@ window.addEventListener("message", async (event) => {
 		//console.log("Неписалка " + nepisalkaValue);
 		break;
 	}
+	case "pollResults": {
+		console.log("кейс");
+		localStorage.setItem("pollResultsValue", event.data.value);
+		break;
+	}
     case "vkNewDesign": {
       // Замена функции ajax.post
       deferredCallback(
@@ -222,7 +227,134 @@ window.addEventListener("message", async (event) => {
 document.arrive(adsSelector, { existing: true }, function (e) {
   e.remove();
 });
+async function VKEnhancerMessageBox(title, content, buttonCont, buttonCont2, color, color2, callback) {
+    var i = new MessageBox;
+    i.addButton(buttonCont,function() {
+        if (callback) {
+            callback();
+        }
+		i.hide();
+    }, color);
+	i.addButton(buttonCont2,!1, color2);
+    i.setOptions({title: title, bodyStyle: "overflow: hidden; text-overflow: ellipsis;"});
+    i.content(content);
+    i.show();
+}
+///ОТПРАВКА АУДИО КАК ГОЛОСОВОГО///
+document.arrive("#spa_root > .vkui__root", { existing: true }, function (e) {
+const audioFileInput = document.getElementById('audioFileInput');
+var inputWrap = document.createElement("a");
+inputWrap.innerHTML = '<input style="display:none;" type="file" id="audioFileInput" accept="audio/mp3,audio/ogg,audio/wav">';
+if(!audioFileInput) {
+	e.appendChild(inputWrap);
+}
+});
+document.arrive(".MEPopper > div > .ActionsMenu", { existing: true }, function (e) {
+let styleElement = fromId("MEPopperStyle");
+	if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = "MEPopperStyle";
+			document.head.appendChild(styleElement);
+	}
+styleElement.innerHTML = '.MEPopper{top:517px!important;}';
+var clmno = document.createElement("a");
+clmno.innerHTML = '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular AudioMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#voice_outline_24" style="fill: currentcolor;"></use></svg></i><span class="ActionsMenuAction__title">Голосовое</span></button>';
+var newpanel = document.querySelector(".MEPopper > div > .ActionsMenu");
+var setElement = document.querySelector('.AudioMenuPopper');
+if (!setElement) {
+    newpanel.appendChild(clmno);
+}
+setElement = document.querySelector('.AudioMenuPopper');
+var eventListenerSet = false;
+if (!eventListenerSet) {
+setElement.addEventListener('click', function() {
+    var contAudio = 'Прежде чем загружать аудиосообщение, убедитесь в том, что оно записано не в стерео, а в моно. Иначе оно не будет воспроизводиться в приложении на смартфонах';
+	VKEnhancerMessageBox('Внимание!',contAudio,'Загрузить','Отмена','yes','no', function() {
+        audioFileInput.click();
+    });
+});
+  audioFileInput.addEventListener('change', function() {
+    if (audioFileInput.files.length > 0) {
+        handleUpload();
+    }
+  });
+  eventListenerSet = true;
+}
+async function handleUpload() {
+  const audioFileInput = document.getElementById('audioFileInput');
+  const file = audioFileInput.files[0];
+  await sendAudioMessage(file);
+}
+async function sendAudioMessage (fileNameOutput) {
+  /** Получаем URL для загрузки */
+  const uploadUrl1 = await vkApi.api("docs.getMessagesUploadServer",{peer_id: vk.id,type:"audio_message"})
+  const uploadUrl = uploadUrl1['upload_url'];
+	
+  /** Загружаем файл */
+  let file =  await uploadFile(uploadUrl, fileNameOutput);
+  /** Сохраняем */
+  const data = JSON.parse(file);
+  console.log(data['file']);
+  let doc = await vkApi.api("docs.save",{file: data['file']})
+  doc = doc.audio_message;
 
+  /** Отправляем */
+  var peerId = new URL(window.location.href).pathname.split("/").at(-1);
+  await vkApi.api("messages.send", {
+	peer_id: peerId,
+	attachment: `doc${doc.owner_id}_${doc.id}_${doc.access_key}`,
+	random_id: Math.floor(Math.random() * 2147483647)
+  })
+}
+
+async function uploadFile(uploadUrl, fileNameOutput) {
+    const formData = new FormData();
+    formData.append('file', fileNameOutput);
+    const xhr = new XMLHttpRequest();
+    return new Promise((resolve, reject) => {
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                resolve(xhr.responseText);
+            } else {
+                reject(new Error('Upload failed. Status: ' + xhr.status));
+            }
+        };
+
+        xhr.onerror = function() {
+            reject(new Error('Upload failed. Network error'));
+        };
+
+        xhr.open('POST', uploadUrl);
+        xhr.send(formData);
+    });
+}
+});
+
+///КОНЕЦ ОТПРАВКИ АУДИО КАК ГОЛОСОВОГО///
+///РЕЗУЛЬТАТЫ ОПРОСА БЕЗ ГОЛОСОВАНИЯ///
+if (localStorage.getItem("pollResultsValue") == 'true') {
+document.arrive("[class^='PollPrimaryAttachment-module__voting']", { existing: true }, function (e) {
+   let styleElement = fromId("PollResultsShow");
+		if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = "PollResultsShow";
+			document.head.appendChild(styleElement);
+			}
+			styleElement.innerHTML = '.VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionVotes"] { opacity: .4; } .VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionRight"] { opacity: 1; transform: translateX(0); } .VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionCheckboxIcon"] { opacity: 0; } .VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionFill"] { opacity:.06 } [class*="PollOptions-module__votingOptionsDark"].VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionFill"] { opacity:.12 } ';
+	var polls = document.querySelectorAll('[class^="PollOptions-module__votingOptions"]');
+	for (var poll of polls) {
+		poll.classList.add("VKEnhancer-module__votingOptionsVoted");
+	}
+	var percentageElements = document.querySelectorAll('[class^="PollOptions-module__votingOptionRight"]');
+    percentageElements.forEach(function(element) {
+    var percentage = parseFloat(element.textContent.replace('%', ''));
+    var parentElement = element.closest('[class^="PollOptions-module__votingOptionWrapper"]');
+    var fillElement = parentElement.querySelector('[class^="PollOptions-module__votingOptionFill"]');
+    fillElement.style.width = percentage + '%';
+  });
+});
+}
+///КОНЕЦ РЕЗУЛЬТАТОВ ОПРОСА БЕЗ ГОЛОСОВАНИЯ///
 document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
   var burgerim = document.querySelector(
     ".BurgerMenu__actionsMenu > div > div > div"
@@ -255,7 +387,7 @@ document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
 });
 //console.log(localStorage.getItem("isCentralDesign"));
 ///НАЧАЛО ЦЕНТРАЛЬНОГО ДИЗАЙНА///
-
+		
 	  if(!im.test(window.location.href)) {
 		let styleElement = fromId("rightBarClassicRemove");
 		if (!styleElement) {
@@ -271,6 +403,7 @@ document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
 			customStyle.remove();
 		}
 	  }
+    
 
 deferredCallback(
   () => {
@@ -374,9 +507,14 @@ deferredCallback(
             var sectionElement = document.querySelector(
               "section.vkenhancer--right-section"
             );
-            sectionElement.appendChild(
-              addConvoItem(ConvoTitle__title, ConvoHref, true, unread, muted)
-            );
+			try {
+				sectionElement.appendChild(
+					addConvoItem(ConvoTitle__title, ConvoHref, true, unread, muted)
+				);
+			}
+			catch(error) {
+					location.reload;
+			}
             closeButtons();
 			checkPickerOfIm();
           } else {
@@ -438,6 +576,17 @@ deferredCallback(
         "#spa_root > .vkui__root",
         { existing: false, fireOnAttributesModification: true },
         async function (e) {
+				var currentPageURL12 = window.location.href;
+
+    // Проверяем, содержит ли текущий адрес страницы '/convo/'
+    if (currentPageURL12.includes("/convo/")) {
+        let styleElement = fromId("MEApp__mainPanel1234");
+		if (!styleElement) {
+			styleElement = create("style", {}, { id: "MEApp__mainPanel1234" });
+			document.head.appendChild(styleElement);
+		}
+		styleElement.innerHTML =     ".MEApp__mainPanel {display:none;}";
+    }
 		  
           const vkuiRoot = e;
 
@@ -636,6 +785,23 @@ deferredCallback(
 			customStyle.remove();
 		}
 	  }
+	var currentPageURL = window.location.href;
+
+    // Проверяем, содержит ли текущий адрес страницы '/convo/'
+    if (currentPageURL.includes("/convo/") && localStorage.getItem("isCentralDesign") == "true") {
+        let styleElement = fromId("MEApp__mainPanel1234");
+		if (!styleElement) {
+			styleElement = create("style", {}, { id: "MEApp__mainPanel1234" });
+			document.head.appendChild(styleElement);
+		}
+		styleElement.innerHTML =     ".MEApp__mainPanel {display:none;}";
+    }
+	else {
+		  const customStyle = fromId("MEApp__mainPanel1234");
+			if (customStyle) {
+				customStyle.remove();
+			}
+	}
 		checkPickerOfIm();
 
     });

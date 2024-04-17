@@ -613,7 +613,7 @@ function addBlur() {
     document.head.appendChild(styleElement);
   }
   styleElement.innerHTML =
-    ".BasicAvatar__img,.ConvoProfileName__longName,.ConvoProfileInformation__infoCellText,.spanPseudoText1,.bp_thumb,.bp_author,.wall_module .author_highlighted,.deep_active .replies .reply_image,.top_profile_name,.im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg {    filter: blur(10px) grayscale(1) !important;} .MEAvatar,.ConvoTitle__title,.ConvoMessageAuthor,.ConvoListItem__author {filter: blur(5px) grayscale(1)!important}";
+    ".ServiceMessage__link,.BasicAvatar__img,.ConvoProfileName__longName,.ConvoProfileInformation__infoCellText,.spanPseudoText1,.bp_thumb,.bp_author,.wall_module .author_highlighted,.deep_active .replies .reply_image,.top_profile_name,.im-mess-stack--lnk, ._im_ui_peers_list .ui_rmenu_item_label, ._im_page_peer_name, .nim-dialog--name, .im-page-pinned--name, .im-replied--author,.ConvoRecommendList__name,.nim-dialog .nim-dialog--text-preview, .nim-dialog .nim-dialog--preview,.ProfileSubscriptions__item,.ProfileFriends__item,#react_rootLeftMenuRoot > div > nav > ol > li:not(#l_pr):not(#l_nwsf):not(#l_msg):not(#l_ca):not(#l_fr):not(#l_gr):not(#l_ph):not(#l_aud):not(#l_vid):not(#l_svd):not(#l_ap):not(#l_stickers):not(#l_mk):not(#l_vkfest2023):not(#l_mini_apps):not(#l_fav):not(#l_doc):not(#l_apm):not(#l_vkp):not(#l_ads) {    filter: blur(5px) !important;}.nim-peer--photo-w img, .nim-peer img,.ImUserAvatar img,.TopNavBtn__profileImg {    filter: blur(10px) grayscale(1) !important;} .MEAvatar,.ConvoTitle__title,.ConvoMessageAuthor,.ConvoListItem__author {filter: blur(5px) grayscale(1)!important}";
 }
 
 function removeBlur() {
@@ -851,7 +851,8 @@ function applyStyles(
   newDesignChecked,
   integrationMediaChecked,
   nechitalkaChecked,
-  nepisalkaChecked
+  nepisalkaChecked,
+  pollResultsChecked
 ) {
   if (isOldAccentChecked) {
     hideNFT_Avatars();
@@ -1008,11 +1009,26 @@ function applyStyles(
       "*"
     );  
   }
+  if (pollResultsChecked) {
+	//console.log("Polls true");
+    window.postMessage(
+      { action: "pollResults", value: pollResultsChecked },
+      "*"
+    );  
+  }
+  else {
+	//console.log("Polls false");
+    window.postMessage(
+      { action: "pollResults", value: pollResultsChecked },
+      "*"
+    );    
+	}
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
   chrome.storage.local.get(
     [
+	  "pollResultsState",
 	  "nepisalkaState",
 	  "nechitalkaState",
       "integrationMediaState",
@@ -1065,6 +1081,7 @@ function applySavedStyles() {
       const integrationMediaChecked = items.integrationMediaState;
 	  const nechitalkaChecked = items.nechitalkaState;
 	  const nepisalkaChecked = items.nepisalkaState;
+	  const pollResultsChecked = items.pollResultsState;
       applyStyles(
         isOldAccentChecked,
         isMsgReactionsChecked,
@@ -1090,7 +1107,8 @@ function applySavedStyles() {
         newDesignChecked,
         integrationMediaChecked,
 		nechitalkaChecked,
-		nepisalkaChecked
+		nepisalkaChecked,
+		pollResultsChecked
       );
     }
   );
@@ -1124,7 +1142,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     message.type === "toggleNewDesign" ||
     message.type === "toggleIntegrationMedia" ||
 	message.type === "toggleNechitalka" ||
-	message.type === "toggleNepisalka"
+	message.type === "toggleNepisalka" ||
+	message.type === "togglePollResults"
   ) {
     applySavedStyles();
   }
