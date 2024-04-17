@@ -27,6 +27,7 @@
     display: none !important;
   }
   .MainRightRoot {
+	background:transparent!important;
     height: calc(100vh - var(--header-height, 0) - 30px);
     margin-top: var(--page-block-offset, 15px);
     overflow: hidden;
@@ -35,6 +36,9 @@
     top: var(--header-height, 0);
     width: var(--narrow-column-width, 345px);
 	z-index: 1;
+  }
+  .ConvoMain__rightPanelContainer {
+	background-color: var(--vkui--color_background)!important;  
   }
 
   .MainRightRoot:empty {
