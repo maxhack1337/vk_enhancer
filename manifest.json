@@ -4,8 +4,8 @@
     "default_popup": "popup/popup.html",
     "default_title": "Настройки VK Enhancer"
   },
-  "name": "VKEnhancer",
-  "version": "3.0.0",
+  "name": "VK Enhancer",
+  "version": "3.1.4",
   "icons": {
     "128": "assets/icon128.png",
     "16": "assets/icon16.png",
@@ -20,20 +20,14 @@
     "*://vk.com/*"
   ],
   "permissions": [
-    "webRequest",
     "browsingData",
     "tabs",
     "unlimitedStorage",
     "storage",
     "declarativeNetRequestWithHostAccess",
-    "scripting",
-    "downloads",
-    "alarms",
     "activeTab",
     "declarativeNetRequest",
-    "declarativeNetRequestFeedback",
-    "management",
-    "tabs"
+    "declarativeNetRequestFeedback"
   ],
   "background": {
     "service_worker": "js/service-worker.js"
@@ -44,6 +38,8 @@
         "*://vk.com/*"
       ],
       "js": [
+        "js/modules-start.js",
+        "js/helper.js",
         "js/content_script.js"
       ],
       "run_at": "document_start"
@@ -73,8 +69,9 @@
         "js/main.js",
         "js/modules/arrive.js",
         "js/modules/hls.js",
-	"js/vkm_reforged_in_vkcom.js",
-	"js/legacy_in_vkcom.js"
+        "js/vkm_reforged_in_vkcom.js",
+        "js/legacy_in_vkcom.js",
+	"css/im-page-open.css"
       ],
       "matches": [
         "*://vk.com/*"
