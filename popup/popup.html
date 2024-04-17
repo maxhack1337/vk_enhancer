@@ -2,6 +2,10 @@
 
 <head>
   <style>
+	.vkenhancerChooseLabel:hover {
+		background-color:var(--vkui--color_transparent--hover)!important;
+		border-radius:8px;
+	}
     .HeaderLinks_HeaderLinks {
       font-size: 18px;
       line-height: 26px;
@@ -290,6 +294,25 @@
       transition: transform 0.3s ease;
       transform-origin: 50% 25%;
     }
+	@media screen and (min-width: 1200px) {
+		#openInNewTab {
+			display: none;
+		}
+	}
+	#openInNewTab > button {
+      width: 32px;
+      scale: 0.9;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' xml:space='preserve' width='24px' height='24px' version='1.1' style='shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd' viewBox='0 0 24 24'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%3C!%5BCDATA%5B .fil0 %7Bfill:%232688EB%7D %5D%5D%3E%3C/style%3E%3C/defs%3E%3Cg id='Слой_x0020_1'%3E%3Cmetadata id='CorelCorpID_0Corel-Layer'/%3E%3Cg id='_2378111325744'%3E%3Crect class='fil0' x='0.65' y='3.95' width='2.16' height='19.37' rx='1.08' ry='1.11'/%3E%3Crect class='fil0' transform='matrix(2.02061E-14 0.936332 -0.563401 1.82077E-14 11.9651 3.94591)' width='2.3' height='20.07' rx='1.15' ry='1.15'/%3E%3Crect class='fil0' transform='matrix(3.48055E-14 0.937357 -0.966461 1.82632E-14 20.0573 21.1527)' width='2.3' height='20.07' rx='1.15' ry='1.15'/%3E%3Crect class='fil0' x='17.89' y='11.51' width='2.16' height='11.8' rx='1.08' ry='0.68'/%3E%3Crect class='fil0' transform='matrix(1.59872E-14 0.936332 -0.445484 1.82354E-14 23.254 0.640859)' width='2.3' height='20.07' rx='1.15' ry='1.15'/%3E%3Crect class='fil0' x='21.18' y='0.7' width='2.16' height='8.94' rx='1.08' ry='0.51'/%3E%3Crect class='fil0' transform='matrix(0.662087 0.662087 -0.605919 0.605919 22.191 0.23717)' width='2.3' height='20.07' rx='1.15' ry='1.15'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 0px no-repeat;
+      transition: transform 0.3s ease;
+      transform-origin: 50% 25%;
+    }
+	#openInNewTab {
+      z-index: 1000;
+      position: absolute;
+      left: 6px;
+      width: 32px;
+      height: 32px;
+	}
     
     #serverMessages > button:hover {
       animation: bellAnimation 0.5s ease-in-out;
@@ -368,6 +391,7 @@
     }
     
     #serverSidebar {
+      display:none;
       position: fixed;
       top: 0;
       left: -400px;
@@ -2373,25 +2397,6 @@
                           </button>
                         </div>
                       </div>
-                      <div id="updateAvailable" class="updateAvailable" style="position:absolute; display:none; z-index:9999;">
-                        <p align="center">Доступно обновление расширения!</p>
-                        <div align="center">
-                          <button class="vkenhancerButton__action vkenhancerButton__action1 vkenhancerButton__action2 vkenhancerButton__action3 vkenhancerButton__action4 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7 vkenhancerButton8" id="updatenow"><span class="vkenhancerButtonText"><span class="vkenhancerButtonText__in">Обновить</span></span>
-                          </button>
-                          <button class="vkenhancerButton__action vkenhancerButton__action1 vkenhancerButton__action2 vkenhancerButton__action3 vkenhancerButton__action4 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7 vkenhancerButton8" style="margin-left:12px;" id="clearCacheUpdate"><span class="vkenhancerButtonText"><span class="vkenhancerButtonText__in">Очистить кеш</span></span>
-                          </button>
-                        </div>
-                      </div>
-                      <div id="serverMessage" class="serverMessage" style="position:absolute; display:none; z-index:9999;">
-                        <div id="serverMessageBlock">
-                          <p align="center">Сообщение от сервера</p>
-                          <a id="serverMessageText" align="center"></a>
-                          <div align="center">
-                            <button class="vkenhancerButton__action vkenhancerButton__action1 vkenhancerButton__action2 vkenhancerButton__action3 vkenhancerButton__action4 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7 vkenhancerButton8" id="closeServerMessage"><span class="vkenhancerButtonText"><span class="vkenhancerButtonText__in">Ок</span></span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
                       <div class="vkebhancerInternalPanel_in vkenhancerInternalPanel__in" data-tooltip-container="true">
                         <div class="vkebhancerInternalPanel"></div>
                         <div class="vkebhancerInternalPanelHead vkuiInternalPanelHeader vkebhancerInternalHead vkuiInternalPanelHeader--ios vkebhancerInternalHead--ios vkuiInternalPanelHeader--vis vkuiInternalPanelHeader--sep vkebhancerInternalHead--sep vkebhancerInternalHead--separator">
@@ -2424,9 +2429,8 @@
 
                                 </button>
                               </div>
-                              <div id="top_notify_count" class="TopNavBtn__notifyCount">1</div>
-                              <div id="serverMessages" class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
-                                <button id="servermessages" title="Сообщения от сервера" type="button" class="vkenhancerButtonMoon vkenhancerButton1 vkenhancerButton2 vkenhancerButton3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7 vkenhancerButton8 bellButton">
+							  <div id="openInNewTab" class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
+                                <button id="openinnewtab" title="Открыть расширение в новом окне" type="button" class="vkenhancerButtonMoon vkenhancerButton1 vkenhancerButton2 vkenhancerButton3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7 vkenhancerButton8 bellButton">
 
                                 </button>
                               </div>
@@ -2442,19 +2446,6 @@
                               <div class="vkenhancerScEmpty"> </div>
                             </div>
                           </div>
-                        </div>
-                        <div aria-hidden="true" class="vkenhancerSep1 vkenhancerSep3" role="separator">
-                          <div class="vkenhancerSepIn"></div>
-                        </div>
-                        <div id="serverSidebar">
-                          <div id="serverMessageGet">
-                            <p align="left" id="inMessage" style="color:white; font-size:12px; font-weight:600; padding-left:6px;margin-top:6px;">Входящее сообщение от сервера</p>
-                            <div aria-hidden="true" class="vkenhancerSep1 vkenhancerSep2" style="margin-top:-4px; padding-bottom:6px;" role="separator">
-                              <div class="vkenhancerSepIn"></div>
-                            </div>
-                            <p id="serverMessageTextLow" align="left" style="color:gray; font-size:10px; padding-left:8px;margin-top:-2px;"></p>
-                          </div>
-                          <p align="center" id="noMessagesFromServer" style="margin-top:250px;color:gray; padding-left:20px; padding-right:20px;">Сообщения от сервера отсутствуют</p>
                         </div>
                         <section class="vkenhancerInternalGroup vkenhancerGroup vkenhancerSectionC vkenhancerSectionD vkenhancerSectionE vkenhancerSectionF">
                           <div style="position: relative; overflow: hidden; width: 100%; height: 536px;">
@@ -2531,6 +2522,20 @@
                                   <label class="vkenhancerCheckBoxLabel vkenhancerCheckBoxLabel__in">
                                     <input type="checkbox" id="hider" class="vkenhancerCheckBoxClass vkenhancerCheckBoxClass__in"><span aria-hidden="true" class="vkenhancerCB"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerCBHidden__in"></span></label>
                                 </div><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></label>
+
+							  <label id="PollsRes" class="vkenhancerChooseLabel vkenhancerStandartLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
+
+                                <div class="vkenhancerChoosePicker">
+                                  <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Показывать результаты опросов</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"><span class="emptyt"></span></div>
+                                  </span>
+                                </div>
+                                <div class="vkenhancerChoosePickerText"><span class="vkenhancerStandartWarning vkenhancerWarning vkenhancerWarningBox vkenhancerWarningBox__in">По умолчанию результаты опроса скрыты до выбора ответа</span></div>
+                            </div>
+                            <div class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
+                              <label class="vkenhancerCheckBoxLabel vkenhancerCheckBoxLabel__in">
+                                <input type="checkbox" id="pollresults" class="vkenhancerCheckBoxClass vkenhancerCheckBoxClass__in"><span aria-hidden="true" class="vkenhancerCB"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerCBHidden__in"></span></label>
+                            </div><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></label>
+
 
                               <label id="idName" class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
                                 <div class="vkenhancerChoosePicker">
@@ -2712,6 +2717,22 @@
                       <label class="vkenhancerCheckBoxLabel vkenhancerCheckBoxLabel__in">
                         <input type="checkbox" id="hidebutton" class="vkenhancerCheckBoxClass vkenhancerCheckBoxClass__in"><span aria-hidden="true" class="vkenhancerCB"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerCBHidden__in"></span></label>
                     </div><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></label>
+
+				  <label id="SaveSettings" class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
+                    <div class="vkenhancerChoosePicker">
+                      <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Сохранить настройки в файл</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"></div></span></div>
+                    </div>
+                    <div class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
+                    </div><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></label>
+
+				  <label id="LoadSettings" class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
+                    <div class="vkenhancerChoosePicker">
+                      <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Загрузить настройки из файла</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"></div></span></div>
+                    </div>
+					<input id="LoadSettingsInput" type="file" style="display:none;" accept=".json">
+                    <div class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
+                    </div><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></label>
+
 
                   <div aria-hidden="true" class="vkenhancerSep1 vkenhancerSep2" role="separator"> </div>
                   <div aria-hidden="true" class="vkenhancerHiddenSep" style="height: 12px; padding: 6px 0px;">
