@@ -5,7 +5,15 @@ chrome.commands.onCommand.addListener((shortcut) => {
   if (shortcut.includes("+M")) {
     chrome.runtime.reload();
   }
-})
+});
+
+chrome.runtime.onInstalled.addListener(function(details) {
+    if (details.reason === 'install') {
+        chrome.tabs.create({ url: 'install.html' });
+    } else if (details.reason === 'update') {
+        chrome.tabs.create({ url: 'update.html' });
+    }
+});
 
 function sendMessageToContentScript(tabId, message) {
   chrome.tabs.sendMessage(tabId, message);
