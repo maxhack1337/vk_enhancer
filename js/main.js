@@ -227,39 +227,18 @@ window.addEventListener("message", async (event) => {
 document.arrive(adsSelector, { existing: true }, function (e) {
   e.remove();
 });
-async function VKEnhancerMessageBox(title, content, buttonCont, buttonCont2, color, color2, callback) {
-    var i = new MessageBox;
-    i.addButton(buttonCont,function() {
-        if (callback) {
-            callback();
-        }
-		i.hide();
-    }, color);
-	i.addButton(buttonCont2,!1, color2);
-    i.setOptions({title: title, bodyStyle: "overflow: hidden; text-overflow: ellipsis;"});
-    i.content(content);
-    i.show();
-}
 ///ОТПРАВКА АУДИО КАК ГОЛОСОВОГО///
-document.arrive("#spa_root > .vkui__root", { existing: true }, function (e) {
-const audioFileInput = document.getElementById('audioFileInput');
-var inputWrap = document.createElement("a");
-inputWrap.innerHTML = '<input style="display:none;" type="file" id="audioFileInput" accept="audio/mp3,audio/ogg,audio/wav">';
-if(!audioFileInput) {
-	e.appendChild(inputWrap);
-}
-});
-document.arrive(".MEPopper > div > .ActionsMenu", { existing: true }, function (e) {
+document.arrive(".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper > div > .ActionsMenu", { existing: true }, function (e) {
 let styleElement = fromId("MEPopperStyle");
 	if (!styleElement) {
 			styleElement = document.createElement("style");
 			styleElement.id = "MEPopperStyle";
 			document.head.appendChild(styleElement);
 	}
-styleElement.innerHTML = '.MEPopper{top:517px!important;}';
+styleElement.innerHTML = '.VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{top:517px!important;}';
 var clmno = document.createElement("a");
 clmno.innerHTML = '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular AudioMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#voice_outline_24" style="fill: currentcolor;"></use></svg></i><span class="ActionsMenuAction__title">Голосовое</span></button>';
-var newpanel = document.querySelector(".MEPopper > div > .ActionsMenu");
+var newpanel = document.querySelector(".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper > div > .ActionsMenu");
 var setElement = document.querySelector('.AudioMenuPopper');
 if (!setElement) {
     newpanel.appendChild(clmno);
@@ -273,13 +252,33 @@ setElement.addEventListener('click', function() {
         audioFileInput.click();
     });
 });
-  audioFileInput.addEventListener('change', function() {
-    if (audioFileInput.files.length > 0) {
-        handleUpload();
-    }
-  });
   eventListenerSet = true;
 }
+
+async function VKEnhancerMessageBox(title, content, buttonCont, buttonCont2, color, color2, callback) {
+    var i = new MessageBox;
+    i.addButton(buttonCont,function() {
+        if (callback) {
+            callback();
+        }
+    }, color);
+	i.addButton(buttonCont2,!1, color2);
+    i.setOptions({title: title, bodyStyle: "overflow: hidden; text-overflow: ellipsis; color: var(--vkenhancer)"});
+    i.content(content);
+    i.show();
+	const appendHere = document.querySelector('.box_body[style="overflow: hidden; text-overflow: ellipsis; color: var(--vkenhancer);"]');
+	var inputWrap = document.createElement("a");
+	inputWrap.innerHTML = '<input style="display:none;" type="file" id="audioFileInput" accept="audio/mp3,audio/ogg,audio/wav">';
+	appendHere.appendChild(inputWrap);
+	const audioFileInput = document.getElementById('audioFileInput');
+	audioFileInput.addEventListener('change', function() {
+		if (audioFileInput.files.length > 0) {
+			handleUpload();
+			i.hide();
+		}
+	});
+}
+
 async function handleUpload() {
   const audioFileInput = document.getElementById('audioFileInput');
   const file = audioFileInput.files[0];
