@@ -51,7 +51,7 @@ var tab3 = document.getElementById('tab3');
 var tab4 = document.getElementById('tab4');
 var ID;
 
-  openinnewtab.addEventListener('click', function() {
+openinnewtab.addEventListener('click', function() {
     chrome.tabs.create({ url: 'popup/popup.html' });
   });
 
