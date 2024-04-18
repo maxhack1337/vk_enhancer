@@ -227,6 +227,128 @@ window.addEventListener("message", async (event) => {
 document.arrive(adsSelector, { existing: true }, function (e) {
   e.remove();
 });
+///ОТПРАВКА ФОТО И ВИДЕО///
+/*
+document.arrive(".ConvoComposer__inputPanel", { existing: true }, function (e) {
+var clmno = document.createElement("a");
+clmno.innerHTML = '<div class="PhotoMenuPopper onmouseover="showTooltip(this, { text: '+'Прикрепить фото или видео'+', black: true, shift: [4, 5] });""><div class="PhotoMenuPopper__trigger"><button class="ConvoComposer__button" aria-label="Прикрепить фото или видео"><i role="img" class="ConvoComposer__buttonIcon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.46 3h3.08c.29 0 .53 0 .76.03.7.1 1.35.47 1.8 1.03.25.3.4.64.62.96.2.28.5.46.85.48.3.02.58-.01.88.02a3.9 3.9 0 0 1 3.53 3.53c.02.18.02.37.02.65v4.04c0 1.09 0 1.96-.06 2.66a5.03 5.03 0 0 1-.47 1.92 4.9 4.9 0 0 1-2.15 2.15c-.57.29-1.2.41-1.92.47-.7.06-1.57.06-2.66.06H9.26c-1.09 0-1.96 0-2.66-.06a5.03 5.03 0 0 1-1.92-.47 4.9 4.9 0 0 1-2.15-2.15 5.07 5.07 0 0 1-.47-1.92C2 15.7 2 14.83 2 13.74V9.7c0-.28 0-.47.02-.65a3.9 3.9 0 0 1 3.53-3.53c.3-.03.59 0 .88-.02.34-.02.65-.2.85-.48.21-.32.37-.67.61-.96A2.9 2.9 0 0 1 9.7 3.03c.23-.03.47-.03.76-.03Zm0 1.8-.49.01a1.1 1.1 0 0 0-.69.4c-.2.24-.33.56-.52.82A2.9 2.9 0 0 1 6.54 7.3c-.28.01-.55-.02-.83 0a2.1 2.1 0 0 0-1.9 1.91l-.01.53v3.96c0 1.14 0 1.93.05 2.55.05.62.15.98.29 1.26.3.58.77 1.05 1.35 1.35.28.14.64.24 1.26.29.62.05 1.42.05 2.55.05h5.4c1.13 0 1.93 0 2.55-.05.62-.05.98-.15 1.26-.29a3.1 3.1 0 0 0 1.35-1.35c.14-.28.24-.64.29-1.26.05-.62.05-1.41.05-2.55V9.21a2.1 2.1 0 0 0-1.91-1.9c-.28-.03-.55 0-.83-.01a2.9 2.9 0 0 1-2.22-1.27c-.19-.26-.32-.58-.52-.83a1.1 1.1 0 0 0-.69-.39 3.92 3.92 0 0 0-.49-.01h-3.08Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M12 9.8a2.7 2.7 0 1 0 0 5.4 2.7 2.7 0 0 0 0-5.4Zm-4.5 2.7a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0Z" fill="currentColor"></path></svg></i></button></div></div><input aria-label="Прикрепить фото или видео" style="display:none!important;" tabindex="0" id="im_full_upload" class="im-chat-input--attach-file" type="file" size="28" multiple="true" accept="image/jpeg,image/png,image/gif,video/*" name="media"> ';
+e.appendChild(clmno);
+var inputPhoto = document.getElementById('im_full_upload');
+clmno.addEventListener('click', function() {
+        inputPhoto.click();
+});
+inputPhoto.addEventListener('change', function() {
+		if (inputPhoto.files.length > 0) {
+handleUpload();          
+		}
+	});
+
+async function handleUpload() {
+  const audioFileInput = document.getElementById('im_full_upload');
+  const file = audioFileInput.files[0];
+  await sendPhotoMessage(file);
+}
+async function sendPhotoMessage (fileNameOutput) {
+  if(fileNameOutput.type.includes('image'))
+  {
+
+  }
+  if(fileNameOutput.type.includes('video')) {
+	
+  }
+}
+
+async function uploadFile(uploadUrl, fileNameOutput) {
+    const formData = new FormData();
+    formData.append('file', fileNameOutput);
+    const xhr = new XMLHttpRequest();
+    return new Promise((resolve, reject) => {
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                resolve(xhr.responseText);
+            } else {
+                reject(new Error('Upload failed. Status: ' + xhr.status));
+            }
+        };
+
+        xhr.onerror = function() {
+            reject(new Error('Upload failed. Network error'));
+        };
+
+        xhr.open('POST', uploadUrl);
+        xhr.send(formData);
+    });
+}
+});
+*/
+///КОНЕЦ ОТПРАВКИ ФОТО И ВИДЕО///
+///СКАЧИВАНИЕ ГС///
+document.arrive(".AttachVoice", {
+    existing: true
+}, function(e) {
+	let styleElement = fromId("vkEnhancerDownloadAudioButtonStyle");
+	if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = "vkEnhancerDownloadAudioButtonStyle";
+			document.head.appendChild(styleElement);
+	}
+	var bgImageUri = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath fill='%23447bba' fill-rule='evenodd' d='M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z' clip-rule='evenodd'%3E%3C/path%3E%3C/svg%3E");`;
+	styleElement.innerHTML = '.vkEnhancerDownloadAudioButton:hover:before{background:#8fadc880;opacity:1}.vkEnhancerDownloadAudioButton{color:var(--vkui--color_icon_accent);'+bgImageUri+'background-position: center;background-repeat: no-repeat;isolation: isolate;position: relative; align-items:center; justify-content: center;display: flex;cursor: pointer;border-radius: 100px; margin-left: 6px; margin-right: 4px; order: 3; top: 2px;height: 24px; width: 24px;}.vkEnhancerDownloadAudioButton:before {background: #8fadc84d;color: var(--blue_400);opacity: 1;transition: background-color .14s; border-radius:100px; bottom: 0;content: "";left: 0; position: absolute;right: 0;top: 0;z-index:-1;}';
+    let download_name = getLink(document.querySelector(".AttachVoice")).split("/").at(-1);
+    let link = getLink(e);
+	let fileNameAud = getAudioId(e);
+    let download = create("a", {}, {
+        href: getLink(e),
+        innerHTML: '',
+        download: download_name,
+        "data-link": link,
+    });
+	download.classList.add("vkEnhancerDownloadAudioButton");
+    download.addEventListener("click", async function(e) {
+        e.preventDefault();
+        const a = document.createElement("a");
+        a.rel = "noopener";
+        a.target = "_blank";
+        a.download = fileNameAud;
+        const a_ = await globalThis.fetch(e.target.href, {
+            method: "GET",
+        });
+        console.log(e);
+        let o = await a_.blob();
+        a.href = URL.createObjectURL(o);
+        setTimeout(() => {
+            URL.revokeObjectURL(o);
+        }, 4e4);
+        setTimeout(() => {
+            const a__ = document.createEvent("MouseEvents");
+            a__.initMouseEvent("click", !0, !0, window, 0, 0, 0, 80, 20, !1, !1, !1, !1, 0, null);
+            a.dispatchEvent(a__);
+        }, 0);
+    });
+    e.children[0].appendChild(download);
+});
+
+function getLink(elem) {
+    const t = {};
+    let n = 0;
+    for (const o of Object.keys(elem))
+        if (
+            (o.startsWith("__reactFiber") ? ((t.fiber = elem[o]), ++n) : o.startsWith("__reactProps") && ((t.props = elem[o]), ++n), 2 === n)) break;
+    return t.fiber.return.memoizedProps.voice.linkMp3;
+}
+
+function getAudioId(elem) {
+    const t = {};
+    let n = 0;
+    for (const o of Object.keys(elem))
+        if (
+            (o.startsWith("__reactFiber") ? ((t.fiber = elem[o]), ++n) : o.startsWith("__reactProps") && ((t.props = elem[o]), ++n), 2 === n)) break;
+    var o = t.fiber.return.memoizedProps.voice.ownerId;
+	var a = t.fiber.return.memoizedProps.voice.id;
+	var i = [o, a].join("_");
+	return `audio_message${i}.mp3`;
+}
+///КОНЕЦ СКАЧИВАНИЯ ГС///
 ///ОТПРАВКА АУДИО КАК ГОЛОСОВОГО///
 document.arrive(".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper > div > .ActionsMenu", { existing: true }, function (e) {
 let styleElement = fromId("MEPopperStyle");
