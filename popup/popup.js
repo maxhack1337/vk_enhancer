@@ -187,7 +187,7 @@ tab4.addEventListener('click', (event) => {
 saveSettings.addEventListener('click', (event) => {
 	var jsonData = null;
     var JSONSettings = {};
-	chrome.storage.local.get(["pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
+	chrome.storage.local.get(["sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
 		console.log(items);
 		jsonData = JSON.stringify(items);
 		console.log(jsonData);
@@ -215,9 +215,10 @@ loadSettingsInput.addEventListener('change', function() {
 			await chrome.storage.local.set(item123);
 		}
 		loadSavedCheckBoxes();
+		loadSettingsInput.value = null;
         });
         
-        reader.readAsText(loadSettingsInput.files[0]); // Read the uploaded file
+        reader.readAsText(loadSettingsInput.files[0]);
       }
     });
 
@@ -947,7 +948,7 @@ loadSavedCheckBoxes();
 
 function loadSavedCheckBoxes() {
     // Получение состояния из Local Storage
-    chrome.storage.local.get(["pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
+    chrome.storage.local.get(["sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
         accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
         recentgroups.checked = items.recentGroupsState;
@@ -961,6 +962,12 @@ function loadSavedCheckBoxes() {
 		nechitalka.checked = items.nechitalkaState;
 		nepisalka.checked = items.nepisalkaState;
 		pollresults.checked = items.pollResultsState;
+        slider.value = items.sliderValue;
+		const sliderValue = document.getElementById('slider-value');
+        sliderValue.textContent = slider.value + "%";
+        const percentage = slider.value;
+        const colorBefore = `linear-gradient(to right, #397dcc ${percentage}%, #ffffff ${percentage}%)`;
+        slider.style.background = colorBefore;
         if (typeof items.customAccent === "undefined") {
             customAccent.value = "#FFFFFF";
             chrome.storage.local.set({
