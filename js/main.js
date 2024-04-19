@@ -277,19 +277,24 @@ document.arrive(awayHrefs, { existing: true }, function (e) {
 });
 }
 
-if(localStorage.getItem("isNewDesign") == "true")
-{
-	document.arrive('a[href^="/im?sel="]', { existing: true }, function (e) {
-		const links = document.querySelectorAll('a[href^="/im?sel="]');
-		links.forEach(link => {
-			const newHref = link.href.replace(/\/im\?sel=(\d+)/, '/im/convo/$1');
-			link.href = newHref;
-			const onclickValue = link.getAttribute('onclick');
-			if (onclickValue && onclickValue.startsWith('return WriteBox.toFull')) {
-				link.removeAttribute('onclick');
-			}
-		});
-	});
+if (localStorage.getItem("isNewDesign") === "true") {
+    var imHrefs = ['a[href^="/im?sel="]','a[href^="https://vk.com/im?sel="]'];
+    document.arrive(imHrefs, { existing: true }, function (e) {
+        const links = document.querySelectorAll(imHrefs.join(', '));
+        links.forEach(link => {
+            const href = link.href;
+            let newHref = href;
+            if (href.includes("https://vk.com")) {
+                newHref = href.replace("https://vk.com", "");
+            }
+            newHref = newHref.replace(/\/im\?sel=(-?\d+)/, '/im/convo/$1');
+            link.href = newHref;
+            const onclickValue = link.getAttribute('onclick');
+            if (onclickValue && onclickValue.startsWith('return WriteBox.toFull')) {
+                link.removeAttribute('onclick');
+            }
+        });
+    });
 }
 
 function backPostReactionsFunc() {
