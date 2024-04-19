@@ -1,4 +1,4 @@
-console.log('Версия 3.1.4 Release');
+console.log('Версия 3.1.5 Release');
 var accentC = document.getElementById('oldaccent');
 var msgreact = document.getElementById('messagereactions');
 var recentgroups = document.getElementById('recentgroups');
@@ -45,6 +45,7 @@ var loadSettings = document.getElementById('LoadSettings');
 var loadSettingsInput = document.getElementById('LoadSettingsInput');
 var pollresults = document.getElementById('pollresults');
 var openinnewtab = document.getElementById('openinnewtab');
+var removeaway = document.getElementById('removeaway');
 var tab1 = document.getElementById('tab1');
 var tab2 = document.getElementById('tab2');
 var tab3 = document.getElementById('tab3');
@@ -144,7 +145,7 @@ function defaultTab3() {
         styleElement.id = "tabs3";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = '#tab3,#tab3>div>.vkuiTabbarItem__icon{color:var(--vkenhancer--chosen_tab)!important}#PollsRes,#SaveSettings,#LoadSettings,#ReloadVKE,#SecretOldDesign,#HiderL,#CallsM{display:flex!important;}[aria-id="true"]{display:block!important}';
+    styleElement.innerHTML = '#tab3,#tab3>div>.vkuiTabbarItem__icon{color:var(--vkenhancer--chosen_tab)!important}#AwayR,#PollsRes,#SaveSettings,#LoadSettings,#ReloadVKE,#SecretOldDesign,#HiderL,#CallsM{display:flex!important;}[aria-id="true"]{display:block!important}';
     chrome.storage.local.set({
         defaultTab: "3",
     });
@@ -187,7 +188,7 @@ tab4.addEventListener('click', (event) => {
 saveSettings.addEventListener('click', (event) => {
 	var jsonData = null;
     var JSONSettings = {};
-	chrome.storage.local.get(["sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
+	chrome.storage.local.get(["removeAwayState","sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
 		console.log(items);
 		jsonData = JSON.stringify(items);
 		console.log(jsonData);
@@ -221,6 +222,23 @@ loadSettingsInput.addEventListener('change', function() {
         reader.readAsText(loadSettingsInput.files[0]);
       }
     });
+
+removeaway.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({
+        removeAwayState: checked
+    });
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, {
+            type: "toggleRemoveAway",
+            isChecked: checked
+        });
+    });
+});
 
 pollresults.addEventListener('change', (event) => {
     const checked = event.target.checked;
@@ -387,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const styleElementVersion = document.createElement("style");
     styleElementVersion.id = "version";
-    styleElementVersion.innerHTML = "#version::after{content:'Версия 3.1.4 Release'}";
+    styleElementVersion.innerHTML = "#version::after{content:'Версия 3.1.5 Release'}";
     document.head.appendChild(styleElementVersion);
     
 
@@ -948,7 +966,7 @@ loadSavedCheckBoxes();
 
 function loadSavedCheckBoxes() {
     // Получение состояния из Local Storage
-    chrome.storage.local.get(["sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
+    chrome.storage.local.get(["removeAwayState","sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
         accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
         recentgroups.checked = items.recentGroupsState;
@@ -962,6 +980,7 @@ function loadSavedCheckBoxes() {
 		nechitalka.checked = items.nechitalkaState;
 		nepisalka.checked = items.nepisalkaState;
 		pollresults.checked = items.pollResultsState;
+		removeaway.checked = items.removeAwayState;
         slider.value = items.sliderValue;
 		const sliderValue = document.getElementById('slider-value');
         sliderValue.textContent = slider.value + "%";
@@ -1026,6 +1045,10 @@ function loadSavedCheckBoxes() {
 			chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleNewDesign",
                 isChecked: items.newDesignState
+            });
+			chrome.tabs.sendMessage(activeTabId, {
+                type: "toggleRemoveAway",
+                isChecked: items.removeAwayState
             });
 			chrome.tabs.sendMessage(activeTabId, {
                 type: "togglePollResults",
