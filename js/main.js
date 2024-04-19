@@ -267,8 +267,9 @@ document.arrive(adsSelector, { existing: true }, function (e) {
 
 if(localStorage.getItem("removeAway") == "true")
 {
-document.arrive('a[href^="https://vk.com/away.php"]', { existing: true }, function (e) {
-    const links = document.querySelectorAll('a[href^="https://vk.com/away.php"]');
+var awayHrefs=['a[href^="https://vk.com/away.php"]','a[href^="/away.php"]'];
+document.arrive(awayHrefs, { existing: true }, function (e) {
+    const links = document.querySelectorAll(awayHrefs);
     links.forEach(link => {
         const decodedUrl = decodeURIComponent(new URLSearchParams(link.search).get('to'));
         link.href = decodedUrl;
