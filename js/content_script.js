@@ -40,7 +40,7 @@ const fromId = document.getElementById.bind(document);
 })();
 
 window.addEventListener("vkNav", async (e) => {
-  console.log(e);
+  //console.log(e);
   chrome.storage.local.get(["newDesignState"], async ({ newDesignState }) => {
     if (newDesignState) {
       //console.log("Новый дизайн мессенджера");
@@ -366,85 +366,7 @@ function HotBarAppear(cHotBarValue) {
 function getEmojiId(emoji) {
   return emoji.codePointAt(0).toString(16);
 }
-/*Фикс маргина для лайков*/
-function updateMarginLeft() {
-  if (
-    window.location.href.includes("wall") &&
-    (isPostReact || isSecretEnabled)
-  ) {
-    //console.log("Change margin for likes")
-    const reactionsPreviewCount = document.querySelector(
-      '.ReactionsPreview__count[data-section-ref="like-button-count"]'
-    );
-    if (reactionsPreviewCount) {
-      const textLength = reactionsPreviewCount.textContent.length;
-      const newMarginLeft = 8 + (textLength - 1) * 4;
-      const likeBtns = document.querySelectorAll(
-        ".PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomAction:first-child, .PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomActionContainer:first-child"
-      );
-      likeBtns.forEach(function (element) {
-        if (!element.closest("#profile_redesigned")) {
-          // Проверка, что элемент не находится внутри #profile_redesigned
-          element.style.paddingRight = `${newMarginLeft}px`;
-        }
-      });
-    }
-    const isDonate = document.querySelector(".PostActionStatusBar__rightInner");
-    if (isDonate) {
-      const likeTop = document.querySelectorAll(
-        ".ReactionsPreview--isInActionStatusBar"
-      );
-      likeTop.forEach(function (element) {
-        if (!element.closest("#profile_redesigned")) {
-          // Проверка, что элемент не находится внутри #profile_redesigned
-          element.style.marginTop = `25px`;
-        }
-      });
-    }
-  }
-}
-document.addEventListener("DOMContentLoaded", updateMarginLeft);
-window.addEventListener("hashchange", updateMarginLeft);
-window.addEventListener("load", updateMarginLeft);
-window.addEventListener("popstate", updateMarginLeft);
-//Мутейшн обсервер для хотбара, маргина, звонков
-function handleWlPostMutation(mutationsList, observer) {
-  for (const mutation of mutationsList) {
-    /*const e = fromId("wrap3");
-            if (e)
-                for (const t of e.childNodes) e.removeChild(t)*/
-    if (
-      mutation.type === "childList" &&
-      (isPostReact || isSecretEnabled) &&
-      mutation.addedNodes.length > 0 &&
-      window.location.href.includes("?w=wall")
-    ) {
-      const wlPostElement = fromId("wl_post");
-      if (wlPostElement) {
-        //console.log('Элемент с id "wl_post" появился на странице');
-        updateMarginLeft();
-      }
-    }
-    if (
-      mutation.type === "childList" &&
-      muteCallsBool &&
-      mutation.addedNodes.length > 0
-    ) {
-      const wlPostElement = document.querySelectorAll("#calls audio");
-      if (!isCallsMuted && wlPostElement.length > 0) {
-        //console.log("Замутил звонки");
-        isCallsMuted = true;
-        applyStyleAndMuteSpecificAudio();
-      }
-    }
-  }
-}
-const observer = new MutationObserver(handleWlPostMutation);
-const observerOptions = {
-  childList: true,
-  subtree: true,
-};
-observer.observe(document, observerOptions);
+
 document.addEventListener("DOMContentLoaded", function () {
   const stylusInstalled = document.querySelector("style.stylus") !== null;
   chrome.storage.local.set(
@@ -591,7 +513,7 @@ function removePostReactions() {
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 0 24 24' width='24'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M0 0h24v24H0z'/%3E%3Cpath xmlns='http://www.w3.org/2000/svg' fill-rule='nonzero' fill='%23e64646' d='M11.95 4.83l-0.09 -0.09c-1.27,-1.23 -2.96,-1.93 -4.73,-1.94 0,0 0,0 0,0 -3.62,0 -6.55,2.93 -6.56,6.54 0,3.52 1.3,5.2 7.07,9.76l3.07 2.4c0.37,0.29 0.8,0.44 1.24,0.45l0 0c0.44,-0.01 0.88,-0.16 1.24,-0.45l3.07 -2.4c5.78,-4.56 7.07,-6.24 7.07,-9.76 -0.01,-3.61 -2.94,-6.54 -6.55,-6.54 0,0 0,0 0,0 -1.77,0.01 -3.47,0.71 -4.73,1.94l-0.1 0.09z'/%3E%3C/g%3E%3C/svg%3E";
   isPostReact = true;
   styleElement.innerHTML =
-    '.PostButtonReactions__iconAnimation{display:none;}.PostButtonReactions__icon.PostButtonReactions__icon--custom{background: url("' +
+    '.PostBottomAction--withBg{padding:4px 6px!important;}.PostButtonReactions__iconAnimation{display:none;}.PostButtonReactions__icon.PostButtonReactions__icon--custom{background: url("' +
     imageUrl +
     '")!important;         scale:.85;} .ReactionsMenuPopperTransition-appear-done, .ReactionsMenuPopperTransition-enter-done {          display: none!important;      }                        .ReactionsMenu,    .ReactionsMenu--extraHoverArea,    .ReactionsMenu--extraHoverAreaToTop,    div.ReactionsPreview__items,.PostButtonReactions--post .PostButtonReactions__title--textual,.like_tt_reacted-count,.fans_fanph_reaction,li#likes_tab_reactions_0,    li#likes_tab_reactions_1,    li#likes_tab_reactions_2,    li#likes_tab_reactions_3,    li#likes_tab_reactions_4,    li#likes_tab_reactions_5,.ui_tab.ui_tab_group,.like_tt_reaction {        display: none !important;    }    .PostBottomAction {        --post-bottom-action-background-color: transparent !important;    }    div.ReactionsPreview.ReactionsPreview--active .ReactionsPreview__count._counter_anim_container {        color: #e64646 !important;    }   .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count{color:var(--vkui--color_text_subhead);} [dir] .ReactionsPreview {        position: absolute;        margin-top: 14px;        margin-left: 30px;        z-index: 9;    }    .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count {    font-size: 13px;    line-height: 16px;    font-weight: 500;    }    .PostButtonReactionsContainer {        width: auto !important;    }    .PostButtonReactions__iconAnimation svg    {        background: url("' +
     imageUrl +
@@ -789,7 +711,7 @@ function addOpacity(sliderValueCount) {
     rule =
       ".vkui--vkBase--dark,[scheme=vkcom_dark]{ --vkui--color_background_content: rgba(25, 25, 26, " +
       opacity +
-      ")!important;} :is( .VKCOMMessenger__integrationRoot .MEAppConfig, .VKCOMMessenger__integrationRoot.MEAppConfig ).MEAppConfig__withoutBubbles.MEAppConfig__withoutBubbles{--convoHistoryBackgroundColor:rgba(25, 25, 26, " +
+      ")!important;} :is( .VKCOMMessenger__integrationRoot .MEAppConfig, .VKCOMMessenger__integrationRoot.MEAppConfig ).MEAppConfig__withoutBubbles.MEAppConfig__withoutBubbles{--convoHistoryBackgroundColor:rgba(34, 34, 34, " +
       opacity +
       ")!important;} .ConvoMain__rightPanelContainer,.MEApp{background-color:rgba(20,20,20," +
       opacity +
@@ -852,7 +774,8 @@ function applyStyles(
   integrationMediaChecked,
   nechitalkaChecked,
   nepisalkaChecked,
-  pollResultsChecked
+  pollResultsChecked,
+  removeAwayChecked
 ) {
   if (isOldAccentChecked) {
     hideNFT_Avatars();
@@ -868,8 +791,10 @@ function applyStyles(
     backMessageReactions();
   }
   if (isPostReactionsChecked) {
+	window.postMessage({ action: "removePostReactions" }, "*");
     removePostReactions();
   } else {
+	window.postMessage({ action: "backPostReactions" }, "*");
     backPostReactions();
   }
   if (isNameAva) {
@@ -882,8 +807,10 @@ function applyStyles(
     removeNameAva();
   }
   if (isSecretChecked) {
+	window.postMessage({ action: "secretFunctionsEnabled" }, "*");
     secretFunctionsEnabled();
   } else {
+	window.postMessage({ action: "secretFunctionsDisabled" }, "*");
     secretFunctionsDisabled();
   }
   /*console.log("isHiderChecked now " + isHiderChecked)*/
@@ -1021,13 +948,28 @@ function applyStyles(
     window.postMessage(
       { action: "pollResults", value: pollResultsChecked },
       "*"
+    );
+  }
+   if(removeAwayChecked) {
+	console.log("Away true");
+    window.postMessage(
+      { action: "removeAway", value: removeAwayChecked },
+      "*"
+    );   
+   }
+   else {
+	console.log("Away false");
+	window.postMessage(
+      { action: "removeAway", value: removeAwayChecked },
+      "*"
     );    
-	}
+   }
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
   chrome.storage.local.get(
     [
+	  "removeAwayState",
 	  "pollResultsState",
 	  "nepisalkaState",
 	  "nechitalkaState",
@@ -1082,6 +1024,7 @@ function applySavedStyles() {
 	  const nechitalkaChecked = items.nechitalkaState;
 	  const nepisalkaChecked = items.nepisalkaState;
 	  const pollResultsChecked = items.pollResultsState;
+	  const removeAwayChecked = items.removeAwayState;
       applyStyles(
         isOldAccentChecked,
         isMsgReactionsChecked,
@@ -1108,7 +1051,8 @@ function applySavedStyles() {
         integrationMediaChecked,
 		nechitalkaChecked,
 		nepisalkaChecked,
-		pollResultsChecked
+		pollResultsChecked,
+		removeAwayChecked
       );
     }
   );
@@ -1143,7 +1087,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     message.type === "toggleIntegrationMedia" ||
 	message.type === "toggleNechitalka" ||
 	message.type === "toggleNepisalka" ||
-	message.type === "togglePollResults"
+	message.type === "togglePollResults" ||
+	message.type === "toggleRemoveAway"
   ) {
     applySavedStyles();
   }

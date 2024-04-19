@@ -74,6 +74,8 @@ let intMedia = false;
 var pollResultsValue = false;
 var nechitalkaValue = false;
 var nepisalkaValue = false;
+var removePostReactions = false;
+var secretFunctions = false;
 let ajax_replaced = null;
 window.urls = null;
 
@@ -151,7 +153,6 @@ window.addEventListener("message", async (event) => {
 		break;
 	}
 	case "pollResults": {
-		console.log("кейс");
 		localStorage.setItem("pollResultsValue", event.data.value);
 		break;
 	}
@@ -212,6 +213,42 @@ window.addEventListener("message", async (event) => {
       globalThis.HotBarAppearVAL = event.data.value;
       break;
     }
+	case "removePostReactions": {
+	  localStorage.setItem("removePostReactions", true);
+	  try {
+		updateMarginLeft();
+	  }
+	  catch(error) {}
+	  break;
+	}
+	case "backPostReactions": {
+	  localStorage.setItem("removePostReactions", false);
+	  try {
+		backPostReactionsFunc();
+	  }
+	  catch(error) {}
+	  break;
+	}
+	case "secretFunctionsEnabled": {
+	  localStorage.setItem("secretFunctions", true);	
+	  try {
+		updateMarginLeft();
+	  }
+	  catch(error) {}
+	  break;	
+	}
+	case "secretFunctionsDisabled": {
+	  localStorage.setItem("secretFunctions", false);	
+	  try {
+		backPostReactionsFunc();
+	  }
+	  catch(error) {}
+	  break;	
+	}
+	case "removeAway": {
+	  localStorage.setItem("removeAway", event.data.value);	
+	  break;	
+	}
     case "Init": {
       window.noAdsAtAll = true;
       break;
@@ -227,6 +264,61 @@ window.addEventListener("message", async (event) => {
 document.arrive(adsSelector, { existing: true }, function (e) {
   e.remove();
 });
+
+if(localStorage.getItem("removeAway") == "true")
+{
+document.arrive('a[href^="https://vk.com/away.php"]', { existing: true }, function (e) {
+    const links = document.querySelectorAll('a[href^="https://vk.com/away.php"]');
+    links.forEach(link => {
+        const decodedUrl = decodeURIComponent(new URLSearchParams(link.search).get('to'));
+        link.href = decodedUrl;
+    });
+});
+}
+
+if(localStorage.getItem("isNewDesign") == "true")
+{
+	document.arrive('a[href^="/im?sel="]', { existing: true }, function (e) {
+		const links = document.querySelectorAll('a[href^="/im?sel="]');
+		links.forEach(link => {
+			const newHref = link.href.replace(/\/im\?sel=(\d+)/, '/im/convo/$1');
+			link.href = newHref;
+			const onclickValue = link.getAttribute('onclick');
+			if (onclickValue && onclickValue.startsWith('return WriteBox.toFull')) {
+				link.removeAttribute('onclick');
+			}
+		});
+	});
+}
+
+function backPostReactionsFunc() {
+	if(localStorage.getItem("removePostReactions") != 'true') {
+	const likeBtns = document.querySelectorAll(
+        ".PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomAction:first-child, .PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomActionContainer:first-child"
+      );
+	likeBtns.forEach(function (element) {
+		if (!element.closest("#profile_redesigned")) {
+			element.style.paddingRight = `0px`;
+		}
+	});
+	    const isDonate = document.querySelector(".PostActionStatusBar__rightInner");
+    if (isDonate) {
+      const likeTop = document.querySelectorAll(
+        ".ReactionsPreview--isInActionStatusBar"
+      );
+      likeTop.forEach(function (element) {
+        if (!element.closest("#profile_redesigned")) {
+          element.style.marginTop = `0px`;
+        }
+      });
+    }
+	const customStyle = fromId("postReactionsMargin24");
+	if (customStyle) {
+		customStyle.remove();
+	}
+	}	
+}
+
 ///ОТПРАВКА ФОТО И ВИДЕО///
 /*
 document.arrive(".ConvoComposer__inputPanel", { existing: true }, function (e) {
@@ -313,7 +405,6 @@ document.arrive(".AttachVoice", {
         const a_ = await globalThis.fetch(e.target.href, {
             method: "GET",
         });
-        console.log(e);
         let o = await a_.blob();
         a.href = URL.createObjectURL(o);
         setTimeout(() => {
@@ -415,7 +506,7 @@ async function sendAudioMessage (fileNameOutput) {
   let file =  await uploadFile(uploadUrl, fileNameOutput);
   /** Сохраняем */
   const data = JSON.parse(file);
-  console.log(data['file']);
+  console.log('[VK ENH] File uploaded: ' + data['file']);
   let doc = await vkApi.api("docs.save",{file: data['file']})
   doc = doc.audio_message;
 
@@ -452,6 +543,55 @@ async function uploadFile(uploadUrl, fileNameOutput) {
 });
 
 ///КОНЕЦ ОТПРАВКИ АУДИО КАК ГОЛОСОВОГО///
+///МАРГИН ДЛЯ ЛАЙКОВ ПРИ ВЫКЛЮЧЕННЫХ РЕАКЦИЯХ///
+if ((localStorage.getItem("removePostReactions") == 'true' || localStorage.getItem("secretFunctions") == 'true')) {
+	const wallSel = ['.PostActionStatusBar--inPost'];
+	document.arrive(wallSel, { existing: true }, function (e) {
+		updateMarginLeft();
+	});
+}
+
+function updateMarginLeft() {
+  if (
+    window.location.href.includes("wall") &&
+    (localStorage.getItem("removePostReactions") == 'true' || localStorage.getItem("secretFunctions") == 'true')
+  ) {
+    const reactionsPreviewCount = document.querySelector(
+      '.ReactionsPreview__count[data-section-ref="like-button-count"]'
+    );
+	//console.log(reactionsPreviewCount);
+    if (reactionsPreviewCount) {
+      const textLength = reactionsPreviewCount.textContent.length;
+      const newMarginLeft = 12 + (textLength - 1) * 4;
+      const likeBtns = document.querySelectorAll(
+        ".PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomAction:first-child, .PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomActionContainer:first-child"
+      );
+      likeBtns.forEach(function (element) {
+        if (!element.closest("#profile_redesigned")) {
+          element.style.paddingRight = `${newMarginLeft}px`;
+        }
+      });
+	  let styleElement = fromId("postReactionsMargin24");
+	  if (!styleElement) {
+		styleElement = create("style", {}, { id: "postReactionsMargin24" });
+		document.head.appendChild(styleElement);
+	  }
+	  styleElement.innerHTML = '.ReactionsPreview{margin-left:24px!important;}'
+    }
+    const isDonate = document.querySelector(".PostActionStatusBar__rightInner");
+    if (isDonate) {
+      const likeTop = document.querySelectorAll(
+        ".ReactionsPreview--isInActionStatusBar"
+      );
+      likeTop.forEach(function (element) {
+        if (!element.closest("#profile_redesigned")) {
+          element.style.marginTop = `25px`;
+        }
+      });
+    }
+  }
+}
+///КОНЕЦ МАРГИНА ДЛЯ ЛАЙКОВ ПРИ ВЫКЛЮЧЕННЫХ РЕАКЦИЯХ///
 ///РЕЗУЛЬТАТЫ ОПРОСА БЕЗ ГОЛОСОВАНИЯ///
 if (localStorage.getItem("pollResultsValue") == 'true') {
 document.arrive("[class^='PollPrimaryAttachment-module__voting']", { existing: true }, function (e) {
@@ -495,11 +635,11 @@ document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
     isCentralDesign === "true" ? newInterfaceSVG : classicInterfaceSVG;
   changeDesign.innerHTML = `<i class="ActionsMenuAction__icon">${designSVG}</i><span class="ActionsMenuAction__title">${designText}</span>`;
   burgerim.appendChild(changeDesign);
-  if(isCentralDesign == "true") {
+  /*if(isCentralDesign == "true") {
   document.querySelector('.ActionsMenuAction:has(>i>svg.vkuiIcon--gear_outline_20)').addEventListener("click", function () {
     window.location.href = '/im/settings';
   });
-  }
+  }*/
   changeDesign.addEventListener("click", function () {
     const currentValue = localStorage.getItem("isCentralDesign") === "true";
     localStorage.setItem("isCentralDesign", currentValue ? "false" : "true");
@@ -528,7 +668,7 @@ document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
 
 deferredCallback(
   () => {
-    if (JSON.parse(localStorage.getItem("isCentralDesign")) && JSON.parse(localStorage.getItem("isVKMReforgedDesign")) && !window.location.href.includes("vk.com/im/settings")) {
+    if (JSON.parse(localStorage.getItem("isCentralDesign")) && JSON.parse(localStorage.getItem("isVKMReforgedDesign"))) {
       //console.log("Classical design activated");
       const cssLink = document.createElement("link");
       cssLink.rel = "stylesheet";
@@ -589,7 +729,7 @@ deferredCallback(
         });
       }
 
-      document.arrive(".ConvoHeader", { existing: true }, async function (e) {
+      document.arrive(".ConvoHeader__infoContainer", { existing: true }, async function (e) {
         // Проверяем, существует ли элемент div с классом simplebar-content
         var simplebarContentDiv = document.querySelector(".simplebar-content");
         var ConvoTitle__title = document.querySelector(
@@ -619,6 +759,13 @@ deferredCallback(
             })
           : null;
         let id = ConvoUrl.href.split("/").at(-1);
+		if(id.includes('?')) {
+			var match = ConvoUrl.pathname.match(/\/(\d+)$/);
+			id = match[1];
+			convo_other = Array.from(
+          document.querySelectorAll("a.ARightRoot1")
+        ).find((e) => e.href === `https://vk.com/im/convo/${id}`);
+		}
         let user = obj.items.find((e) => e.peer.id == id);
         let unread = user.unread_count ? user.unread_count : 0;
         let muted = user?.push_settings?.no_sound ? true : false;
@@ -634,7 +781,7 @@ deferredCallback(
 				);
 			}
 			catch(error) {
-					location.reload;
+				location.reload;
 			}
             closeButtons();
 			checkPickerOfIm();
@@ -694,7 +841,7 @@ deferredCallback(
       });
 
       document.arrive(
-        "#spa_root > .vkui__root",
+        "#spa_root > .vkui__root:not(.VKCOMMessenger__reforgedRoot--settingsScreen)",
         { existing: false, fireOnAttributesModification: true },
         async function (e) {
 				var currentPageURL12 = window.location.href;
@@ -875,7 +1022,6 @@ document.arrive(
   ".ConvoMain__composer .ComposerSelecting",
   { existing: true },
   function (e) {
-	console.log(".ConvoMain__composer .ComposerSelecting");
     const container = document.querySelector(".ConvoMain__composer");
     if (container && document.getElementById("vkenhancerEmojiHotbarID")) {
       const emojiHotbar = document.getElementById("vkenhancerEmojiHotbarID");
@@ -924,7 +1070,22 @@ deferredCallback(
 			}
 	}
 		checkPickerOfIm();
-
+	if (currentPageURL.includes("/im/settings") && localStorage.getItem("isCentralDesign") == "true") {
+		let styleElement = fromId("settingsRightRoot");
+		if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = "settingsRightRoot";
+			document.head.appendChild(styleElement);
+			}
+			styleElement.innerHTML = ".MainRightRoot{display:none;}";
+	}
+	else {
+		const customStyle = fromId("settingsRightRoot");
+		if (customStyle) {
+			customStyle.remove();
+		}	
+	}
+	//updateMarginLeft();
     });
   },
   { variable: "nav" }
@@ -956,6 +1117,7 @@ function checkPickerOfIm() {
 }
 
 function newDesign() {
+  localStorage.setItem("isNewDesign", true);
   return new Promise((resolve, reject) => {
     let url = window.location.href;
     if (im.test(url)) {
@@ -1185,6 +1347,7 @@ function HotBarAppear(cHotBarValue) {
   }
 }
 function OldDesign() {
+  localStorage.setItem("isNewDesign", false);
   deferredCallback(
     (_vk) => {
       newDesignFunctions.forEach((flag) => {
