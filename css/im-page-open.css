@@ -1,5 +1,6 @@
   .MEApp__mainPanel,
-  div#reforged-root {
+  div#reforged-root:not(.VKCOMMessenger__reforgedRoot--settingsScreen) {
+	width:550px;
     max-width: 550px!important;
   }
   .MEApp__mainPanel--primary {
