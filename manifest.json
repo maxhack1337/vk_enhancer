@@ -4,8 +4,8 @@
     "default_popup": "popup/popup.html",
     "default_title": "Настройки VK Enhancer"
   },
-  "name": "VK Enhancer",
-  "version": "3.1.5",
+  "name": "VK Enhancer - улучшение ВКонтакте",
+  "version": "3.2",
   "icons": {
     "128": "assets/icon128.png",
     "16": "assets/icon16.png",
@@ -15,7 +15,7 @@
     "36": "assets/icon36.png",
     "48": "assets/icon48.png"
   },
-  "description": "Enjoy your experience with VK Enhancer!",
+  "description": "Расширение, делающее времяпрепровождение в VK удобнее и приятнее!",
   "host_permissions": [
     "*://vk.com/*"
   ],
@@ -71,7 +71,7 @@
         "js/modules/hls.js",
         "js/vkm_reforged_in_vkcom.js",
         "js/legacy_in_vkcom.js",
-	"css/im-page-open.css"
+        "css/im-page-open.css"
       ],
       "matches": [
         "*://vk.com/*"
