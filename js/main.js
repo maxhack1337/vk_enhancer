@@ -61,7 +61,7 @@ const adsSelector = [
   ".apps_feedRightAppsBlock",
   ".apps_feedRightAppsBlock_new_apps",
   ".NewMiniAppsRightBlock__root",
-].join();
+];
 const im = /(^|\/)al_im\.php|(^|\/)im(\?|$)|\/write-?\d+|\/im\/.*/;
 
 const query = document.querySelector.bind(document);
@@ -80,31 +80,28 @@ let ajax_replaced = null;
 window.urls = null;
 
 function XHRListener() {
-            const { send } = XMLHttpRequest.prototype
+  const { send } = XMLHttpRequest.prototype;
 
-            XMLHttpRequest.prototype.send = function (data) {
-                //console.log(data)
-                if (/type=typing/.test(data) && nepisalkaValue) {
-                    return this.abort()
-                }
-                if (/type=audiomessage/.test(data) && nepisalkaValue) {
-                    return this.abort()
-                }
+  XMLHttpRequest.prototype.send = function (data) {
+    //console.log(data)
+    if (/type=typing/.test(data) && nepisalkaValue) {
+      return this.abort();
+    }
+    if (/type=audiomessage/.test(data) && nepisalkaValue) {
+      return this.abort();
+    }
 
-                if (/act=a_mark_read/.test(data) && nechitalkaValue) {
-                    return this.abort()
-
-                }
-                if (/act=a_mard_listened/.test(data) && nechitalkaValue) {
-                    return this.abort()
-                }
-                return send.apply(this, Array.prototype.slice.call(arguments))
-            }
-        }
+    if (/act=a_mark_read/.test(data) && nechitalkaValue) {
+      return this.abort();
+    }
+    if (/act=a_mard_listened/.test(data) && nechitalkaValue) {
+      return this.abort();
+    }
+    return send.apply(this, Array.prototype.slice.call(arguments));
+  };
+}
 
 XHRListener();
-
-
 
 let xuy = ["get_unread_notifications", "get_accounts"];
 
@@ -125,37 +122,42 @@ window.addEventListener("message", async (event) => {
       intMedia = event.data.value;
       break;
     }
-	case "nechitalka": {
-		nechitalkaValue = event.data.value;
-		//console.log("Нечиталка " + nechitalkaValue);
-		deferredCallback(
-          () => {
-			MECommonContext.then(e=>{
-			let j = e.browserEnv.api.fetch;
-			e.browserEnv.api.fetch = function (e, n, ...o) {
-				if (e === "execute" && n.code && n.code.includes("messages.markAsRead") && nechitalkaValue){
-					return new Promise(() => {});
-				}
-				if (e === "messages.setActivity" && nepisalkaValue){
-					return  new Promise(() => {});
-				}
-				return j.apply(this, Array.prototype.slice.call(arguments));
-			}
-		})
-		},
-          { variable: "MECommonContext" }
-        );
-		break;
-	}
-	case "nepisalka": {
-		nepisalkaValue = event.data.value;
-		//console.log("Неписалка " + nepisalkaValue);
-		break;
-	}
-	case "pollResults": {
-		localStorage.setItem("pollResultsValue", event.data.value);
-		break;
-	}
+    case "nechitalka": {
+      nechitalkaValue = event.data.value;
+      //console.log("Нечиталка " + nechitalkaValue);
+      deferredCallback(
+        () => {
+          MECommonContext.then((e) => {
+            let j = e.browserEnv.api.fetch;
+            e.browserEnv.api.fetch = function (e, n, ...o) {
+              if (
+                e === "execute" &&
+                n.code &&
+                n.code.includes("messages.markAsRead") &&
+                nechitalkaValue
+              ) {
+                return new Promise(() => {});
+              }
+              if (e === "messages.setActivity" && nepisalkaValue) {
+                return new Promise(() => {});
+              }
+              return j.apply(this, Array.prototype.slice.call(arguments));
+            };
+          });
+        },
+        { variable: "MECommonContext" }
+      );
+      break;
+    }
+    case "nepisalka": {
+      nepisalkaValue = event.data.value;
+      //console.log("Неписалка " + nepisalkaValue);
+      break;
+    }
+    case "pollResults": {
+      localStorage.setItem("pollResultsValue", event.data.value);
+      break;
+    }
     case "vkNewDesign": {
       // Замена функции ajax.post
       deferredCallback(
@@ -175,7 +177,7 @@ window.addEventListener("message", async (event) => {
               };
             }
             const t = orig_ajax.apply(this, e);
-			
+
             return newDesign, t;
           };
           ajax_replaced = true;
@@ -213,42 +215,38 @@ window.addEventListener("message", async (event) => {
       globalThis.HotBarAppearVAL = event.data.value;
       break;
     }
-	case "removePostReactions": {
-	  localStorage.setItem("removePostReactions", true);
-	  try {
-		updateMarginLeft();
-	  }
-	  catch(error) {}
-	  break;
-	}
-	case "backPostReactions": {
-	  localStorage.setItem("removePostReactions", false);
-	  try {
-		backPostReactionsFunc();
-	  }
-	  catch(error) {}
-	  break;
-	}
-	case "secretFunctionsEnabled": {
-	  localStorage.setItem("secretFunctions", true);	
-	  try {
-		updateMarginLeft();
-	  }
-	  catch(error) {}
-	  break;	
-	}
-	case "secretFunctionsDisabled": {
-	  localStorage.setItem("secretFunctions", false);	
-	  try {
-		backPostReactionsFunc();
-	  }
-	  catch(error) {}
-	  break;	
-	}
-	case "removeAway": {
-	  localStorage.setItem("removeAway", event.data.value);	
-	  break;	
-	}
+    case "removePostReactions": {
+      localStorage.setItem("removePostReactions", true);
+      try {
+        updateMarginLeft();
+      } catch (error) {}
+      break;
+    }
+    case "backPostReactions": {
+      localStorage.setItem("removePostReactions", false);
+      try {
+        backPostReactionsFunc();
+      } catch (error) {}
+      break;
+    }
+    case "secretFunctionsEnabled": {
+      localStorage.setItem("secretFunctions", true);
+      try {
+        updateMarginLeft();
+      } catch (error) {}
+      break;
+    }
+    case "secretFunctionsDisabled": {
+      localStorage.setItem("secretFunctions", false);
+      try {
+        backPostReactionsFunc();
+      } catch (error) {}
+      break;
+    }
+    case "removeAway": {
+      localStorage.setItem("removeAway", event.data.value);
+      break;
+    }
     case "Init": {
       window.noAdsAtAll = true;
       break;
@@ -260,54 +258,197 @@ window.addEventListener("message", async (event) => {
   }
 });
 
-
+document.arrive('.OwnerPageName__icons', { existing: true }, function (e) {
+  updateUsers();
+});
+///ЗНАЧКИ В ПРОФИЛЯХ///
 document.arrive(adsSelector, { existing: true }, function (e) {
   e.remove();
 });
+async function updateUsers() {
+	const url = window.location.href;
+    var parts = url.split("/");
+    var objectId;
+    var username = parts[parts.length - 1];
+    if (username.includes("?")) {
+      username = username.split("?")[0];
+    }
+	var i = await vkApi.api("users.get",{user_ids:username});
+	objectId = i[0].id;
+	switch(objectId) {
+		case 185853506:
+			appendIcons(['founder','dev','designer']);
+			break;
+		case 539793061:
+			appendIcons(['dev']);
+			break;
+		case 86322416:
+			appendIcons(['help','old']);
+			break;
+	}
+}
 
-if(localStorage.getItem("removeAway") == "true")
-{
-var awayHrefs=['a[href^="https://vk.com/away.php"]','a[href^="/away.php"]'];
-document.arrive(awayHrefs, { existing: true }, function (e) {
-    const links = document.querySelectorAll(awayHrefs);
-    links.forEach(link => {
-        const decodedUrl = decodeURIComponent(new URLSearchParams(link.search).get('to'));
-        link.href = decodedUrl;
-    });
+function createSVG() {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '20');
+  svg.setAttribute('height', '20');
+  svg.setAttribute('viewBox', '0 0 20 20');
+  svg.setAttribute('fill', 'none');
+  svg.style.marginLeft = '8px';
+  svg.style.marginTop = '6px';
+
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('clip-path', 'url(#clip0_120_106)');
+
+  const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path1.setAttribute('d', 'M0 9.6C0 5.0745 0 2.81177 1.40589 1.40589C2.81177 0 5.0745 0 9.6 0H10.4C14.9255 0 17.1882 0 18.5941 1.40589C20 2.81177 20 5.0745 20 9.6V10.4C20 14.9255 20 17.1882 18.5941 18.5941C17.1882 20 14.9255 20 10.4 20H9.6C5.0745 20 2.81177 20 1.40589 18.5941C0 17.1882 0 14.9255 0 10.4V9.6Z');
+  path1.setAttribute('fill', '#2961F4');
+
+  const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path2.setAttribute('fill-rule', 'evenodd');
+  path2.setAttribute('clip-rule', 'evenodd');
+  path2.setAttribute('d', 'M18.5236 18.6629C17.1126 20.0001 14.8506 20.0001 10.4 20.0001H9.60002C5.14957 20.0001 2.88746 20.0001 1.47656 18.663V17.3155C1.47656 15.5734 2.88882 14.1611 4.63092 14.1611H15.3692C17.1113 14.1611 18.5236 15.5734 18.5236 17.3155V18.6629Z');
+  path2.setAttribute('fill', '#589AFA');
+
+  const path3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path3.setAttribute('d', 'M11.0255 14.1612C6.21427 14.1612 3.47006 11.1884 3.35571 6.2417H5.76573C5.84489 9.87243 7.6216 11.4104 9.02887 11.7274V6.2417H9.363C12.0311 6.2417 13.7337 6.2417 14.8147 6.2417C15.8596 6.2417 16.5837 7.08876 16.5837 8.13369C16.5837 8.13369 12.9883 8.13369 11.2983 8.13369V9.45816H16.5837V11.2556H11.2983V12.5259H16.5837C16.5837 13.429 15.8516 14.1612 14.9485 14.1612H11.0255Z');
+  path3.setAttribute('fill', 'white');
+
+  g.appendChild(path1);
+  g.appendChild(path2);
+  g.appendChild(path3);
+  svg.appendChild(g);
+
+  return svg;
+}
+
+function createTooltipText(roles) {
+  const tooltipText = document.createElement('div');
+  tooltipText.style.position = 'absolute';
+  tooltipText.style.fontSize = '13px';
+  tooltipText.style.fontWeight = '400';
+  tooltipText.style.backgroundColor = 'var(--vkui--color_background_tertiary)';
+  tooltipText.style.borderRadius = '8px';
+  tooltipText.style.border = '2px solid 1px solid var(--vkui--color_separator_primary)';
+  tooltipText.style.color = '2px solid 1px solid var(--vkui--color_text_primary)';
+  tooltipText.style.padding = '4px 24px';
+  tooltipText.style.boxShadow = 'var(--vkui--elevation3)';
+  tooltipText.style.zIndex = '999999';
+
+roles.forEach(role => {
+    let text;
+    switch (role) {
+        case 'founder':
+            text = '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="10" fill="url(#paint0_linear_35635_1132)"/><path d="M11.9853 7.37283L14.614 7.63087C15.5287 7.72065 15.8092 8.6348 15.1029 9.23539L13.0449 10.9854L13.8089 13.8362C14.0598 14.7724 13.2814 15.3392 12.5018 14.7757L10.0012 12.9686L7.50063 14.7757C6.72414 15.3369 5.94255 14.7726 6.19348 13.8362L6.95747 10.9854L4.8995 9.23539C4.19024 8.63228 4.46965 7.72106 5.38824 7.63087L8.01645 7.37283L9.17437 4.64137C9.53698 3.78598 10.4656 3.78641 10.828 4.64146L11.9853 7.37283Z" fill="white"/><defs><linearGradient id="paint0_linear_35635_1132" x1="-10" y1="10" x2="10" y2="30" gradientUnits="userSpaceOnUse"><stop stop-color="#70B2FF"/><stop offset="1" stop-color="#5C9CE6"/></linearGradient></defs></svg><div style="margin-left: 8px;">Создатель расширения VK Enhancer</div></div>';
+            break;
+        case 'dev':
+            text = '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="url(#paint0_linear_35635_1242)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.63935 15.1031C3.78688 14.2515 3.78688 12.8706 4.63935 12.0189L6.19473 10.465C6.30756 10.3522 6.34834 10.1873 6.31179 10.032C6.22658 9.67008 6.18151 9.29268 6.18151 8.90475C6.18151 6.19593 8.37945 4 11.0908 4C11.693 4 12.2699 4.10833 12.803 4.30656C13.0793 4.40932 13.1349 4.76017 12.9269 4.96912L11.036 6.86858C10.9546 6.95036 10.9089 7.06105 10.9089 7.17644V8.65467C10.9089 8.89567 11.1043 9.09104 11.3453 9.09104H12.8209C12.9362 9.09104 13.0469 9.04535 13.1287 8.96397L15.0309 7.07085C15.2398 6.86297 15.5905 6.91843 15.6933 7.19461C15.8916 7.72708 16 8.30328 16 8.90475C16 11.6136 13.8021 13.8095 11.0908 13.8095C10.7081 13.8095 10.3356 13.7658 9.97808 13.683C9.82346 13.6472 9.65948 13.688 9.5472 13.8002L7.98473 15.3612C7.13226 16.2129 5.75014 16.2129 4.89767 15.3612L4.63935 15.1031Z" fill="white"/><defs><linearGradient id="paint0_linear_35635_1242" x1="-11.3295" y1="-12.7168" x2="18.3815" y2="17.4567" gradientUnits="userSpaceOnUse"><stop stop-color="#FFB73D"/><stop offset="1" stop-color="#FFA000"/></linearGradient></defs></svg><div style="margin-left: 8px;">Разработчик расширения VK Enhancer</div></div>';
+            break;
+        case 'designer':
+            text = '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="url(#paint0_radial_35635_1237)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M11.2494 4.7288C11.8594 5.41811 11.7951 6.47143 11.1058 7.08144L9.69121 8.33333H13.83C15.6712 8.33333 16.5343 10.6109 15.1554 11.8311L11.1058 15.4148C10.4165 16.0248 9.3632 15.9605 8.75319 15.2712C8.14317 14.5819 8.20746 13.5286 8.89678 12.9185L10.3114 11.6667H6.17262C4.3314 11.6667 3.46838 9.38911 4.84719 8.16892L8.89678 4.58521C9.58609 3.9752 10.6394 4.03948 11.2494 4.7288Z" fill="white"/><defs><radialGradient id="paint0_radial_35635_1237" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(3.52601 2.36994) rotate(45.4424) scale(21.173 27.2409)"><stop offset="0.0433247" stop-color="#FFD44C"/><stop offset="0.353531" stop-color="#FF962E"/><stop offset="0.702496" stop-color="#FF5773"/><stop offset="1" stop-color="#FA60A3"/></radialGradient></defs></svg><div style="margin-left: 8px;">Дизайнер расширения VK Enhancer</div></div>';
+            break;
+        case 'help':
+            text = '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"> <rect width="20" height="20" rx="10" fill="url(#paint0_linear_35635_1261)"/> <path d="M6.2 6.5C6.53137 6.5 6.8 6.76863 6.8 7.1V9.3498C6.8 9.59833 7.00147 9.7998 7.25 9.7998V9.7998C7.49853 9.7998 7.7 9.59833 7.7 9.3498V5.6C7.7 5.26863 7.96863 5 8.3 5V5C8.63137 5 8.9 5.26863 8.9 5.6V8.8498C8.9 9.09833 9.10147 9.2998 9.35 9.2998V9.2998C9.59853 9.2998 9.8 9.09833 9.8 8.8498V4.89981C9.8 4.56843 10.0686 4.2998 10.4 4.2998V4.2998C10.7314 4.2998 11 4.56843 11 4.8998V8.8498C11 9.09833 11.2015 9.2998 11.45 9.2998V9.2998C11.6985 9.2998 11.9 9.09833 11.9 8.8498V5.8998C11.9 5.56843 12.1686 5.2998 12.5 5.2998V5.2998C12.8314 5.2998 13.1 5.56843 13.1 5.8998V11.3698L14.5154 9.80029C14.805 9.47916 15.3045 9.46601 15.6106 9.77146V9.77146C15.8876 10.048 15.9083 10.4895 15.6575 10.7901C15.0449 11.5242 13.9413 12.8469 13.2986 13.6182C12.2472 14.8799 10.7073 15.2999 9.54876 15.2999C5.76833 15.2999 5.6 12.7544 5.6 11.8928L5.6 7.1C5.6 6.76863 5.86863 6.5 6.2 6.5V6.5Z" fill="white"/> <defs> <linearGradient id="paint0_linear_35635_1261" x1="-10" y1="10" x2="10" y2="30" gradientUnits="userSpaceOnUse"> <stop stop-color="#70B2FF"/> <stop offset="1" stop-color="#5C9CE6"/> </linearGradient> </defs> </svg><div style="margin-left: 8px;">Тестер расширения VK Enhancer</div></div>';
+            break;
+        case 'old':
+            text = '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"> <rect width="20" height="20" rx="10" fill="url(#paint0_linear_35635_1259)"/> <path d="M9.54691 4.03936C9.5956 4.00469 9.65761 3.99211 9.71676 4.00488C9.82904 4.02913 9.89958 4.13616 9.87432 4.24395L9.87428 4.24394C9.84477 4.36985 9.80783 4.46569 9.76346 4.53147C8.19037 6.86335 8.88126 8.26503 9.94201 8.41565C11.0392 8.57145 11.8417 7.86577 11.67 6.3426C11.6404 6.08032 11.6157 5.85929 11.5958 5.67949C11.5912 5.63709 11.602 5.59444 11.6264 5.55884C11.6846 5.474 11.8035 5.45056 11.8919 5.50647L11.8919 5.50645C12.2484 5.73205 12.6751 6.14228 13.172 6.73714C14.9401 8.85418 15.0092 10.6262 14.9993 11.3883C14.9636 14.1208 12.8566 16 9.99964 16C7.1427 16 5 14.1212 5 11.3883C5.01265 9.31934 6.1013 6.40699 9.10674 4.34818C9.21899 4.27128 9.36571 4.16834 9.54691 4.03936Z" fill="white"/> <defs> <linearGradient id="paint0_linear_35635_1259" x1="-10" y1="10" x2="10" y2="30" gradientUnits="userSpaceOnUse"> <stop stop-color="#FF5263"/> <stop offset="1" stop-color="#FF3347"/> </linearGradient> </defs> </svg><div style="margin-left: 8px;">Установил VK Enhancer до релиза в магазине Chrome</div></div>';
+            break;
+        default:
+            text = '';
+            break;
+    }
+    tooltipText.insertAdjacentHTML('beforeend', text);
 });
+
+  return tooltipText;
 }
 
+function appendIcons(roles) {
+  const iconsContainer = document.querySelector('.OwnerPageName__icons');
+  if (!iconsContainer) return;
+
+  const svg = createSVG();
+  const tooltipText = createTooltipText(roles);
+
+  const tooltip = document.createElement('div');
+  tooltip.style.opacity = '0';
+  tooltip.style.position = 'absolute';
+  tooltip.style.transition = 'opacity 0.3s ease';
+  tooltip.style.zIndex = '999999';
+  tooltip.appendChild(tooltipText);
+
+  svg.addEventListener('mouseenter', function() {
+    tooltip.style.opacity = '1';
+  });
+
+  svg.addEventListener('mouseleave', function() {
+    tooltip.style.opacity = '0';
+  });
+
+  iconsContainer.appendChild(svg);
+  iconsContainer.appendChild(tooltip);
+}
+
+///КОНЕЦ ЗНАЧКОВ В ПРОФИЛЯХ///
+///УБРАТЬ AWAY.PHP///
+if (localStorage.getItem("removeAway") == "true") {
+  const awayHrefs = [
+    'a[href^="https://vk.com/away.php"]',
+    'a[href^="/away.php"]',
+  ];
+  document.arrive(awayHrefs, { existing: true }, function (link) {
+    const url = new URL(link.href);
+    const toParam = url.searchParams.get("to");
+    if (toParam) {
+      const decodedUrl = decodeURIComponent(toParam);
+      link.href = decodedUrl;
+    }
+  });
+}
+
+
+function removeAway(str) {
+  const decodeMap = {};
+  const win1251 = new TextDecoder("windows-1251");
+  for (let i = 0x00; i <= 0xff; i++) {
+    const hex = (i <= 0x0f ? "0" : "") + i.toString(16).toUpperCase();
+    decodeMap[hex] = win1251.decode(Uint8Array.from([i]));
+  }
+  return str.replace(/%([0-9A-F]{2})/g, (match, hex) => decodeMap[hex]);
+}
+///КОНЕЦ УБРАТЬ AWAY.PHP///
+///ДЛЯ НОВОГО ДИЗАЙНА ССЫЛКИ В ЛС ИЗ ПРОФИЛЯ///
 if (localStorage.getItem("isNewDesign") === "true") {
-    var imHrefs = ['a[href^="/im?sel="]','a[href^="https://vk.com/im?sel="]'];
-    document.arrive(imHrefs, { existing: true }, function (e) {
-        const links = document.querySelectorAll(imHrefs.join(', '));
-        links.forEach(link => {
-            const href = link.href;
-            let newHref = href;
-            if (href.includes("https://vk.com")) {
-                newHref = href.replace("https://vk.com", "");
-            }
-            newHref = newHref.replace(/\/im\?sel=(-?\d+)/, '/im/convo/$1');
-            link.href = newHref;
-            const onclickValue = link.getAttribute('onclick');
-            if (onclickValue && onclickValue.startsWith('return WriteBox.toFull')) {
-                link.removeAttribute('onclick');
-            }
-        });
+  const imHrefs = ['a[href^="/im?sel="]', 'a[href^="https://vk.com/im?sel="]'];
+  document.arrive(imHrefs, { existing: true }, function (e) {
+    const links = document.querySelectorAll(imHrefs.join(", "));
+    links.forEach((link) => {
+      const href = link.href;
+      let newHref = href;
+      if (href.includes("https://vk.com")) {
+        newHref = href.replace("https://vk.com", "");
+      }
+      newHref = newHref.replace(/\/im\?sel=(-?\d+)/, "/im/convo/$1");
+      link.href = newHref;
+      const onclickValue = link.getAttribute("onclick");
+      if (onclickValue && onclickValue.startsWith("return WriteBox.toFull")) {
+        link.removeAttribute("onclick");
+      }
     });
+  });
 }
-
+///КОНЕЦ ДЛЯ НОВОГО ДИЗАЙНА ССЫЛКИ В ЛС ИЗ ПРОФИЛЯ///
 function backPostReactionsFunc() {
-	if(localStorage.getItem("removePostReactions") != 'true') {
-	const likeBtns = document.querySelectorAll(
-        ".PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomAction:first-child, .PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomActionContainer:first-child"
-      );
-	likeBtns.forEach(function (element) {
-		if (!element.closest("#profile_redesigned")) {
-			element.style.paddingRight = `0px`;
-		}
-	});
-	    const isDonate = document.querySelector(".PostActionStatusBar__rightInner");
+  if (localStorage.getItem("removePostReactions") != "true") {
+    const likeBtns = document.querySelectorAll(
+      ".PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomAction:first-child, .PostBottomActionLikeBtns--withBgButtons .like_btns>.PostBottomActionContainer:first-child"
+    );
+    likeBtns.forEach(function (element) {
+      if (!element.closest("#profile_redesigned")) {
+        element.style.paddingRight = `0px`;
+      }
+    });
+    const isDonate = document.querySelector(".PostActionStatusBar__rightInner");
     if (isDonate) {
       const likeTop = document.querySelectorAll(
         ".ReactionsPreview--isInActionStatusBar"
@@ -318,11 +459,11 @@ function backPostReactionsFunc() {
         }
       });
     }
-	const customStyle = fromId("postReactionsMargin24");
-	if (customStyle) {
-		customStyle.remove();
-	}
-	}	
+    const customStyle = fromId("postReactionsMargin24");
+    if (customStyle) {
+      customStyle.remove();
+    }
+  }
 }
 
 ///ОТПРАВКА ФОТО И ВИДЕО///
@@ -336,10 +477,10 @@ clmno.addEventListener('click', function() {
         inputPhoto.click();
 });
 inputPhoto.addEventListener('change', function() {
-		if (inputPhoto.files.length > 0) {
+    if (inputPhoto.files.length > 0) {
 handleUpload();          
-		}
-	});
+    }
+  });
 
 async function handleUpload() {
   const audioFileInput = document.getElementById('im_full_upload');
@@ -381,191 +522,282 @@ async function uploadFile(uploadUrl, fileNameOutput) {
 */
 ///КОНЕЦ ОТПРАВКИ ФОТО И ВИДЕО///
 ///СКАЧИВАНИЕ ГС///
-document.arrive(".AttachVoice", {
-    existing: true
-}, function(e) {
-	let styleElement = fromId("vkEnhancerDownloadAudioButtonStyle");
-	if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "vkEnhancerDownloadAudioButtonStyle";
-			document.head.appendChild(styleElement);
-	}
-	var bgImageUri = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath fill='%23447bba' fill-rule='evenodd' d='M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z' clip-rule='evenodd'%3E%3C/path%3E%3C/svg%3E");`;
-	styleElement.innerHTML = '.vkEnhancerDownloadAudioButton:hover:before{background:#8fadc880;opacity:1}.vkEnhancerDownloadAudioButton{color:var(--vkui--color_icon_accent);'+bgImageUri+'background-position: center;background-repeat: no-repeat;isolation: isolate;position: relative; align-items:center; justify-content: center;display: flex;cursor: pointer;border-radius: 100px; margin-left: 6px; margin-right: 4px; order: 3; top: 2px;height: 24px; width: 24px;}.vkEnhancerDownloadAudioButton:before {background: #8fadc84d;color: var(--blue_400);opacity: 1;transition: background-color .14s; border-radius:100px; bottom: 0;content: "";left: 0; position: absolute;right: 0;top: 0;z-index:-1;}';
-    let download_name = getLink(document.querySelector(".AttachVoice")).split("/").at(-1);
+document.arrive(
+  ".AttachVoice",
+  {
+    existing: true,
+  },
+  function (e) {
+    let styleElement = fromId("vkEnhancerDownloadAudioButtonStyle");
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = "vkEnhancerDownloadAudioButtonStyle";
+      document.head.appendChild(styleElement);
+    }
+    var bgImageUri = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath fill='%23447bba' fill-rule='evenodd' d='M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z' clip-rule='evenodd'%3E%3C/path%3E%3C/svg%3E");`;
+    styleElement.innerHTML =
+      ".vkEnhancerDownloadAudioButton:hover:before{background:#8fadc880;opacity:1}.vkEnhancerDownloadAudioButton{color:var(--vkui--color_icon_accent);" +
+      bgImageUri +
+      'background-position: center;background-repeat: no-repeat;isolation: isolate;position: relative; align-items:center; justify-content: center;display: flex;cursor: pointer;border-radius: 100px; margin-left: 6px; margin-right: 4px; order: 3; top: 2px;height: 24px; width: 24px;}.vkEnhancerDownloadAudioButton:before {background: #8fadc84d;color: var(--blue_400);opacity: 1;transition: background-color .14s; border-radius:100px; bottom: 0;content: "";left: 0; position: absolute;right: 0;top: 0;z-index:-1;}';
+    let download_name = getLink(document.querySelector(".AttachVoice"))
+      .split("/")
+      .at(-1);
     let link = getLink(e);
-	let fileNameAud = getAudioId(e);
-    let download = create("a", {}, {
+    let fileNameAud = getAudioId(e);
+    let download = create(
+      "a",
+      {},
+      {
         href: getLink(e),
-        innerHTML: '',
+        innerHTML: "",
         download: download_name,
         "data-link": link,
-    });
-	download.classList.add("vkEnhancerDownloadAudioButton");
-    download.addEventListener("click", async function(e) {
-        e.preventDefault();
-        const a = document.createElement("a");
-        a.rel = "noopener";
-        a.target = "_blank";
-        a.download = fileNameAud;
-        const a_ = await globalThis.fetch(e.target.href, {
-            method: "GET",
-        });
-        let o = await a_.blob();
-        a.href = URL.createObjectURL(o);
-        setTimeout(() => {
-            URL.revokeObjectURL(o);
-        }, 4e4);
-        setTimeout(() => {
-            const a__ = document.createEvent("MouseEvents");
-            a__.initMouseEvent("click", !0, !0, window, 0, 0, 0, 80, 20, !1, !1, !1, !1, 0, null);
-            a.dispatchEvent(a__);
-        }, 0);
+      }
+    );
+    download.classList.add("vkEnhancerDownloadAudioButton");
+    download.addEventListener("click", async function (e) {
+      e.preventDefault();
+      const a = document.createElement("a");
+      a.rel = "noopener";
+      a.target = "_blank";
+      a.download = fileNameAud;
+      const a_ = await globalThis.fetch(e.target.href, {
+        method: "GET",
+      });
+      let o = await a_.blob();
+      a.href = URL.createObjectURL(o);
+      setTimeout(() => {
+        URL.revokeObjectURL(o);
+      }, 4e4);
+      setTimeout(() => {
+        const a__ = document.createEvent("MouseEvents");
+        a__.initMouseEvent(
+          "click",
+          !0,
+          !0,
+          window,
+          0,
+          0,
+          0,
+          80,
+          20,
+          !1,
+          !1,
+          !1,
+          !1,
+          0,
+          null
+        );
+        a.dispatchEvent(a__);
+      }, 0);
     });
     e.children[0].appendChild(download);
-});
+  }
+);
 
 function getLink(elem) {
-    const t = {};
-    let n = 0;
-    for (const o of Object.keys(elem))
-        if (
-            (o.startsWith("__reactFiber") ? ((t.fiber = elem[o]), ++n) : o.startsWith("__reactProps") && ((t.props = elem[o]), ++n), 2 === n)) break;
-    return t.fiber.return.memoizedProps.voice.linkMp3;
+  const t = {};
+  let n = 0;
+  for (const o of Object.keys(elem))
+    if (
+      (o.startsWith("__reactFiber")
+        ? ((t.fiber = elem[o]), ++n)
+        : o.startsWith("__reactProps") && ((t.props = elem[o]), ++n),
+      2 === n)
+    )
+      break;
+  return t.fiber.return.memoizedProps.voice.linkMp3;
 }
 
 function getAudioId(elem) {
-    const t = {};
-    let n = 0;
-    for (const o of Object.keys(elem))
-        if (
-            (o.startsWith("__reactFiber") ? ((t.fiber = elem[o]), ++n) : o.startsWith("__reactProps") && ((t.props = elem[o]), ++n), 2 === n)) break;
-    var o = t.fiber.return.memoizedProps.voice.ownerId;
-	var a = t.fiber.return.memoizedProps.voice.id;
-	var i = [o, a].join("_");
-	return `audio_message${i}.mp3`;
+  const t = {};
+  let n = 0;
+  for (const o of Object.keys(elem))
+    if (
+      (o.startsWith("__reactFiber")
+        ? ((t.fiber = elem[o]), ++n)
+        : o.startsWith("__reactProps") && ((t.props = elem[o]), ++n),
+      2 === n)
+    )
+      break;
+  var o = t.fiber.return.memoizedProps.voice.ownerId;
+  var a = t.fiber.return.memoizedProps.voice.id;
+  var i = [o, a].join("_");
+  return `audio_message${i}.mp3`;
 }
 ///КОНЕЦ СКАЧИВАНИЯ ГС///
 ///ОТПРАВКА АУДИО КАК ГОЛОСОВОГО///
-document.arrive(".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper > div > .ActionsMenu", { existing: true }, function (e) {
-let styleElement = fromId("MEPopperStyle");
-	if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "MEPopperStyle";
-			document.head.appendChild(styleElement);
-	}
-styleElement.innerHTML = '.VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{top:517px!important;}';
-var clmno = document.createElement("a");
-clmno.innerHTML = '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular AudioMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#voice_outline_24" style="fill: currentcolor;"></use></svg></i><span class="ActionsMenuAction__title">Голосовое</span></button>';
-var newpanel = document.querySelector(".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper > div > .ActionsMenu");
-var setElement = document.querySelector('.AudioMenuPopper');
-if (!setElement) {
-    newpanel.appendChild(clmno);
-}
-setElement = document.querySelector('.AudioMenuPopper');
-var eventListenerSet = false;
-if (!eventListenerSet) {
-setElement.addEventListener('click', function() {
-    var contAudio = 'Прежде чем загружать аудиосообщение, убедитесь в том, что оно записано не в стерео, а в моно. Иначе оно не будет воспроизводиться в приложении на смартфонах';
-	VKEnhancerMessageBox('Внимание!',contAudio,'Загрузить','Отмена','yes','no', function() {
-        audioFileInput.click();
-    });
-});
-  eventListenerSet = true;
-}
+document.arrive(
+  ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper > div > .ActionsMenu",
+  { existing: true },
+  function (e) {
+    let styleElement = fromId("MEPopperStyle");
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = "MEPopperStyle";
+      document.head.appendChild(styleElement);
+    }
+    styleElement.innerHTML =
+      ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{top:517px!important;}";
+    var clmno = document.createElement("a");
+    clmno.innerHTML =
+      '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular AudioMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#voice_outline_24" style="fill: currentcolor;"></use></svg></i><span class="ActionsMenuAction__title">Голосовое</span></button>';
+    var newpanel = document.querySelector(
+      ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper > div > .ActionsMenu"
+    );
+    var setElement = document.querySelector(".AudioMenuPopper");
+    if (!setElement) {
+      newpanel.appendChild(clmno);
+    }
+    setElement = document.querySelector(".AudioMenuPopper");
+    var eventListenerSet = false;
+    if (!eventListenerSet) {
+      setElement.addEventListener("click", function () {
+        var contAudio =
+          "Прежде чем загружать аудиосообщение, убедитесь в том, что оно записано не в стерео, а в моно. Иначе оно не будет воспроизводиться в приложении на смартфонах";
+        VKEnhancerMessageBox(
+          "Внимание!",
+          contAudio,
+          "Загрузить",
+          "Отмена",
+          "yes",
+          "no",
+          function () {
+            audioFileInput.click();
+          }
+        );
+      });
+      eventListenerSet = true;
+    }
 
-async function VKEnhancerMessageBox(title, content, buttonCont, buttonCont2, color, color2, callback) {
-    var i = new MessageBox;
-    i.addButton(buttonCont,function() {
-        if (callback) {
+    async function VKEnhancerMessageBox(
+      title,
+      content,
+      buttonCont,
+      buttonCont2,
+      color,
+      color2,
+      callback
+    ) {
+      var i = new MessageBox();
+      i.addButton(
+        buttonCont,
+        function () {
+          if (callback) {
             callback();
+          }
+        },
+        color
+      );
+      i.addButton(buttonCont2, !1, color2);
+      i.setOptions({
+        title: title,
+        bodyStyle:
+          "overflow: hidden; text-overflow: ellipsis; color: var(--vkenhancer)",
+      });
+      i.content(content);
+      i.show();
+      const appendHere = document.querySelector(
+        '.box_body[style="overflow: hidden; text-overflow: ellipsis; color: var(--vkenhancer);"]'
+      );
+      var inputWrap = document.createElement("a");
+      inputWrap.innerHTML =
+        '<input style="display:none;" type="file" id="audioFileInput" accept="audio/mp3,audio/ogg,audio/wav">';
+      appendHere.appendChild(inputWrap);
+      const audioFileInput = document.getElementById("audioFileInput");
+      audioFileInput.addEventListener("change", function () {
+        if (audioFileInput.files.length > 0) {
+          handleUpload();
+          i.hide();
         }
-    }, color);
-	i.addButton(buttonCont2,!1, color2);
-    i.setOptions({title: title, bodyStyle: "overflow: hidden; text-overflow: ellipsis; color: var(--vkenhancer)"});
-    i.content(content);
-    i.show();
-	const appendHere = document.querySelector('.box_body[style="overflow: hidden; text-overflow: ellipsis; color: var(--vkenhancer);"]');
-	var inputWrap = document.createElement("a");
-	inputWrap.innerHTML = '<input style="display:none;" type="file" id="audioFileInput" accept="audio/mp3,audio/ogg,audio/wav">';
-	appendHere.appendChild(inputWrap);
-	const audioFileInput = document.getElementById('audioFileInput');
-	audioFileInput.addEventListener('change', function() {
-		if (audioFileInput.files.length > 0) {
-			handleUpload();
-			i.hide();
-		}
-	});
-}
+      });
+    }
 
-async function handleUpload() {
-  const audioFileInput = document.getElementById('audioFileInput');
-  const file = audioFileInput.files[0];
-  await sendAudioMessage(file);
-}
-async function sendAudioMessage (fileNameOutput) {
-  /** Получаем URL для загрузки */
-  const uploadUrl1 = await vkApi.api("docs.getMessagesUploadServer",{peer_id: vk.id,type:"audio_message"})
-  const uploadUrl = uploadUrl1['upload_url'];
-	
-  /** Загружаем файл */
-  let file =  await uploadFile(uploadUrl, fileNameOutput);
-  /** Сохраняем */
-  const data = JSON.parse(file);
-  console.log('[VK ENH] File uploaded: ' + data['file']);
-  let doc = await vkApi.api("docs.save",{file: data['file']})
-  doc = doc.audio_message;
+    async function handleUpload() {
+      const audioFileInput = document.getElementById("audioFileInput");
+      const file = audioFileInput.files[0];
+      await sendAudioMessage(file);
+    }
+    async function sendAudioMessage(fileNameOutput) {
+      /** Получаем URL для загрузки */
+      const uploadUrl1 = await vkApi.api("docs.getMessagesUploadServer", {
+        peer_id: vk.id,
+        type: "audio_message",
+      });
+      const uploadUrl = uploadUrl1["upload_url"];
 
-  /** Отправляем */
-  var peerId = new URL(window.location.href).pathname.split("/").at(-1);
-  await vkApi.api("messages.send", {
-	peer_id: peerId,
-	attachment: `doc${doc.owner_id}_${doc.id}_${doc.access_key}`,
-	random_id: Math.floor(Math.random() * 2147483647)
-  })
-}
+      /** Загружаем файл */
+      let file = await uploadFile(uploadUrl, fileNameOutput);
+      /** Сохраняем */
+      const data = JSON.parse(file);
+      console.log("[VK ENH] File uploaded: " + data["file"]);
+      let doc = await vkApi.api("docs.save", { file: data["file"] });
+      doc = doc.audio_message;
 
-async function uploadFile(uploadUrl, fileNameOutput) {
-    const formData = new FormData();
-    formData.append('file', fileNameOutput);
-    const xhr = new XMLHttpRequest();
-    return new Promise((resolve, reject) => {
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                resolve(xhr.responseText);
-            } else {
-                reject(new Error('Upload failed. Status: ' + xhr.status));
-            }
+      /** Отправляем */
+      var peerId = new URL(window.location.href).pathname.split("/").at(-1);
+      await vkApi.api("messages.send", {
+        peer_id: peerId,
+        attachment: `doc${doc.owner_id}_${doc.id}_${doc.access_key}`,
+        random_id: Math.floor(Math.random() * 2147483647),
+      });
+    }
+
+    async function uploadFile(uploadUrl, fileNameOutput) {
+      const formData = new FormData();
+      formData.append("file", fileNameOutput);
+      const xhr = new XMLHttpRequest();
+      return new Promise((resolve, reject) => {
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            resolve(xhr.responseText);
+          } else {
+            reject(new Error("Upload failed. Status: " + xhr.status));
+          }
         };
 
-        xhr.onerror = function() {
-            reject(new Error('Upload failed. Network error'));
+        xhr.onerror = function () {
+          reject(new Error("Upload failed. Network error"));
         };
 
-        xhr.open('POST', uploadUrl);
+        xhr.open("POST", uploadUrl);
         xhr.send(formData);
-    });
-}
-});
+      });
+    }
+  }
+);
 
 ///КОНЕЦ ОТПРАВКИ АУДИО КАК ГОЛОСОВОГО///
 ///МАРГИН ДЛЯ ЛАЙКОВ ПРИ ВЫКЛЮЧЕННЫХ РЕАКЦИЯХ///
-if ((localStorage.getItem("removePostReactions") == 'true' || localStorage.getItem("secretFunctions") == 'true')) {
-	const wallSel = ['.PostActionStatusBar--inPost'];
-	document.arrive(wallSel, { existing: true }, function (e) {
-		updateMarginLeft();
-	});
+if (
+  localStorage.getItem("removePostReactions") == "true" ||
+  localStorage.getItem("secretFunctions") == "true"
+) {
+  const wallSel = [".PostActionStatusBar--inPost"];
+  document.arrive(wallSel, { existing: true }, function (e) {
+    updateMarginLeft();
+  });
+  document.arrive('.post--withPostBottomAction:not(.post--withActionStatusBar)', { existing: true }, function (e) {
+    var postId = e.getAttribute('id');
+    var postButton = e.querySelector('.PostBottomAction.PostBottomAction--withBg.PostButtonReactions.PostButtonReactions--post');
+    if (postButton) {
+        postButton.removeAttribute('onmouseenter');
+		postButton.removeAttribute('onkeydown');
+        postButton.setAttribute('onmouseover', "Likes.showLikes(this, '" + postId.replace('post', 'wall') + "', {isFromReactionsPreview:1})");
+    }
+  });
 }
 
 function updateMarginLeft() {
   if (
     window.location.href.includes("wall") &&
-    (localStorage.getItem("removePostReactions") == 'true' || localStorage.getItem("secretFunctions") == 'true')
+    (localStorage.getItem("removePostReactions") == "true" ||
+      localStorage.getItem("secretFunctions") == "true")
   ) {
     const reactionsPreviewCount = document.querySelector(
       '.ReactionsPreview__count[data-section-ref="like-button-count"]'
     );
-	//console.log(reactionsPreviewCount);
+    //console.log(reactionsPreviewCount);
     if (reactionsPreviewCount) {
       const textLength = reactionsPreviewCount.textContent.length;
       const newMarginLeft = 12 + (textLength - 1) * 4;
@@ -577,12 +809,12 @@ function updateMarginLeft() {
           element.style.paddingRight = `${newMarginLeft}px`;
         }
       });
-	  let styleElement = fromId("postReactionsMargin24");
-	  if (!styleElement) {
-		styleElement = create("style", {}, { id: "postReactionsMargin24" });
-		document.head.appendChild(styleElement);
-	  }
-	  styleElement.innerHTML = '.ReactionsPreview{margin-left:24px!important;}'
+      let styleElement = fromId("postReactionsMargin24");
+      if (!styleElement) {
+        styleElement = create("style", {}, { id: "postReactionsMargin24" });
+        document.head.appendChild(styleElement);
+      }
+      styleElement.innerHTML = ".ReactionsPreview{margin-left:24px!important;}";
     }
     const isDonate = document.querySelector(".PostActionStatusBar__rightInner");
     if (isDonate) {
@@ -599,27 +831,40 @@ function updateMarginLeft() {
 }
 ///КОНЕЦ МАРГИНА ДЛЯ ЛАЙКОВ ПРИ ВЫКЛЮЧЕННЫХ РЕАКЦИЯХ///
 ///РЕЗУЛЬТАТЫ ОПРОСА БЕЗ ГОЛОСОВАНИЯ///
-if (localStorage.getItem("pollResultsValue") == 'true') {
-document.arrive("[class^='PollPrimaryAttachment-module__voting']", { existing: true }, function (e) {
-   let styleElement = fromId("PollResultsShow");
-		if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "PollResultsShow";
-			document.head.appendChild(styleElement);
-			}
-			styleElement.innerHTML = '.VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionVotes"] { opacity: .4; } .VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionRight"] { opacity: 1; transform: translateX(0); } .VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionCheckboxIcon"] { opacity: 0; } .VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionFill"] { opacity:.06 } [class*="PollOptions-module__votingOptionsDark"].VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionFill"] { opacity:.12 } ';
-	var polls = document.querySelectorAll('[class^="PollOptions-module__votingOptions"]');
-	for (var poll of polls) {
-		poll.classList.add("VKEnhancer-module__votingOptionsVoted");
-	}
-	var percentageElements = document.querySelectorAll('[class^="PollOptions-module__votingOptionRight"]');
-    percentageElements.forEach(function(element) {
-    var percentage = parseFloat(element.textContent.replace('%', ''));
-    var parentElement = element.closest('[class^="PollOptions-module__votingOptionWrapper"]');
-    var fillElement = parentElement.querySelector('[class^="PollOptions-module__votingOptionFill"]');
-    fillElement.style.width = percentage + '%';
-  });
-});
+if (localStorage.getItem("pollResultsValue") == "true") {
+  document.arrive(
+    "[class^='PollPrimaryAttachment-module__voting']",
+    { existing: true },
+    function (e) {
+      let styleElement = fromId("PollResultsShow");
+      if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "PollResultsShow";
+        document.head.appendChild(styleElement);
+      }
+      styleElement.innerHTML =
+        '.VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionVotes"] { opacity: .4; } .VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionRight"] { opacity: 1; transform: translateX(0);} [class*="PollOptions-module__votingOptionsVoted"] [class^="PollOptions-module__votingOptionRight"]{ margin-right:0px!important;} div:has(>[class^="PollOptions-module__votingOptionCheckboxIcon"]>svg) > [class^="PollOptions-module__votingOptionRight"] {margin-right:28px;} [class*="PollOptions-module__votingOptionsVoted"] [class^="PollOptions-module__votingOptionCheckboxIcon"]{display:none!important;}.VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionFill"] { opacity:.06 } [class*="PollOptions-module__votingOptionsDark"].VKEnhancer-module__votingOptionsVoted [class^="PollOptions-module__votingOptionFill"] { opacity:.12 } ';
+      var polls = document.querySelectorAll(
+        '[class^="PollOptions-module__votingOptions"]'
+      );
+      for (var poll of polls) {
+        poll.classList.add("VKEnhancer-module__votingOptionsVoted");
+      }
+      var percentageElements = document.querySelectorAll(
+        '[class^="PollOptions-module__votingOptionRight"]'
+      );
+      percentageElements.forEach(function (element) {
+        var percentage = parseFloat(element.textContent.replace("%", ""));
+        var parentElement = element.closest(
+          '[class^="PollOptions-module__votingOptionWrapper"]'
+        );
+        var fillElement = parentElement.querySelector(
+          '[class^="PollOptions-module__votingOptionFill"]'
+        );
+        fillElement.style.width = percentage + "%";
+      });
+    }
+  );
 }
 ///КОНЕЦ РЕЗУЛЬТАТОВ ОПРОСА БЕЗ ГОЛОСОВАНИЯ///
 document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
@@ -654,27 +899,28 @@ document.arrive(".BurgerMenu__actionsMenu", { existing: true }, function (e) {
 });
 //console.log(localStorage.getItem("isCentralDesign"));
 ///НАЧАЛО ЦЕНТРАЛЬНОГО ДИЗАЙНА///
-		
-	  if(!im.test(window.location.href)) {
-		let styleElement = fromId("rightBarClassicRemove");
-		if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "rightBarClassicRemove";
-			document.head.appendChild(styleElement);
-			}
-			styleElement.innerHTML = ".MainRightRoot{display:none;}";
-	  }
-	  else {
-		const customStyle = fromId("rightBarClassicRemove");
-		if (customStyle) {
-			customStyle.remove();
-		}
-	  }
-    
+
+if (!im.test(window.location.href)) {
+  let styleElement = fromId("rightBarClassicRemove");
+  if (!styleElement) {
+    styleElement = document.createElement("style");
+    styleElement.id = "rightBarClassicRemove";
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML = ".MainRightRoot{display:none;}";
+} else {
+  const customStyle = fromId("rightBarClassicRemove");
+  if (customStyle) {
+    customStyle.remove();
+  }
+}
 
 deferredCallback(
   () => {
-    if (JSON.parse(localStorage.getItem("isCentralDesign")) && JSON.parse(localStorage.getItem("isVKMReforgedDesign"))) {
+    if (
+      JSON.parse(localStorage.getItem("isCentralDesign")) &&
+      JSON.parse(localStorage.getItem("isVKMReforgedDesign"))
+    ) {
       //console.log("Classical design activated");
       const cssLink = document.createElement("link");
       cssLink.rel = "stylesheet";
@@ -735,133 +981,146 @@ deferredCallback(
         });
       }
 
-      document.arrive(".ConvoHeader__infoContainer", { existing: true }, async function (e) {
-        // Проверяем, существует ли элемент div с классом simplebar-content
-        var simplebarContentDiv = document.querySelector(".simplebar-content");
-        var ConvoTitle__title = document.querySelector(
-          ".ConvoHeader__infoContainer >.ConvoTitle > .ConvoTitle__title"
-        ).textContent;
-        var ConvoUrl = new URL(window.location.href);
-        var ConvoHref = ConvoUrl.pathname;
-		
+      document.arrive(
+        ".ConvoHeader__infoContainer",
+        { existing: true },
+        async function (e) {
+          // Проверяем, существует ли элемент div с классом simplebar-content
+          var simplebarContentDiv =
+            document.querySelector(".simplebar-content");
+          var ConvoTitle__title = document.querySelector(
+            ".ConvoHeader__infoContainer >.ConvoTitle > .ConvoTitle__title"
+          ).textContent;
+          var ConvoUrl = new URL(window.location.href);
+          var ConvoHref = ConvoUrl.pathname;
 
-        // Создаем новый элемент
+          // Создаем новый элемент
 
-        let history = JSON.parse(localStorage.getItem("convo_history")) ?? [];
-        let convo = { name: ConvoTitle__title, href: ConvoHref };
-        history.find((e) => e.href === ConvoHref)
-          ? null
-          : (history.push(convo),
-            localStorage.setItem("convo_history", JSON.stringify(history)));
-        let convo_other = Array.from(
-          document.querySelectorAll("a.ARightRoot1")
-        ).find((e) => e.href === ConvoUrl.href);
-        let ids = "";
-        history.forEach((e) => (ids += e.href.split("/").at(-1) + ","));
-        ids = ids.slice(0, -1);
-        let obj = ids
-          ? await vkApi.api("messages.getConversationsById", {
-              peer_ids: ids,
-            })
-          : null;
-        let id = ConvoUrl.href.split("/").at(-1);
-		if(id.includes('?')) {
-			var match = ConvoUrl.pathname.match(/\/(\d+)$/);
-			id = match[1];
-			convo_other = Array.from(
-          document.querySelectorAll("a.ARightRoot1")
-        ).find((e) => e.href === `https://vk.com/im/convo/${id}`);
-		}
-        let user = obj.items.find((e) => e.peer.id == id);
-        let unread = user.unread_count ? user.unread_count : 0;
-        let muted = user?.push_settings?.no_sound ? true : false;
-        if (!convo_other) {
-          if (!simplebarContentDiv) {
-            // Если элемент .simplebar-content не существует, добавляем новый элемент внутрь элемента section с классом vkenhancer--right-section
-            var sectionElement = document.querySelector(
-              "section.vkenhancer--right-section"
-            );
-			try {
-				sectionElement.appendChild(
-					addConvoItem(ConvoTitle__title, ConvoHref, true, unread, muted)
-				);
-			}
-			catch(error) {
-				location.reload;
-			}
-            closeButtons();
-			checkPickerOfIm();
-          } else {
-            simplebarContentDiv.appendChild(
-              addConvoItem(ConvoTitle__title, ConvoHref, false, unread, muted)
-            );
-            closeButtons();
-			checkPickerOfIm();
+          let history = JSON.parse(localStorage.getItem("convo_history")) ?? [];
+          let convo = { name: ConvoTitle__title, href: ConvoHref };
+          history.find((e) => e.href === ConvoHref)
+            ? null
+            : (history.push(convo),
+              localStorage.setItem("convo_history", JSON.stringify(history)));
+          let convo_other = Array.from(
+            document.querySelectorAll("a.ARightRoot1")
+          ).find((e) => e.href === ConvoUrl.href);
+          let ids = "";
+          history.forEach((e) => (ids += e.href.split("/").at(-1) + ","));
+          ids = ids.slice(0, -1);
+          let obj = ids
+            ? await vkApi.api("messages.getConversationsById", {
+                peer_ids: ids,
+              })
+            : null;
+          let id = ConvoUrl.href.split("/").at(-1);
+          if (id.includes("?")) {
+            var match = ConvoUrl.pathname.match(/\/(\d+)$/);
+            id = match[1];
+            convo_other = Array.from(
+              document.querySelectorAll("a.ARightRoot1")
+            ).find((e) => e.href === `https://vk.com/im/convo/${id}`);
           }
-        }
-        deferredCallback(
-          () => {
-            MECommonContext.then((e) => {
-              e.store.subscribe((e) => {
-                history =
-                  JSON.parse(localStorage.getItem("convo_history")) ?? [];
-                let allhistory = e.convos;
-                for (let item of history) {
-                  let id = Number(item.href.split("/").at(-1));
-                  let user = allhistory.get(id);
-                  if (user) {
-                    let elem = Array.from(
-                      document.querySelectorAll("a.ARightRoot1")
-                    ).find((e) => e.href.indexOf(id) !== -1);
-                    if (!elem) return;
-                    let user_elem = elem.querySelector("i > span");
-                    user_elem.dataset.muted = user.push.mode !== "everything";
-                    user_elem.dataset.unread =
-                      user.unreadCount > 0 ? true : false;
-                    user_elem.innerText = user.unreadCount;
+          let user = obj.items.find((e) => e.peer.id == id);
+          let unread = user.unread_count ? user.unread_count : 0;
+          let muted = user?.push_settings?.no_sound ? true : false;
+          if (!convo_other) {
+            if (!simplebarContentDiv) {
+              // Если элемент .simplebar-content не существует, добавляем новый элемент внутрь элемента section с классом vkenhancer--right-section
+              var sectionElement = document.querySelector(
+                "section.vkenhancer--right-section"
+              );
+              try {
+                sectionElement.appendChild(
+                  addConvoItem(
+                    ConvoTitle__title,
+                    ConvoHref,
+                    true,
+                    unread,
+                    muted
+                  )
+                );
+              } catch (error) {
+                location.reload;
+              }
+              closeButtons();
+              checkPickerOfIm();
+            } else {
+              simplebarContentDiv.appendChild(
+                addConvoItem(ConvoTitle__title, ConvoHref, false, unread, muted)
+              );
+              closeButtons();
+              checkPickerOfIm();
+            }
+          }
+          deferredCallback(
+            () => {
+              MECommonContext.then((e) => {
+                e.store.subscribe((e) => {
+                  history =
+                    JSON.parse(localStorage.getItem("convo_history")) ?? [];
+                  let allhistory = e.convos;
+                  for (let item of history) {
+                    let id = Number(item.href.split("/").at(-1));
+                    let user = allhistory.get(id);
+                    if (user) {
+                      let elem = Array.from(
+                        document.querySelectorAll("a.ARightRoot1")
+                      ).find((e) => e.href.indexOf(id) !== -1);
+                      if (!elem) return;
+                      let user_elem = elem.querySelector("i > span");
+                      user_elem.dataset.muted = user.push.mode !== "everything";
+                      user_elem.dataset.unread =
+                        user.unreadCount > 0 ? true : false;
+                      user_elem.innerText = user.unreadCount;
+                    }
                   }
-                }
+                });
               });
-            });
-          },
-          { variable: "MECommonContext" }
-        );
-        const convoHeader = document.querySelector(".ConvoHeader");
-        // Создаем элемент div
-        const backButtonDiv = document.createElement("a");
-        backButtonDiv.classList.add("iconBackChats");
-        backButtonDiv.classList.add("ConvoHeader__back");
-        backButtonDiv.setAttribute("aria-describedby", ":r0:");
-        backButtonDiv.href = "/im";
-        // Создаем элемент SVG
-        const svgElement = document.createElement("svg");
-        svgElement.innerHTML =
-          '<svg aria-hidden="true" display="block" aria-label="Назад" class="vkuiIcon vkuiIcon--24 vkuiIcon--w-16 vkuiIcon--h-24 vkuiIcon--chevron_compact_left_24" viewBox="0 0 16 24" width="16" height="24" style="width: 16px; height: 24px;"><path fill="currentColor" d="M11.293 7.706a1 1 0 0 0 0-1.412l-.088-.088a.997.997 0 0 0-1.414.002l-5.084 5.084a1 1 0 0 0 0 1.416l5.084 5.084c.39.391 1.026.39 1.414.002l.088-.088a.995.995 0 0 0 0-1.412L7 12z"></path></svg>';
+            },
+            { variable: "MECommonContext" }
+          );
+          const convoHeader = document.querySelector(".ConvoHeader");
+          // Создаем элемент div
+          const backButtonDiv = document.createElement("a");
+          backButtonDiv.classList.add("iconBackChats");
+          backButtonDiv.classList.add("ConvoHeader__back");
+          backButtonDiv.setAttribute("aria-describedby", ":r0:");
+          backButtonDiv.href = "/im";
+          // Создаем элемент SVG
+          const svgElement = document.createElement("svg");
+          svgElement.innerHTML =
+            '<svg aria-hidden="true" display="block" aria-label="Назад" class="vkuiIcon vkuiIcon--24 vkuiIcon--w-16 vkuiIcon--h-24 vkuiIcon--chevron_compact_left_24" viewBox="0 0 16 24" width="16" height="24" style="width: 16px; height: 24px;"><path fill="currentColor" d="M11.293 7.706a1 1 0 0 0 0-1.412l-.088-.088a.997.997 0 0 0-1.414.002l-5.084 5.084a1 1 0 0 0 0 1.416l5.084 5.084c.39.391 1.026.39 1.414.002l.088-.088a.995.995 0 0 0 0-1.412L7 12z"></path></svg>';
 
-        // Добавляем SVG-элемент в div с классом backButtonDiv
-        backButtonDiv.appendChild(svgElement);
+          // Добавляем SVG-элемент в div с классом backButtonDiv
+          backButtonDiv.appendChild(svgElement);
 
-        // Добавляем SVG-элемент в div с классом ConvoHeader
-        convoHeader.prepend(backButtonDiv);
-        convoHeader.classList.add("ConvoHeader__backButtonAvailable");
-      });
+          // Добавляем SVG-элемент в div с классом ConvoHeader
+          convoHeader.prepend(backButtonDiv);
+          convoHeader.classList.add("ConvoHeader__backButtonAvailable");
+        }
+      );
 
       document.arrive(
         "#spa_root > .vkui__root:not(.VKCOMMessenger__reforgedRoot--settingsScreen)",
         { existing: false, fireOnAttributesModification: true },
         async function (e) {
-				var currentPageURL12 = window.location.href;
+          var currentPageURL12 = window.location.href;
 
-    // Проверяем, содержит ли текущий адрес страницы '/convo/'
-    if (currentPageURL12.includes("/convo/")) {
-        let styleElement = fromId("MEApp__mainPanel1234");
-		if (!styleElement) {
-			styleElement = create("style", {}, { id: "MEApp__mainPanel1234" });
-			document.head.appendChild(styleElement);
-		}
-		styleElement.innerHTML =     ".MEApp__mainPanel {display:none;}";
-    }
-		  
+          // Проверяем, содержит ли текущий адрес страницы '/convo/'
+          if (currentPageURL12.includes("/convo/")) {
+            let styleElement = fromId("MEApp__mainPanel1234");
+            if (!styleElement) {
+              styleElement = create(
+                "style",
+                {},
+                { id: "MEApp__mainPanel1234" }
+              );
+              document.head.appendChild(styleElement);
+            }
+            styleElement.innerHTML = ".MEApp__mainPanel {display:none;}";
+          }
+
           const vkuiRoot = e;
 
           const currentURL = window.location.href;
@@ -931,7 +1190,7 @@ deferredCallback(
           nestedDiv.appendChild(section);
 
           // Добавляем созданный элемент в DOM
-		  vkuiRoot.appendChild(container);
+          vkuiRoot.appendChild(container);
 
           let simplebarContentDiv =
             document.querySelector(".simplebar-content");
@@ -988,21 +1247,20 @@ deferredCallback(
                 addConvoItem(item.name, item.href, true, unread, muted)
               );
               closeButtons();
-			  checkPickerOfIm();
+              checkPickerOfIm();
             } else {
               simplebarContentDiv.appendChild(
                 addConvoItem(item.name, item.href, false, unread, muted)
               );
               closeButtons();
-			  checkPickerOfIm();
+              checkPickerOfIm();
             }
           }
-	}
+        }
       );
+    } else {
+      localStorage.setItem("isCentralDesign", "false");
     }
-	else {
-		localStorage.setItem("isCentralDesign", "false");
-	}
   },
   { variable: "urls" }
 );
@@ -1011,7 +1269,7 @@ document.arrive(
   ".ConvoComposer__inputWrapper",
   { existing: true },
   function (e) {
-	//console.log(globalThis.HotBarAppearVAL);
+    //console.log(globalThis.HotBarAppearVAL);
     const container = document.querySelector(".ConvoMain__composer");
     if (container && document.getElementById("vkenhancerEmojiHotbarID")) {
       const emojiHotbar = document.getElementById("vkenhancerEmojiHotbarID");
@@ -1043,83 +1301,88 @@ deferredCallback(
   (_vk) => {
     nav.subscribeOnModuleEvaluated(() => {
       window.dispatchEvent(new CustomEvent("vkNav"));
-	  if(!im.test(window.location.href)) {
-		let styleElement = fromId("rightBarClassicRemove");
-		if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "rightBarClassicRemove";
-			document.head.appendChild(styleElement);
-			}
-			styleElement.innerHTML = ".MainRightRoot{display:none;}";
-	  }
-	  else {
-		const customStyle = fromId("rightBarClassicRemove");
-		if (customStyle) {
-			customStyle.remove();
-		}
-	  }
-	var currentPageURL = window.location.href;
+      if (!im.test(window.location.href)) {
+        let styleElement = fromId("rightBarClassicRemove");
+        if (!styleElement) {
+          styleElement = document.createElement("style");
+          styleElement.id = "rightBarClassicRemove";
+          document.head.appendChild(styleElement);
+        }
+        styleElement.innerHTML = ".MainRightRoot{display:none;}";
+      } else {
+        const customStyle = fromId("rightBarClassicRemove");
+        if (customStyle) {
+          customStyle.remove();
+        }
+      }
+      var currentPageURL = window.location.href;
 
-    // Проверяем, содержит ли текущий адрес страницы '/convo/'
-    if (currentPageURL.includes("/convo/") && localStorage.getItem("isCentralDesign") == "true") {
+      // Проверяем, содержит ли текущий адрес страницы '/convo/'
+      if (
+        currentPageURL.includes("/convo/") &&
+        localStorage.getItem("isCentralDesign") == "true"
+      ) {
         let styleElement = fromId("MEApp__mainPanel1234");
-		if (!styleElement) {
-			styleElement = create("style", {}, { id: "MEApp__mainPanel1234" });
-			document.head.appendChild(styleElement);
-		}
-		styleElement.innerHTML =     ".MEApp__mainPanel {display:none;}";
-    }
-	else {
-		  const customStyle = fromId("MEApp__mainPanel1234");
-			if (customStyle) {
-				customStyle.remove();
-			}
-	}
-		checkPickerOfIm();
-	if (currentPageURL.includes("/im/settings") && localStorage.getItem("isCentralDesign") == "true") {
-		let styleElement = fromId("settingsRightRoot");
-		if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "settingsRightRoot";
-			document.head.appendChild(styleElement);
-			}
-			styleElement.innerHTML = ".MainRightRoot{display:none;}";
-	}
-	else {
-		const customStyle = fromId("settingsRightRoot");
-		if (customStyle) {
-			customStyle.remove();
-		}	
-	}
-	//updateMarginLeft();
+        if (!styleElement) {
+          styleElement = create("style", {}, { id: "MEApp__mainPanel1234" });
+          document.head.appendChild(styleElement);
+        }
+        styleElement.innerHTML = ".MEApp__mainPanel {display:none;}";
+      } else {
+        const customStyle = fromId("MEApp__mainPanel1234");
+        if (customStyle) {
+          customStyle.remove();
+        }
+      }
+      checkPickerOfIm();
+      if (
+        currentPageURL.includes("/im/settings") &&
+        localStorage.getItem("isCentralDesign") == "true"
+      ) {
+        let styleElement = fromId("settingsRightRoot");
+        if (!styleElement) {
+          styleElement = document.createElement("style");
+          styleElement.id = "settingsRightRoot";
+          document.head.appendChild(styleElement);
+        }
+        styleElement.innerHTML = ".MainRightRoot{display:none;}";
+      } else {
+        const customStyle = fromId("settingsRightRoot");
+        if (customStyle) {
+          customStyle.remove();
+        }
+      }
+	  //updateUsers();
+      //updateMarginLeft();
     });
   },
   { variable: "nav" }
 );
 
 function checkPickerOfIm() {
-		const currentPath = window.location.href;
-		const links = document.querySelectorAll('a.ARightRoot5');
-		let styleElement = fromId("aHoverRightRoot");
-		if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "aHoverRightRoot";
-			document.head.appendChild(styleElement);
-			}
-			styleElement.innerHTML = "a.ARightRoot1:hover{background-color:var(--vkui--vkontakte_background_hover_alpha)!important;}";
+  const currentPath = window.location.href;
+  const links = document.querySelectorAll("a.ARightRoot5");
+  let styleElement = fromId("aHoverRightRoot");
+  if (!styleElement) {
+    styleElement = document.createElement("style");
+    styleElement.id = "aHoverRightRoot";
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML =
+    "a.ARightRoot1:hover{background-color:var(--vkui--vkontakte_background_hover_alpha)!important;}";
 
-		links.forEach(link => {
-			const href = link.getAttribute('href');
-			if (currentPath.includes(href)) {
-				link.style.backgroundColor = 'var(--vkui--vkontakte_background_hover_alpha)';
-			}
-			else {
-				link.style.backgroundColor = 'transparent';
-			}
-			if (currentPath != 'https://vk.com/im') {
-				links[0].style.backgroundColor = 'transparent';
-			}
-		});	
+  links.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (currentPath.includes(href)) {
+      link.style.backgroundColor =
+        "var(--vkui--vkontakte_background_hover_alpha)";
+    } else {
+      link.style.backgroundColor = "transparent";
+    }
+    if (currentPath != "https://vk.com/im") {
+      links[0].style.backgroundColor = "transparent";
+    }
+  });
 }
 
 function newDesign() {
@@ -1129,10 +1392,13 @@ function newDesign() {
     if (im.test(url)) {
       const e = document.querySelector(".body_im #wrap3");
       if (e) for (const t of e.childNodes) e.removeChild(t);
-	  if (new URL(window.location.href).searchParams.get("sel") || new URL(window.location.href).searchParams.get("peers")) {
-		console.log(new URL(window.location.href).searchParams);
+      if (
+        new URL(window.location.href).searchParams.get("sel") ||
+        new URL(window.location.href).searchParams.get("peers")
+      ) {
+        console.log(new URL(window.location.href).searchParams);
         const t = { ...window.nav.objLoc };
-		window.location.href = '/im';
+        window.location.href = "/im";
       }
     }
     newDesignFunctions.forEach((flag) => {
@@ -1143,7 +1409,7 @@ function newDesign() {
     window.vk.pe.me_vkcom_api_feature_flags = 1;
     window.vk.pe.vkm_hide_forward_author = 1;
     window.vk.pe.vkm_theme_styles_settings = 1;
-	localStorage.setItem("isVKMReforgedDesign",true)
+    localStorage.setItem("isVKMReforgedDesign", true);
 
     window.MECommonContext &&
       window.MECommonContext.then((e) => {
@@ -1366,7 +1632,7 @@ function OldDesign() {
       _vk.pe.vkm_hide_forward_author = 0;
       _vk.pe.vkm_integration_media_viewer = 0;
       _vk.pe.vkm_theme_styles_settings = 0;
-	  localStorage.setItem("isVKMReforgedDesign",false)
+      localStorage.setItem("isVKMReforgedDesign", false);
       //console.log("Injection completed. vk.pe flags are set to 0");
     },
     { variable: "vk" }
