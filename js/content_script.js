@@ -23,7 +23,7 @@ const fromId = document.getElementById.bind(document);
   window.postMessage(
     {
       action: "Urls",
-      urls: { im_css: chrome.runtime.getURL("css/im-page-open.css") },
+      urls: { im_css: chrome.runtime.getURL("css/im-page-open.css"),profile_css: chrome.runtime.getURL("css/classical-profile-view.css") },
     },
     "*"
   );
@@ -428,7 +428,7 @@ function emojiRemove() {
     document.head.appendChild(styleElement);
   }
   styleElement.innerHTML =
-    '[class*="OwnerNameIcon-module__icon"]:not(.OwnerPageName__esia, .OwnerPageName__prometheus), .image_status__status, .PostHeaderTitle__imageStatus,span[class^="UserNameIcon-module__icon"]:has(>img),div[class^="StatusIcon"]:has(>img) { display: none !important; }';
+    '[class*="OwnerNameIcon-module__icon"]:not(.OwnerPageName__esia, .OwnerPageName__prometheus, .OwnerPageName__verified), .image_status__status, .PostHeaderTitle__imageStatus,span[class^="UserNameIcon-module__icon"]:has(>img),div[class^="StatusIcon"]:has(>img) { display: none !important; }';
 }
 
 function emojiBack() {
@@ -513,7 +513,7 @@ function removePostReactions() {
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 0 24 24' width='24'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M0 0h24v24H0z'/%3E%3Cpath xmlns='http://www.w3.org/2000/svg' fill-rule='nonzero' fill='%23e64646' d='M11.95 4.83l-0.09 -0.09c-1.27,-1.23 -2.96,-1.93 -4.73,-1.94 0,0 0,0 0,0 -3.62,0 -6.55,2.93 -6.56,6.54 0,3.52 1.3,5.2 7.07,9.76l3.07 2.4c0.37,0.29 0.8,0.44 1.24,0.45l0 0c0.44,-0.01 0.88,-0.16 1.24,-0.45l3.07 -2.4c5.78,-4.56 7.07,-6.24 7.07,-9.76 -0.01,-3.61 -2.94,-6.54 -6.55,-6.54 0,0 0,0 0,0 -1.77,0.01 -3.47,0.71 -4.73,1.94l-0.1 0.09z'/%3E%3C/g%3E%3C/svg%3E";
   isPostReact = true;
   styleElement.innerHTML =
-    '.PostBottomAction--withBg{padding:4px 6px!important;}.PostButtonReactions__iconAnimation{display:none;}.PostButtonReactions__icon.PostButtonReactions__icon--custom{background: url("' +
+    '.PostBottomAction--withBg{padding:4px 6px!important;}.PostButtonReactions__iconAnimation{display:none!important;}.PostButtonReactions__icon.PostButtonReactions__icon--custom{background: url("' +
     imageUrl +
     '")!important;         scale:.85;} .ReactionsMenuPopperTransition-appear-done, .ReactionsMenuPopperTransition-enter-done {          display: none!important;      }                        .ReactionsMenu,    .ReactionsMenu--extraHoverArea,    .ReactionsMenu--extraHoverAreaToTop,    div.ReactionsPreview__items,.PostButtonReactions--post .PostButtonReactions__title--textual,.like_tt_reacted-count,.fans_fanph_reaction,li#likes_tab_reactions_0,    li#likes_tab_reactions_1,    li#likes_tab_reactions_2,    li#likes_tab_reactions_3,    li#likes_tab_reactions_4,    li#likes_tab_reactions_5,.ui_tab.ui_tab_group,.like_tt_reaction {        display: none !important;    }    .PostBottomAction {        --post-bottom-action-background-color: transparent !important;    }    div.ReactionsPreview.ReactionsPreview--active .ReactionsPreview__count._counter_anim_container {        color: #e64646 !important;    }   .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count{color:var(--vkui--color_text_subhead);} [dir] .ReactionsPreview {        position: absolute;        margin-top: 14px;        margin-left: 30px;        z-index: 9;    }    .ReactionsPreview--isInActionStatusBar .ReactionsPreview__count {    font-size: 13px;    line-height: 16px;    font-weight: 500;    }    .PostButtonReactionsContainer {        width: auto !important;    }    .PostButtonReactions__iconAnimation svg    {        background: url("' +
     imageUrl +
@@ -775,7 +775,9 @@ function applyStyles(
   nechitalkaChecked,
   nepisalkaChecked,
   pollResultsChecked,
-  removeAwayChecked
+  removeAwayChecked,
+  newProfilesChecked,
+  middleNameChecked
 ) {
   if (isOldAccentChecked) {
     hideNFT_Avatars();
@@ -962,11 +964,37 @@ function applyStyles(
       "*"
     );    
    }
+   if(newProfilesChecked) {
+    window.postMessage(
+      { action: "newProfiles", value: newProfilesChecked },
+      "*"
+    );   
+   }
+   else {
+	window.postMessage(
+      { action: "newProfiles", value: newProfilesChecked },
+      "*"
+    );  
+	}
+	if(middleNameChecked) {
+    window.postMessage(
+      { action: "middleName", value: middleNameChecked },
+      "*"
+    );   
+   }
+   else {
+	window.postMessage(
+      { action: "middleName", value: middleNameChecked },
+      "*"
+    );  
+	}
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
   chrome.storage.local.get(
     [
+	  "middleNameState",
+	  "newProfilesState",
 	  "removeAwayState",
 	  "pollResultsState",
 	  "nepisalkaState",
@@ -1023,6 +1051,8 @@ function applySavedStyles() {
 	  const nepisalkaChecked = items.nepisalkaState;
 	  const pollResultsChecked = items.pollResultsState;
 	  const removeAwayChecked = items.removeAwayState;
+	  const newProfilesChecked = items.newProfilesState;
+	  const middleNameChecked = items.middleNameState;
       applyStyles(
         isOldAccentChecked,
         isMsgReactionsChecked,
@@ -1050,7 +1080,9 @@ function applySavedStyles() {
 		nechitalkaChecked,
 		nepisalkaChecked,
 		pollResultsChecked,
-		removeAwayChecked
+		removeAwayChecked,
+		newProfilesChecked,
+		middleNameChecked
       );
     }
   );
@@ -1086,7 +1118,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	message.type === "toggleNechitalka" ||
 	message.type === "toggleNepisalka" ||
 	message.type === "togglePollResults" ||
-	message.type === "toggleRemoveAway"
+	message.type === "toggleRemoveAway" ||
+	message.type === "toggleNewProfiles" ||
+	message.type === "toggleMiddleName"
   ) {
     applySavedStyles();
   }
