@@ -284,9 +284,21 @@ document.arrive('#owner_page_name', { existing: true }, async function (e) {
   styleElement.id = "vken_expand_username";
   let objectId = await getId();
   let userDataMiddle = await getUserMiddleName(objectId);
-  if (userDataMiddle[0].nickname && userDataMiddle[0].nickname != "") {
-	e.firstChild.textContent += userDataMiddle[0].nickname + ' ​';
-  }
+if (userDataMiddle[0].nickname && userDataMiddle[0].nickname !== "") {
+    let ownerNameElement = document.querySelector('.OwnerPageName');
+    let ownerName = ownerNameElement.firstChild.textContent.trim();
+    let nickname = userDataMiddle[0].nickname.trim();
+    
+    if (ownerName.includes(' ')) {
+        let lastNameIndex = ownerName.lastIndexOf(' ');
+        let firstName = ownerName.substring(0, lastNameIndex);
+        let lastName = ownerName.substring(lastNameIndex + 1);
+        ownerNameElement.firstChild.textContent = `${firstName} ${nickname} ${lastName}`;
+    } else {
+        ownerNameElement.firstChild.textContent += ` ${nickname} ​`;
+    }
+}
+
 });	
 
 async function getUserMiddleName(objectId) {
