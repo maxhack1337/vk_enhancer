@@ -5,7 +5,7 @@
     "default_title": "Настройки VK Enhancer"
   },
   "name": "VK Enhancer - улучшение ВКонтакте",
-  "version": "3.2",
+  "version": "3.3",
   "icons": {
     "128": "assets/icon128.png",
     "16": "assets/icon16.png",
@@ -71,7 +71,8 @@
         "js/modules/hls.js",
         "js/vkm_reforged_in_vkcom.js",
         "js/legacy_in_vkcom.js",
-        "css/im-page-open.css"
+        "css/im-page-open.css",
+        "css/classical-profile-view.css"
       ],
       "matches": [
         "*://vk.com/*"
