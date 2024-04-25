@@ -1,0 +1,620 @@
+#profile_skeleton {
+	display:none!important;
+}
+#profile_redesigned > div > div > div > div.vkuiPopoutRoot.vkuiSplitLayout > div > div.vkuiSplitCol.vkuiSplitCol--viewWidth-smallTabletPlus.vkuiInternalSplitCol--viewWidth-tabletPlus.vkuiSplitCol--spaced-none.vkuiInternalSplitCol--spaced-none.Profile__column
+{
+    margin-top:calc(var(--vkenhancer-info-height) - 280px);
+}
+/*Левая колонка*/
+.ProfileWrapper .vkuiSplitLayout__inner, .ProfileSkeleton__layout
+{
+    flex-direction:row-reverse;
+}
+.ProfileWrapper .ScrollStickyWrapper, .ProfileSkeleton__column + .ProfileSkeleton__column
+{
+    margin-right:15px;
+    margin-left:0px;
+    width:230px!important;
+}
+
+div[class*="RichAvatar-module__rootNft"][style="width: 150px; height: 150px;"] > img {
+    border-radius: 0% !important;
+}
+
+.page_current_info:empty {
+	padding-bottom:16px!important;
+}
+.ProfileWrapper .ScrollStickyWrapper > div
+{
+    width:230px!important;
+}
+.ProfileGroupHorizontalCells
+{
+    --max-cell-width: 80px;
+    max-height:168px!important;
+    overflow: hidden;
+}
+.ProfileGroup > div.ProfileGroupHorizontalCells > div > a > div.vkuiHorizontalCell__image > div {
+    width: 52px!important;
+    height: 52px!important;
+}
+.ProfileGroup.ProfileSubscriptions > div.ProfileSubscriptions__items > a > div.vkuiSimpleCell__before > div {
+    width: 40px!important;
+    height: 40px!important;
+}
+.ProfileVideos .OwnerVideosList__items {
+    padding-left: 4px!important;
+}
+.OwnerVideosList__items, .ProfileVideoBlockSkeleton__items {
+    display: block;
+}
+
+.OwnerVideosListItem:nth-of-type(9), .OwnerVideosListItem:nth-of-type(8), .OwnerVideosListItem:nth-of-type(7), .OwnerVideosListItem:nth-of-type(6), .OwnerVideosListItem:nth-of-type(5), .OwnerVideosListItem:nth-of-type(4), .OwnerVideosListItem:nth-of-type(3) {
+    display: none !important;
+}
+.OwnerVideosListItem {
+    width: 200px;
+    margin-left: 8px;
+}
+
+.ProfileWrapper .ScrollStickyWrapper .vkuiSpacing {
+    display:none;
+}
+.ProfileGroup {
+    margin-bottom:16px;
+}
+
+/*Правая колонка*/
+.Profile__column {
+    margin-right: 112px;
+}
+
+/*верхний блок*/
+.ProfileHeaderButton:has(> button > span > span > svg.vkuiIcon--phone_outline_20), .OwnerPageCover {
+    display:none;
+}
+
+.ProfileHeader:not(:has(>.ProfileHeader__in a[href="/edit"])){
+    height: 320px;
+    width: 230px;
+    margin: 0px 0 0;
+}
+
+.ProfileHeader:has(>.ProfileHeader__in a[href="/edit"]){
+    height: 276px;
+    width: 230px;
+    margin: 0px 0 0;
+}
+
+#profile_redesigned > div > div .vkuiSplitCol > .ProfileHeader {
+	margin-top:24px;
+}
+
+.ProfileHeader a[href="/edit"]{
+    width: 230px;
+}
+
+.ProfileHeader__in {
+    height: 65px;
+    margin: 1px 0 0;
+}
+
+.ProfileInfo {
+    left: 246px;
+    position: absolute;
+    background-color: var(--vkui--color_background_content);
+    padding-bottom:16px;
+    width: 550px;
+    top: 0px;
+    border: var(--thin-border, .5px) solid var(--vkui--color_separator_primary);
+    border-radius: var(--vkui--size_border_radius_paper--regular);
+}
+
+#owner_page_name {
+    margin-left: 25px;
+    margin-top: 15px;
+}
+
+div.ProfileHeaderActions__moreButtonContainer > div > button {
+    left:0px!important;
+    top:0px!important;
+    width: 5px!important;
+    min-width: 45px;
+    background-color: var(--vkui--color_background_secondary_alpha);
+}
+div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in {
+    margin-right: 0!important;
+    width: 5px;
+    min-width: 45px;
+}
+div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in > span {
+    padding: 0;
+}
+div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in > span {
+    display: none;
+}
+div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in > span.vkuiButton__after {
+    display: none;
+}
+div.ProfileHeaderActions__moreButtonContainer > div > button > span {
+    background: url(data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%2399A2AD%22%20d%3D%22M5%2014c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202zm7%200c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202zm7%200c1.1%200%202-.9%202-2s-.9-2-2-2-2%20.9-2%202%20.9%202%202%202z%22%2F%3E%3C%2Fsvg%3E) no-repeat;
+    background-position: center;
+    background-size: 60%;
+}
+.ProfileHeaderActions__buttons:not(:has(>.ProfileHeaderButton a[href="/edit"])) {
+    top:270px;
+    left:12px;
+    position:absolute;
+}
+.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton a[href="/edit"]) {
+    top:230px;
+    left:12px;
+    position:absolute;
+}
+.ProfileHeaderButton
+{
+    max-width:156.19px;
+}
+.ProfileHeaderButton > button {
+    min-width:156.19px;
+}
+.ProfileHeaderButton:has(>a>span>span>svg.vkuiIcon--message_outline_20),.ProfileHeaderButton:has(>a[href*="/im"])
+{
+    position:absolute;
+    bottom:42px;
+    margin-left:0px;
+}
+.ProfileHeaderActions__buttons > .ProfileGifts__all
+{
+    padding:0;
+    position:absolute;
+    bottom:42px;
+    margin-left:0px;
+    min-width:206px;
+    font-size: var(--vkui--font_headline2--font_size--compact);
+    font-weight: var(--vkui--font_weight_accent2);
+    font-family: var(--vkui--font_headline2--font_family--regular);
+}
+.ProfileHeaderActions__buttons > .ProfileGifts__all > a {
+    height:32px;
+    background-color:var(--vkui--color_text_accent_themed);
+    color:var(--vkui--color_text_contrast_themed)!important;
+    align-content:center!important;
+    display:flex!important;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.ProfileHeaderButton>a:has(>span>span>svg.vkuiIcon--message_outline_20) > span:before,.ProfileHeaderButton >a[href*="/im"] >span:before
+{
+    font-size: var(--vkui--font_headline2--font_size--compact);
+    font-weight: var(--vkui--font_weight_accent2);
+    font-family: var(--vkui--font_headline2--font_family--regular);
+}
+.ProfileHeaderButton>a:has(>span>span>svg.vkuiIcon--message_outline_20) > span > .vkuiButton__before,.ProfileHeaderButton >a[href*="/im"] >span > .vkuiButton__content{
+    display:none;
+}
+.ProfileHeaderButton>a:has(>span>span>svg.vkuiIcon--message_outline_20),.ProfileHeaderButton >a[href*="/im"]
+{
+    max-width:440px;
+    width:206px;
+    background-color:var(--vkui--color_text_accent_themed);
+    color:var(--vkui--color_text_contrast_themed);
+}
+.ProfileHeaderButton:has(>button > span > span > svg.vkuiIcon--user_check_outline_20) {
+    margin-left:0!important;
+}
+.ProfileHeaderButton > button:has(> span > span > svg.vkuiIcon--user_check_outline_20) > span > .vkuiButton__before {
+    display:none;
+}
+[scheme=vkcom_light] .ProfileHeaderButton > button:has(> span > span > svg.vkuiIcon--user_check_outline_20) > span:before {
+    font-size: var(--vkui--font_headline2--font_size--compact);
+    font-weight: var(--vkui--font_weight_accent2);
+    font-family: var(--vkui--font_headline2--font_family--regular);
+    color: var(--vkui--color_text_accent_themed);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' aria-hidden='true' display='block' class='vkuiIcon vkuiIcon--16 vkuiIcon--w-16 vkuiIcon--h-12 vkuiIcon--dropdown_outline_16' viewBox='0 0 16 12' width='16' height='12' style='width: 16px; height: 12px;'%3E%3Cpath fill='%233770b1' d='m8 6.778 3.773-3.107a.75.75 0 1 1 .954 1.158l-4.25 3.5a.75.75 0 0 1-.954 0l-4.25-3.5a.75.75 0 0 1 .954-1.158z'%3E%3C/path%3E%3C/svg%3E") no-repeat 102px 5px;
+}
+[scheme=vkcom_dark] .ProfileHeaderButton > button:has(> span > span > svg.vkuiIcon--user_check_outline_20) > span:before {
+    font-size: var(--vkui--font_headline2--font_size--compact);
+    font-weight: var(--vkui--font_weight_accent2);
+    font-family: var(--vkui--font_headline2--font_family--regular);
+    color: var(--vkui--color_text_accent_themed);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' aria-hidden='true' display='block' class='vkuiIcon vkuiIcon--16 vkuiIcon--w-16 vkuiIcon--h-12 vkuiIcon--dropdown_outline_16' viewBox='0 0 16 12' width='16' height='12' style='width: 16px; height: 12px;'%3E%3Cpath fill='%23FFFFFF' d='m8 6.778 3.773-3.107a.75.75 0 1 1 .954 1.158l-4.25 3.5a.75.75 0 0 1-.954 0l-4.25-3.5a.75.75 0 0 1 .954-1.158z'%3E%3C/path%3E%3C/svg%3E") no-repeat 102px 5px;
+}
+.ProfileHeaderButton:has(>a>span>span>svg.vkuiIcon--message_outline_20) svg
+{
+    display:none;
+}
+div.OwnerPageAvatar__in > div[data-testid="profile-avatar"] > div.vkuiImageBase__border {
+    display:none;
+}
+div.OwnerPageAvatar__in > div[data-testid="profile-avatar"] {
+    border-radius:0!important;
+}
+
+
+.ProfileIndicatorBadge__badgeOnline,.ProfileIndicatorBadge__badgeOnlineMobile {
+        cursor: text!important;
+        position:absolute;
+        top:-167px;
+        right:-578px;
+        color:var(--vkui--color_text_secondary)!important;
+        font-weight:400;
+        font-size:12.5px;
+        white-space: nowrap;
+        background-color:#fff0!important; 
+}
+.ProfileIndicatorBadge__badgeOnlineMobile {
+    right:-588px;
+}
+.vkEnhancerMobileWas::after {
+        height: 26px;
+        padding-left: 11px;
+        content:' ';
+        background: url(https://vk.com/images/icons/mobile.png?2) no-repeat 0 -3px;
+        font-size: 13px;
+        font-family:Roboto;
+        color:var(--vkui--color_text_secondary)!important;
+        background-position:left 4px top 3px;
+}
+
+.ProfileIndicatorBadge__badgeOnline svg {
+    display:none;
+}
+.ProfileIndicatorBadge__badgeOnline::after
+ {
+        height: 26px;
+        padding-left: 7px;
+        margin-left: -12px;
+        font-size: 13px;
+        font-family:Roboto;
+        color:var(--vkui--color_text_secondary)!important;
+        background-position:right 0px top 2px;
+ }
+/* .ProfileBase > div > div > .vkuiSplitCol {
+		top:24px;
+}*/
+.ProfileIndicatorBadge__badgeOnlineMobile::after
+ {
+        height: 26px;
+        padding-left: 21px;
+        margin-left: -12px;
+        content:' ';
+        background: url(https://vk.com/images/icons/mobile.png?2) no-repeat 0 -3px;
+        font-size: 13px;
+        font-family:Roboto;
+        color:var(--vkui--color_text_secondary)!important;
+        background-position:left 4px top 1px;
+ }
+.ProfileIndicatorBadge__badgeOnlineMobile svg {
+    display:none;
+}
+div.ProfileIndicatorBadge__badge
+    {
+        z-index:10!important;
+    }
+
+.ProfileIndicatorBadgeBadgeTT,.vkuiPopper:has(>.ProfileIndicatorBadgeBadgeTT) > .vkuiPopperArrow {
+    display:none!important;
+}
+.vkEnhancerBadgeStaff {
+    margin-top:4px!important;
+}
+
+    .ProfileIndicatorBadge__badgeLastSeen 
+    {
+        cursor: text!important;
+        position:absolute;
+        top:-167px;
+        right:-578px;
+        color:var(--vkui--color_text_secondary)!important;
+        font-weight:400!important;
+        font-size:12.5px!important;
+        white-space: nowrap;
+        background-color:#fff0!important;
+    }
+
+
+.ProfileInfo__status {
+    display:none!important;
+    width: 503px;
+    margin-top: 2px;
+    margin-left: 26px;
+}
+.OwnerPageName {
+    font-size: 19px;
+    line-height: 25px;
+    font-weight: 400!important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 1px;
+    font-family: -apple-system, BlinkMacSystemFont, Roboto, Open Sans, Helvetica Neue, Noto Sans Armenian, Noto Sans Bengali, Noto Sans Cherokee, Noto Sans Devanagari, Noto Sans Ethiopic, Noto Sans Georgian, Noto Sans Hebrew, Noto Sans Kannada, Noto Sans Khmer, Noto Sans Lao, Noto Sans Osmanya, Noto Sans Tamil, Noto Sans Telugu, Noto Sans Thai, sans-serif!important;
+    color: var(--vkui--color_text_primary);
+    width: 300px;
+    max-width: 300px;
+}
+[class^="ActionsGroupItem-module__root"] {
+    display:none;
+}
+
+div.ProfileHeader__ava > div {
+    position:relative;
+    width:206px;
+    height:206px;
+    left:-8px;
+    top:90px;
+}
+div.ProfileHeader__ava > div > div[role="button"] {
+    height:206px;    
+}
+.OwnerPageAvatar__underlay {
+    display:none;
+}
+.OwnerPageAvatar__in {
+    height:206px; 
+}
+.OwnerPageAvatar__in > [data-testid="profile-avatar"] {
+    width:206px!important; 
+    height:206px!important; 
+}
+.OwnerPageAvatar__in > [data-testid="profile-avatar"] > [class*="Outline-module__rootAccent"] {
+    display:none;
+}
+
+.ProfileHeader--noCover > div > div.ProfileHeader__ava > div {
+    top:-6px!important;   
+}
+.ProfileInfo__fullInfo {
+    display:none;
+}
+.page_current_info.current_text {
+    margin-left:26px;
+    border-bottom: 1px solid var(--vkui--color_separator_primary);
+    padding-bottom:16px;
+    width:90%;
+}
+.ProfileHeader__in {
+    height:0px!important;
+}
+
+div.ProfileHeader.ProfileHeader--noCover.ProfileHeader--withSnowballs > div > div.ProfileHeader__ava > img
+{
+    top:-5px!important;
+}
+.profile_info_short {
+    font-size: 13px;
+    padding-top: 10px;
+    padding-left: 26px;
+    width:500px;
+}
+.profile_info {
+    line-height: 150%;
+}
+.profile_info_row {
+    padding-top: 5px;
+}
+.profile_info .label {
+    width: 165px;
+    color: var(--vkui--color_text_secondary);
+}
+.profile_info .labeled {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.profile_info .labeled>a {
+    unicode-bidi: embed;
+}
+.profile_more_info_link {
+    display: block;
+    margin: 10px 0 -5px;
+    border-radius: 4px;
+    height: 34px;
+    line-height: 32px;
+}
+.profile_more_info_link > span {
+    justify-content: center;
+}
+.profile_more_info_link:hover {
+    background-color: var(--vkui--color_transparent--hover);
+    text-decoration: none
+}
+.info_shown .profile_label_more, .profile_label_less {
+    display: none;
+}
+.vkEnhancerSectionProfile {
+    display:flex;
+    padding-top:8px;
+}
+.vkEnhancerSectionInner {
+    margin-left:12px;
+    margin-bottom:8.75px;
+    width:100%;
+    border-bottom: var(--thin-border, .5px) solid var(--vkui--color_separator_primary);  
+}
+.vkEnhancerSectionInner1 {
+    margin-left:12px;
+    margin-bottom:8.75px;
+    width:100%;
+    border-bottom: var(--thin-border, .5px) solid var(--vkui--color_separator_primary);  
+}
+.vkEnhancerSectionInner2 {
+    margin-left:12px;
+    margin-bottom:7.75px;
+    width:100%;
+    border-bottom: var(--thin-border, .5px) solid var(--vkui--color_separator_primary);  
+}
+.vkEnhancerSectionInner3 {
+    margin-left:12px;
+    margin-bottom:7.75px;
+    width:100%;
+    border-bottom: var(--thin-border, .5px) solid var(--vkui--color_separator_primary);  
+}
+.vkEnhancerSectionInner4 {
+    margin-left:12px;
+    margin-bottom:8.75px;
+    width:100%;
+    border-bottom: var(--thin-border, .5px) solid var(--vkui--color_separator_primary);  
+}
+
+.vkEnhancerSectionInner5 {
+    margin-left:12px;
+    margin-bottom:8.75px;
+    width:100%;
+    border-bottom: var(--thin-border, .5px) solid var(--vkui--color_separator_primary);  
+}
+
+.vkEnhancerSectionText {
+	white-space: nowrap;
+}
+
+.vkEnhancerSectionInner6 {
+    margin-left:12px;
+    margin-bottom:8.75px;
+    width:100%;
+    border-bottom: var(--thin-border, .5px) solid var(--vkui--color_separator_primary);  
+}
+.vkEnhancerAdditionalJob {
+    display:flex;
+    margin-left:165px;
+}
+.vkEnhancerAdditionalJob > div {
+    color: #828282; 
+    margin-top:-2px;
+    margin-left:2px;
+}
+.education_info,.school_info,.job_row,.voin_info {
+    padding-top:12px;
+    padding-bottom:12px;
+}
+.education_row {
+    padding-top:8px;
+    display: flex;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.education_row > div {
+    min-width:165px;
+}
+.yearClassDiv,.specialityLinkA, .voinClassDiv  {
+    margin-left:165px;
+    display:flex;
+    padding-top:8px;
+}
+.job_row > a,.job_row > .label.fl_l {
+    position:relative;
+    top:-8px;
+}
+.vkEnhancerSectionProfile:has(>.vkEnhancerSectionInner2) {
+    padding-bottom:12px;
+    padding-top:12px;
+}
+.vkEnhancerSectionProfile:has(>.vkEnhancerSectionInner) {
+    padding-top:12px;
+    padding-bottom:6px;
+}
+.vkEnhancerSectionProfile:has(>.vkEnhancerSectionInner1) {
+    padding-top:12px;
+    padding-bottom:6px;
+}
+
+.vkEnhancerSectionProfile:has(>.vkEnhancerSectionInner3) {
+    padding-top:6px;
+    padding-bottom:6px;
+}
+.vkEnhancerSectionProfile:has(>.vkEnhancerSectionInner4) {
+    padding-top:2px;
+    padding-bottom:2px;
+}
+
+.vkEnhancerSectionProfile:has(>.vkEnhancerSectionInner5) {
+    padding-top:2px;
+}
+.interests_info > span, .music_info > span, .movies_info > span, .books_info > span, .games_info > span,.quotes_info > span,.about_info > span {
+    display:flex;
+    flex-wrap: wrap;
+}
+.interests_info, .music_info, .movies_info, .books_info, .games_info, .quotes_info, .about_info
+{
+    padding-top:12px;   
+}
+.life_info {
+     padding-bottom:12px;   
+}
+.life_info > div {
+    padding-top:8px;
+}
+.life_info {
+    display:flex;
+    flex-direction: column;
+}
+.life_info > div > div {
+    max-width:120px;
+}
+.life_info > div > a,.vkEnhancerPoliticalInfo {
+    margin-left:45px;
+}
+.life_info > div {
+    display:flex;
+    align-items:center;
+}
+.inspired_by_info > span {
+    display:flex;
+    flex-wrap: wrap;
+    margin-left:45px;
+}
+
+.religionRow > a {
+    overflow-wrap: break-word;
+    max-width:322px;
+}
+.vkEnhancerMoreItems > .clear_fix.profile_info_row {
+     padding-bottom:6px;   
+}
+/*каунтеры*/
+
+.page_counter {
+    margin-top:18px;
+    text-align: center;
+    padding-left:0px!important;
+    padding-right:0px!important;
+    padding-top:15px!important;
+    padding-bottom:0px!important;
+    border-top: 1px solid var(--vkui--color_separator_primary);
+}
+.page_counter {
+    min-height: 69px;
+    width:100%;
+}
+.counts_module {
+    display:flex;
+    justify-content: center;
+    max-height: 138px;
+    flex-wrap: wrap;
+}
+.page_counter .counter {
+    padding:15px;
+    text-decoration:none;
+}
+
+.page_counter .counter .value {
+    font-size: 19px;
+    color: var(--vkui--color_text_link);
+    line-height: 21px;
+}
+
+.page_counter .counter .label {
+    margin-top:4px;
+    font-size: 13px;
+    line-height: 15px;
+    color: var(--vkui--color_text_secondary);
+}
+#profile_redesigned > div > div > div > div.ProfileHeader > div.ProfileHeader__in > div.ProfileHeader__wrapper > div > div.ProfileHeader__actions > div > div > div.ProfileHeaderActions__info {
+    left: 0px;
+    position: absolute;
+    top: 300px;
+    width: 63.5%;
+    white-space: nowrap;
+}
+    #profile_redesigned > div > div > div > div.ProfileHeader:has(> div.ProfileHeader__in > div.ProfileHeader__wrapper > div > div.ProfileHeader__actions > div > div > div.ProfileHeaderActions__info)
+    {
+        height:340px;
+    }
