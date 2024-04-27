@@ -30,9 +30,16 @@ div[class*="RichAvatar-module__rootNft"][style="width: 150px; height: 150px;"] >
 }
 .ProfileGroupHorizontalCells
 {
-    --max-cell-width: 80px;
+    --max-cell-width: 67.333px!important;
     max-height:168px!important;
     overflow: hidden;
+}
+.ProfileGroupHorizontalCells .vkuiHorizontalCell.vkuiHorizontalCell--size-s {
+	max-width: var(--max-cell-width)!important;
+}
+.ProfileGroupHorizontalCells .vkuiHorizontalCell.vkuiHorizontalCell--size-s > a {
+    --vkui_internal--side_cell_width: calc(var(--max-cell-width, 67.333px) + var(--vkui_internal--side_cell_gap, 0px));
+    max-width: var(--max-cell-width, 67.333px);
 }
 .ProfileGroup > div.ProfileGroupHorizontalCells > div > a > div.vkuiHorizontalCell__image > div {
     width: 52px!important;
@@ -254,7 +261,7 @@ div.OwnerPageAvatar__in > div[data-testid="profile-avatar"] {
         font-size: 13px;
         font-family:Roboto;
         color:var(--vkui--color_text_secondary)!important;
-        background-position:left 4px top 3px;
+        background-position:left 4px top 2px;
 }
 
 .ProfileIndicatorBadge__badgeOnline svg {

@@ -29,8 +29,8 @@
   }
   .MainRightRoot {
 	background:transparent!important;
-    height: calc(100vh - var(--header-height, 0) - 30px);
-    margin-top: var(--page-block-offset, 15px);
+    height: calc(100vh - var(--header-height, 0) - 30px)!important;
+    margin-top: var(--page-block-offset, 15px)!important;
     overflow: hidden;
     position: absolute;
     right: 16px;
@@ -373,9 +373,11 @@
     min-inline-size: 18px;
     border-radius: 9px;
     font-style: normal;
+	font-size:12px!important;
   }
   [data-muted="true"] {
     background: var(--vkui--color_icon_secondary);
+	color: var(--vkui--color_background_content);
   }
   .Y8xaRbiBmSsC_Tpc {
     display: flex;
