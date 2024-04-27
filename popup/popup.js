@@ -1,4 +1,4 @@
-console.log('Версия 3.3 Release');
+console.log('Версия 3.4 Release');
 var accentC = document.getElementById('oldaccent');
 var msgreact = document.getElementById('messagereactions');
 var recentgroups = document.getElementById('recentgroups');
@@ -49,6 +49,7 @@ var openinnewtab = document.getElementById('openinnewtab');
 var removeaway = document.getElementById('removeaway');
 var newprofiles = document.getElementById('newprofiles');
 var middlename = document.getElementById('middlename');
+var oldhover = document.getElementById('oldhover');
 var tab1 = document.getElementById('tab1');
 var tab2 = document.getElementById('tab2');
 var tab3 = document.getElementById('tab3');
@@ -126,7 +127,7 @@ function defaultTab2() {
         styleElement.id = "tabs2";
         document.head.appendChild(styleElement);
     }
-    styleElement.innerHTML = '#tab2,#tab2>div>.vkuiTabbarItem__icon{color:var(--vkenhancer--chosen_tab)!important}#Chitalka,#Pisalka,#MediaViewer,#NewMessenger,#msgR,#ReconnectInd{display:flex!important;}[aria-hotbar="true"]{display:block!important}';
+    styleElement.innerHTML = '#tab2,#tab2>div>.vkuiTabbarItem__icon{color:var(--vkenhancer--chosen_tab)!important}#OldHover,#Chitalka,#Pisalka,#MediaViewer,#NewMessenger,#msgR,#ReconnectInd{display:flex!important;}[aria-hotbar="true"]{display:block!important}';
     chrome.storage.local.set({
         defaultTab: "2",
     });
@@ -191,7 +192,7 @@ tab4.addEventListener('click', (event) => {
 saveSettings.addEventListener('click', (event) => {
 	var jsonData = null;
     var JSONSettings = {};
-	chrome.storage.local.get(["middleNameState","newProfilesState","removeAwayState","sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
+	chrome.storage.local.get(["oldHoverState","middleNameState","newProfilesState","removeAwayState","sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
 		console.log(items);
 		jsonData = JSON.stringify(items);
 		console.log(jsonData);
@@ -206,7 +207,7 @@ saveSettings.addEventListener('click', (event) => {
 });
 
 clearSettings.addEventListener('click', async function() {
-        var result = {"addstickerState":false,"altSBState":false,"cameraPhotoState":false,"checkboxState":false,"checkboxState1":false,"checkboxStateAva":false,"colorPicker":"#3291ff","colorPickerText":"#ffffff","customAccent":"#ffffff","customBg":"undefined","customFont":"undefined","customHotbar":[],"customLogo":"undefined","emojiStatusState":false,"hideButtonState":false,"hiderState":false,"integrationMediaState":false,"issThemeChanged":false,"muteCallsState":false,"nechitalkaState":false,"nepisalkaState":false,"newDesignState":false,"pollResultsState":false,"postReactionsState":false,"recentGroupsState":false,"removeAwayState":false,"newProfilesState":false,"middleNameState":false,"secretFuncState":false,"sliderValue":"100"}; 
+        var result = {"addstickerState":false,"altSBState":false,"cameraPhotoState":false,"checkboxState":false,"checkboxState1":false,"checkboxStateAva":false,"colorPicker":"#3291ff","colorPickerText":"#ffffff","customAccent":"#ffffff","customBg":"undefined","customFont":"undefined","customHotbar":[],"customLogo":"undefined","emojiStatusState":false,"hideButtonState":false,"hiderState":false,"integrationMediaState":false,"issThemeChanged":false,"muteCallsState":false,"nechitalkaState":false,"nepisalkaState":false,"newDesignState":false,"pollResultsState":false,"postReactionsState":false,"recentGroupsState":false,"removeAwayState":false,"newProfilesState":false,"middleNameState":false,"oldHoverState":false,"secretFuncState":false,"sliderValue":"100"}; 
 		for (item of Object.keys(result)) {
 			let item123 = {};
 			item123[item] = result[item];
@@ -233,6 +234,23 @@ loadSettingsInput.addEventListener('change', function() {
         reader.readAsText(loadSettingsInput.files[0]);
       }
     });
+
+oldhover.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    chrome.storage.local.set({
+        oldHoverState: checked
+    });
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, {
+            type: "toggleOldHover",
+            isChecked: checked
+        });
+    });
+});
 
 middlename.addEventListener('change', (event) => {
     const checked = event.target.checked;
@@ -448,10 +466,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-    const styleElementVersion = document.createElement("style");
+    /*const styleElementVersion = document.createElement("style");
     styleElementVersion.id = "version";
     styleElementVersion.innerHTML = "#version::after{content:'Версия 3.3 Release'} #version1::after{content:'Не обновляется расширение? Нажмите CTRL+M в любом месте браузера и расширение перезагрузится, при этом, обновившись до новейшей версии'}";
-    document.head.appendChild(styleElementVersion);
+    document.head.appendChild(styleElementVersion);*/
     
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -536,12 +554,10 @@ themeChange.addEventListener('click', (event) => {
         });
         isThemeChanged = true;
         styleElement.id = "lightTheme";
-        changerButton.title = 'Сменить тему на тёмную';
         var imageurl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' width='24' height='24' style='display: block;'%3E%3Cg fill-rule='nonzero' fill='none'%3E%3Cpath d='M0 0h28v28H0z'%3E%3C/path%3E%3Cpath d='M24.166 15.685a1 1 0 0 1 1.277 1.275c-.569 1.614-1.445 3.046-2.632 4.229-4.418 4.418-11.58 4.417-15.997 0-4.419-4.417-4.419-11.58 0-15.998C8 4.006 9.431 3.129 11.042 2.559a1 1 0 0 1 1.276 1.277c-1.194 3.372-.394 7.133 2.16 9.69 2.554 2.553 6.317 3.353 9.688 2.16Zm-11.102-.746a11.25 11.25 0 0 1-3.163-9.643c-.61.37-1.17.806-1.673 1.309-3.637 3.637-3.637 9.534 0 13.17a9.311 9.311 0 0 0 13.17-.002 8.75 8.75 0 0 0 1.31-1.671a11.247 11.247 0 0 1-9.644-3.163Z' fill='%232483e4'%3E%3C/path%3E%3C/g%3E%3C/svg%3E ";
-        styleElement.innerHTML = "#scrollableBlock::-webkit-scrollbar-thumb{border: 4px solid #fff!important;}body{background-color:#fff;}:root {--vkui--color_background_content:#fff!important;--vkui--color_transparent--hover:rgba(0, 16, 61, 0.04)!important;--vkenhancer--chosen_tab:#0077FF!important}.vkuiTabbar{	border-top:1px solid #d3d3d3;);background-color:#fff;}.CardLink_CardLink__title{color:#000;}.CardLink_CardLink:hover{background-color:#00103d1f;}.CardLink_CardLink{background-color:#00103d0a;}.custom-slider::-webkit-slider-thumb{	  box-shadow: 0px 0px 5px #ccc;}#inMessage{color:black!important;}#serverSidebar{background-color:#fff;  box-shadow: 0px 9px 10px gray;}.serverMessage > div > a,.dialog > p, .updateAvailable > p, .serverMessage > div > p{color:black!important;} .dialog,.updateAvailable,.serverMessage{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url(" + '"' + imageurl + '"' + ") 4px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > g > path{	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
+        styleElement.innerHTML = "#scrollableBlock::-webkit-scrollbar-thumb{border: 4px solid #fff!important;}body{background-color:#fff;}:root {--vkui--color_separator_primary:#e1e3e6!important;--vkui--color_background_secondary:#00103d0a!important;--vkui--color_text_primary:black!important;--vkui--color_background_content:#fff!important;--vkui--color_transparent--hover:rgba(0, 16, 61, 0.04)!important;--vkenhancer--chosen_tab:#0077FF!important}.vkuiTabbar{	border-top:1px solid #d3d3d3;);background-color:#fff;}.CardLink_CardLink__title{color:#000;}.CardLink_CardLink:hover{background-color:#00103d1f;}.CardLink_CardLink{background-color:#00103d0a;}.custom-slider::-webkit-slider-thumb{	  box-shadow: 0px 0px 5px #ccc;}#inMessage{color:black!important;}#serverSidebar{background-color:#fff;  box-shadow: 0px 9px 10px gray;}.serverMessage > div > a,.dialog > p, .updateAvailable > p, .serverMessage > div > p{color:black!important;} .dialog,.updateAvailable,.serverMessage{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url(" + '"' + imageurl + '"' + ") 4px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;}.vkenhancerLogo > svg > g > g > path{	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
         document.head.appendChild(styleElement);
     } else {
-        changerButton.title = 'Сменить тему на светлую';
         const customStyle = document.getElementById("lightTheme");
         if (customStyle) {
             customStyle.remove();
@@ -822,9 +838,9 @@ document.querySelector('#emojigo').addEventListener('click', function() {
     });
 });
 copyLink.addEventListener('click', (event) => {
-    if (parseId.value != "Данный элемент не является пользователем или группой") {
+    if (parseId.value != getLocalizedString(strings.notGroupOrUserId)) {
         copyToClipboard(parseId.value);
-        parseId.value = "Скопировано в буфер!";
+        parseId.value = getLocalizedString(strings.copiedToCB);
     }
 });
 
@@ -836,11 +852,25 @@ function copyToClipboard(text) {
     document.execCommand('copy');
     document.body.removeChild(textarea);
 }
+
+function getCurrentLanguage() {
+    var select = document.getElementById("languageSelect");
+    return select.value;
+}
+const strings = {
+    notGroupOrUserId: ['Данный элемент не является пользователем или группой', 'This element is not a user profile or group', 'Цей елемент не є користувачем або групою'],
+    copiedToCB: ['Скопировано в буфер!', 'Successfully copied to clipboard!', 'Скопійовано у буфер!'],	
+	}
+function getLocalizedString(obj) {
+    const currentLanguage = getCurrentLanguage();
+    return obj[currentLanguage];
+}
+
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     if (message.greeting) {
         console.log("Greetings " + message.greeting);
         if (message.greeting == "undefined") {
-            parseId.value = "Данный элемент не является пользователем или группой";
+            parseId.value = getLocalizedString(strings.notGroupOrUserId);
         }
         parseId.value = message.greeting;
     }
@@ -1011,7 +1041,7 @@ loadSavedCheckBoxes();
 
 function loadSavedCheckBoxes() {
     // Получение состояния из Local Storage
-    chrome.storage.local.get(["middleNameState","newProfilesState","removeAwayState","sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
+    chrome.storage.local.get(["oldHoverState","middleNameState","newProfilesState","removeAwayState","sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
         accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
         recentgroups.checked = items.recentGroupsState;
@@ -1028,6 +1058,7 @@ function loadSavedCheckBoxes() {
 		removeaway.checked = items.removeAwayState;
 		newprofiles.checked = items.newProfilesState;
 		middlename.checked = items.middleNameState;
+		oldhover.checked = items.oldHoverState;
         slider.value = items.sliderValue;
 		const sliderValue = document.getElementById('slider-value');
         sliderValue.textContent = slider.value + "%";
@@ -1077,9 +1108,8 @@ function loadSavedCheckBoxes() {
                 issThemeChanged: true
             });
             styleElement.id = "lightTheme";
-            changerButton.title = 'Сменить тему на тёмную';
             var imageurl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' width='24' height='24' style='display: block;'%3E%3Cg fill-rule='nonzero' fill='none'%3E%3Cpath d='M0 0h28v28H0z'%3E%3C/path%3E%3Cpath d='M24.166 15.685a1 1 0 0 1 1.277 1.275c-.569 1.614-1.445 3.046-2.632 4.229-4.418 4.418-11.58 4.417-15.997 0-4.419-4.417-4.419-11.58 0-15.998C8 4.006 9.431 3.129 11.042 2.559a1 1 0 0 1 1.276 1.277c-1.194 3.372-.394 7.133 2.16 9.69 2.554 2.553 6.317 3.353 9.688 2.16Zm-11.102-.746a11.25 11.25 0 0 1-3.163-9.643c-.61.37-1.17.806-1.673 1.309-3.637 3.637-3.637 9.534 0 13.17a9.311 9.311 0 0 0 13.17-.002 8.75 8.75 0 0 0 1.31-1.671a11.247 11.247 0 0 1-9.644-3.163Z' fill='%232483e4'%3E%3C/path%3E%3C/g%3E%3C/svg%3E ";
-            styleElement.innerHTML = "#scrollableBlock::-webkit-scrollbar-thumb{border: 4px solid #fff!important;}body{background-color:#fff;}:root {--vkui--color_background_content:#fff!important;--vkui--color_transparent--hover:rgba(0, 16, 61, 0.04)!important;--vkenhancer--chosen_tab:#0077FF!important}.vkuiTabbar{	border-top:1px solid #d3d3d3;);background-color:#fff;}.CardLink_CardLink__title{color:#000;}.CardLink_CardLink:hover{background-color:#00103d1f;}.CardLink_CardLink{background-color:#00103d0a;}.custom-slider::-webkit-slider-thumb{	  box-shadow: 0px 0px 5px #ccc;}#inMessage{color:black!important;}#serverSidebar{background-color:#fff;  box-shadow: 0px 9px 10px gray;}.serverMessage > div > a,.dialog > p, .updateAvailable > p, .serverMessage > div > p{color:black!important;} .dialog,.updateAvailable,.serverMessage{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url(" + '"' + imageurl + '"' + ") 4px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;} .vkenhancerLogo > svg > g > g > path{	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
+            styleElement.innerHTML = "#scrollableBlock::-webkit-scrollbar-thumb{border: 4px solid #fff!important;}body{background-color:#fff;}:root {--vkui--color_separator_primary:#e1e3e6!important;--vkui--color_background_secondary:#00103d0a!important;--vkui--color_text_primary:black!important;--vkui--color_background_content:#fff!important;--vkui--color_transparent--hover:rgba(0, 16, 61, 0.04)!important;--vkenhancer--chosen_tab:#0077FF!important}.vkuiTabbar{	border-top:1px solid #d3d3d3;);background-color:#fff;}.CardLink_CardLink__title{color:#000;}.CardLink_CardLink:hover{background-color:#00103d1f;}.CardLink_CardLink{background-color:#00103d0a;}.custom-slider::-webkit-slider-thumb{	  box-shadow: 0px 0px 5px #ccc;}#inMessage{color:black!important;}#serverSidebar{background-color:#fff;  box-shadow: 0px 9px 10px gray;}.serverMessage > div > a,.dialog > p, .updateAvailable > p, .serverMessage > div > p{color:black!important;} .dialog,.updateAvailable,.serverMessage{background-color:#fff; box-shadow: 0px 0px 10px gray;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::after{	 background-color:#2688eb!important;}.vkenhancerCheckBoxClass__in:checked+.vkenhancerCB::before{	background-color:#2483e4}#colorgray{	color:rgba(0,0,0,0.8);}#addstickertext,#parseidtext{	color:black;}#scrollableBlock::-webkit-scrollbar-thumb{	background-color:#e5e5e7;}#themechange > button{	background: url(" + '"' + imageurl + '"' + ") 4px no-repeat;}.vkenhancerButton1{	color:#2483e4!important;}#themechange > button > svg > g > path:nth-child(2){	fill:#2483e4!important;}.vkenhancerVersionText{	color:rgba(0, 0, 0, 0.5)!important;}.vkenhancerSep1{	color:#e1e3e6!important;}.vkenhancerPlaceHolder__in{	 color: rgba(50, 50, 50)!important;}.ButtonInstallpreload,.vkenhancerButton4.vkenhancerButton8{	 background-color:#2483e4;}.vkenhancerButtonText__in,.ButtonInstallpreload > span > span.vkenhancerPresentation{	 color:#fff!important;} .vkenhancerLogo > svg > g > g > path{	 fill:black;}.vkenhancerInput__in.vkenhancerInput--withPH--ios .vkenhancerPlaceHolderEmpty,.vkenhancerPlaceHolderEmpty{	 border-color:rgba(0, 0, 0, 0.24)!important;}.vkenhancerChooseLabel{	 color:black;}.Y1aohYZJ5QjB1Nuw,.ie6jnmeUOSRv1qMj{	 background-color:#f2f3f5;}.config-reset-icon > svg{	 color:black;}.vkenhancerLowTextInner{	 color:black;}.vkenhancerWarningBox__in{color:gray;}.vkenhancerCB::after {	 background:rgba(0, 0, 0, 0.24);}.vkebhancerHome .vkebhancerInternalPanel_in, .vkebhancerHome::before,.vkenhancerPreLogo,.vkenhancerInput--withPH--ios,.vkenhancerInput__in{	 background-color:#fff;} #textfieldprotipID,.textfieldpro,.vkenhancerLogo__after,.y2tAdaKbIKTTIdCH::after,.betathing {	 background-color:#f5f5f5;	 color:#6d7885;}";
             document.head.appendChild(styleElement);
             isThemeChanged = true;
         }
@@ -1092,6 +1122,10 @@ function loadSavedCheckBoxes() {
 			chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleNewDesign",
                 isChecked: items.newDesignState
+            });
+			chrome.tabs.sendMessage(activeTabId, {
+                type: "toggleOldHover",
+                isChecked: items.oldHoverState
             });
 			chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleMiddleName",

@@ -5,6 +5,7 @@
   <title>VK Enhancer</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no,user-scalable=no,viewport-fit=cover">
   <script defer="defer" src="popup.js"></script>
+  <script src="fillStrings.js" type="module"></script>
   <link rel="stylesheet" href="popup.css">
 </head>
 
@@ -251,6 +252,15 @@
                                   <input type="checkbox" id="integrationmedia" class="vkenhancerCheckBoxClass vkenhancerCheckBoxClass__in"><span aria-hidden="true" class="vkenhancerCB"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerCBHidden__in"></span></label>
                               </div><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></label>
 
+							<label id="OldHover" class="vkenhancerChooseLabel vkenhancerInternalSimpleCell vkenhancerChooseLabel1 vkenhancerInternalSimpleCell--ios vkenhancerChooseLabel2 vkenhancerInternalSimpleCell--sizeY-compact vkenhancerChooseLabel3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7">
+                              <div class="vkenhancerChoosePicker">
+                                <div class="vkenhancerChoosePickerText"><span class="vkenhancerChoosePickerText1 vkenhancerChoosePickerTextIn vkenhancerChoosePickerText__inner vkenhancerChoosePickerText__notBox vkenhancerChoosePickerText__themed">Стандартное взаимодействие с тегом</span><span class="vkenhancerChoosePickerSpan__empty"><div class="vkenhancerChoosePickerDiv__empty"></div></span></div>
+                              </div>
+                              <div class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after">
+                                <label class="vkenhancerCheckBoxLabel vkenhancerCheckBoxLabel__in">
+                                  <input type="checkbox" id="oldhover" class="vkenhancerCheckBoxClass vkenhancerCheckBoxClass__in"><span aria-hidden="true" class="vkenhancerCB"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerCBHidden__in"></span></label>
+                              </div><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></label>
+
                             <div aria-hotbar="true" id="bottomPadding" class="vkenhancerLowText vkenhancerInternalFormItem vkenhancerLowTextItem vkenhancerLowTextItem__in vkenhancerInternalFormItem--withTop" style="width: 50%;">
                               <h5 id="addstickertext" class="vkenhancerLowTextInner vkenhancerLowTextInnerH5 vkenhancerLowTextInnerStyle vkenhancerLowTextStyle">Эмодзи-хотбар</h5><span id="textfieldprotip" class="textfieldpro">​ Нажмите на смайлик ниже, чтобы выбрать нужные эмодзи для хотбара, затем, вставьте сформированную строку сюда. Если хотите отключить хотбар - очистите поле ввода. Далее нажмите кнопку "Обновить хотбар" и перезагрузите страницу</span>
                               <div class="emptyplace"></div><span class="vkenhancerInput vkenhancerInput__in vkenhancerInput--withPH vkenhancerInput--withPH--ios vkenhancerTextInput vkenhancerPlaceHolder"><input placeholder="Введите строку с кодами эмодзи..." type="text" id="addemojitf" class="vkenhancerPlaceHolder__in" value=""><div id="emojigo" class="vkenhancerThemeChanger vkenhancerInternalSimpleCell__after"><button type="button" class="vkenhancerButton1 vkenhancerButton2 vkenhancerButton3 vkenhancerButton4 vkenhancerInternalTappable vkenhancerButton5 vkenhancerButton6 vkenhancerButton7 vkenhancerButton8 vkenhancerEmoji"><svg class=" vkuiIcon vkuiIcon--24 vkuiIcon--w-24 vkuiIcon--h-24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M8.44 14.3a.9.9 0 0 1 1.26.13c.01.02.2.22.53.43.38.24.97.49 1.77.49a3.3 3.3 0 0 0 1.77-.49c.2-.12.39-.26.53-.43a.9.9 0 0 1 1.4 1.13 4.04 4.04 0 0 1-.97.83 5.1 5.1 0 0 1-2.73.76 5.1 5.1 0 0 1-2.73-.76 3.99 3.99 0 0 1-.97-.83.9.9 0 0 1 .14-1.26Zm1.81-4.05a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0ZM15 11.5A1.25 1.25 0 1 0 15 9a1.25 1.25 0 0 0 0 2.5Zm-3-9.4a9.9 9.9 0 1 0 0 19.8 9.9 9.9 0 0 0 0-19.8ZM3.9 12a8.1 8.1 0 1 1 16.2 0 8.1 8.1 0 0 1-16.2 0Z" clip-rule="evenodd"></path></svg><span aria-hidden="true" class="vkenhancerSpanHidden"></span><span aria-hidden="true" class="vkenhancerCBHidden vkenhancerSpanHidden__in"></span></button>
@@ -447,6 +457,14 @@
                       </svg><span aria-hidden="true" class="vkuiTappable__stateLayer"></span></a>
                     <h5 align="center" id="version" class="vkenhancerVersionText vkenhancerLowTextInner vkenhancerLowTextInnerH5 vkenhancerLowTextInnerStyle vkenhancerLowTextStyle"></h5>
 					<h5 align="center" id="version1" class="vkenhancerLowTextInnerAdder vkenhancerLowTextInnerH5 vkenhancerLowTextInnerStyle vkenhancerLowTextStyle"></h5>
+					<div id="selectLanguage" align="center">
+							  <div id="langName"></div>
+							  <select id="languageSelect">
+								<option value="0">Русский</option>
+								<option value="2">Українська</option>
+								<option value="1">English</option>
+							</select>
+							</div>
              
 				  </div>
                 </div>

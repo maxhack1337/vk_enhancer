@@ -1,4 +1,36 @@
-  
+	#languageSelect {
+  padding: 2px;
+  font-size: 13px;
+  border: 1px solid var(--vkui--color_separator_primary);
+  border-radius: 8px;
+  background-color: var(--vkui--color_background_secondary);
+  outline: none;
+  font-weight:600;
+  color:var(--vkui--color_text_primary);
+}
+
+#languageSelect:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+option {
+  padding: 10px;
+  color:var(--vkui--color_text_primary);
+}
+#langName {
+	font-size:14px;
+	font-weight:600;
+	margin-right:8px;
+	margin-bottom:1px;
+	color:var(--vkui--color_text_primary);
+}
+	#selectLanguage {
+		display: flex;
+		align-items: center;
+		font-family: var(--vkui--font_family_base);
+		padding-bottom: 12px;
+	}
 	.vkenhancerChooseLabel:hover {
 		background-color:var(--vkui--color_transparent--hover)!important;
 		border-radius:8px;
