@@ -99,7 +99,7 @@ function createReloadButton() {
   );
   reloadButton.addEventListener("click", (event) => {
     chrome.storage.local.get(
-      [
+      [ "hideButtonState",
         "cameraPhotoState",
         "addstickerState",
         "customHotbar",
@@ -142,6 +142,7 @@ function createReloadButton() {
         customHotbar,
         addstickerState,
         cameraPhotoState,
+		hideButtonState,
       }) =>
         applyStyles(
           checkboxState,
@@ -163,7 +164,8 @@ function createReloadButton() {
           muteCallsState,
           customHotbar,
           addstickerState,
-          cameraPhotoState
+          cameraPhotoState,
+		  hideButtonState
         )
     );
   });
@@ -777,7 +779,8 @@ function applyStyles(
   pollResultsChecked,
   removeAwayChecked,
   newProfilesChecked,
-  middleNameChecked
+  middleNameChecked,
+  oldHoverChecked
 ) {
   if (isOldAccentChecked) {
     hideNFT_Avatars();
@@ -986,13 +989,28 @@ function applyStyles(
 	window.postMessage(
       { action: "middleName", value: middleNameChecked },
       "*"
-    );  
+    ); 
+ 
+	}
+	if(oldHoverChecked) {
+    window.postMessage(
+      { action: "oldHover", value: oldHoverChecked },
+      "*"
+    );   
+   }
+   else {
+	window.postMessage(
+      { action: "oldHover", value: oldHoverChecked },
+      "*"
+    ); 
+ 
 	}
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
   chrome.storage.local.get(
     [
+      "oldHoverState",
 	  "middleNameState",
 	  "newProfilesState",
 	  "removeAwayState",
@@ -1053,6 +1071,7 @@ function applySavedStyles() {
 	  const removeAwayChecked = items.removeAwayState;
 	  const newProfilesChecked = items.newProfilesState;
 	  const middleNameChecked = items.middleNameState;
+	  const oldHoverChecked = items.oldHoverState;
       applyStyles(
         isOldAccentChecked,
         isMsgReactionsChecked,
@@ -1082,7 +1101,8 @@ function applySavedStyles() {
 		pollResultsChecked,
 		removeAwayChecked,
 		newProfilesChecked,
-		middleNameChecked
+		middleNameChecked,
+		oldHoverChecked
       );
     }
   );
@@ -1120,7 +1140,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	message.type === "togglePollResults" ||
 	message.type === "toggleRemoveAway" ||
 	message.type === "toggleNewProfiles" ||
-	message.type === "toggleMiddleName"
+	message.type === "toggleMiddleName" ||
+	message.type === "toggleOldHover"
   ) {
     applySavedStyles();
   }
