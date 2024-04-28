@@ -212,6 +212,7 @@ window.addEventListener("message", async (event) => {
       break;
     }
     case "vkNewDesignOff": {
+	  localStorage.setItem("isNewDesign", false);
       //console.info("[VK ENH] Messenger injection disabled.");
       break;
     }
@@ -322,7 +323,23 @@ if (getLocalValue("isMiddleName")) {
         let lastName = ownerName.substring(lastNameIndex + 1);
         ownerNameElement.firstChild.textContent = `${firstName} ${nickname} ${lastName}`;
       } else {
-        ownerNameElement.firstChild.textContent += ` ${nickname} ​`;
+		let antiIcons = document.querySelector('.OwnerPageName__noWrapText');
+		if(antiIcons) {
+			let antiIconsText = antiIcons.textContent.trim();
+			let lastNameIndex = antiIconsText.lastIndexOf(" ");
+			let firstName = antiIconsText.substring(0, lastNameIndex);
+			let lastName = antiIconsText.substring(lastNameIndex + 1);
+			if(antiIcons.textContent.trim().includes(" ")) {
+				antiIcons.textContent = '';
+				ownerNameElement.firstChild.textContent = `${firstName} ${nickname} ${lastName}`;
+			}
+			else { 
+				ownerNameElement.firstChild.textContent += ` ${nickname} ​`;	
+			}
+		}
+		else {
+			ownerNameElement.firstChild.textContent += ` ${nickname} ​`;		
+		}
       }
     }
   });
@@ -396,17 +413,101 @@ deferredCallback(
               `"}`;
             var objectId1 = await getId();
             var userData = await getUserData(objectId1);
-            var photoUrl = userData[0].photo_200;
+			if(!userData[0].hidden) {
+				var photoUrl = userData[0].photo_200;
+			}
             var activityText = userData[0].activity;
             appendActivityText(activityText);
-            await appearStarts(userData);
-            addCounters(userData[0], userData[0].counters);
-            appearVariable();
-            if (userData[0].can_write_private_message === 0) {
-              buttonrun();
-            }
-            expandMore(userData);
-          } catch (error) {
+			await appearStarts(userData);
+			if(!userData[0].blacklisted == 1 && !userData[0].deactivated && !userData[0].is_service && !userData[0].hidden){
+				const customStyle = fromId("classicalProfilesDELETED");
+				if (customStyle) {
+					customStyle.remove();
+				}
+				const customStyle1 = fromId("classicalProfilesBlackListed");
+				if (customStyle1) {
+					customStyle1.remove();
+				}
+				const customStyle2 = fromId("classicalProfilesDeactivated");
+				if (customStyle2) {
+					customStyle2.remove();
+				}
+				const customStyle3 = fromId("classicalProfilesService");
+				if (customStyle3) {
+					customStyle3.remove();
+				}
+				const customStyle4 = fromId("classicalProfilesHidden");
+				if (customStyle4) {
+					customStyle4.remove();
+				}
+				addCounters(userData[0], userData[0].counters);
+				appearVariable();
+				if (userData[0].can_write_private_message === 0) {
+					buttonrun();
+				}
+				expandMore(userData);
+			}
+			else {
+				let pMoreInfo = document.querySelector('.profile_more_info');
+					pMoreInfo.style.display = 'none';
+				let styleElement = fromId("classicalProfilesDELETED");
+				if (!styleElement) {
+					styleElement = create("style", {}, { id: "classicalProfilesDELETED" });
+					document.head.appendChild(styleElement);
+				}
+				styleElement.innerHTML = ".vkuiInternalGroup:has(>.PlaceholderMessageBlock) {display: none !important;}";
+				let pInfoShort = document.querySelector('.profile_info.profile_info_short');
+				let pModuleText = document.querySelector('.vkuiInternalGroup:has(>.PlaceholderMessageBlock)').textContent;
+				let pModuleDiv = document.createElement('div');
+				let pModuleSpan = document.createElement('span');
+				pModuleSpan.textContent = pModuleText;
+				pModuleDiv.classList.add("vkEnhancerOffProfile");
+				pModuleDiv.style.display = "flex";
+				pModuleDiv.style.justifyContent = "center";
+				pModuleDiv.style.width = "100%";
+				pModuleSpan.classList.add("vkEnhancerOffProfile__in");
+				pModuleSpan.style.padding = "32px 32px";
+				pModuleSpan.style.fontSize = "14px";
+				pModuleSpan.style.lineHeight = "18px";
+				pModuleSpan.style.fontWeight = "400";
+				pModuleSpan.style.color = "var(--vkui--color_text_secondary)";
+				pModuleDiv.appendChild(pModuleSpan);
+				pInfoShort.appendChild(pModuleDiv);
+				if(userData[0].blacklisted == 1 && !userData[0].deactivated) {
+					let styleElement = fromId("classicalProfilesBlackListed");
+					if (!styleElement) {
+						styleElement = create("style", {}, { id: "classicalProfilesBlackListed" });
+						document.head.appendChild(styleElement);
+					}
+				styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:280px!important;}.ProfileHeaderActions__buttons:not(:has(>.ProfileHeaderButton a[href='/edit'])){top:230px!important;}div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in{width:100%!important}div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in > span{display:block!important}div.ProfileHeaderActions__moreButtonContainer > div > button > span{background:none!important;}.ProfileHeaderActions__moreButtonContainer {margin-left:0px; !important;} div.ProfileHeaderActions__moreButtonContainer > div > button {min-width:206px!important;}";
+				}
+				if(userData[0].deactivated) {
+					let styleElement = fromId("classicalProfilesDeactivated");
+					if (!styleElement) {
+						styleElement = create("style", {}, { id: "classicalProfilesDeactivated" });
+						document.head.appendChild(styleElement);
+					}
+				styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}";
+				}
+				if(userData[0].is_service) {
+					addCounters(userData[0], userData[0].counters);
+					let styleElement = fromId("classicalProfilesService");
+					if (!styleElement) {
+						styleElement = create("style", {}, { id: "classicalProfilesService" });
+						document.head.appendChild(styleElement);
+					}
+				styleElement.innerHTML = ".page_current_info.current_text{border-bottom:none!important;}#profile_short{display:none!important}.ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}";
+				}
+				if(userData[0].hidden) {
+					let styleElement = fromId("classicalProfilesHidden");
+					if (!styleElement) {
+						styleElement = create("style", {}, { id: "classicalProfilesHidden" });
+						document.head.appendChild(styleElement);
+					}
+				styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}";
+				}
+			}
+			} catch (error) {
             console.error(error);
           }
         }
@@ -1769,7 +1870,13 @@ deferredCallback(
           "audios",
           "posts",
         ];
+		if(countersData) {
         countersData = sortObject(countersData, order);
+		}
+		else
+		{
+		return;	
+		}
         for (var counterType in countersData) {
           var value = countersData[counterType];
           if (value !== 0) {
@@ -1795,35 +1902,35 @@ deferredCallback(
             switch (counterType) {
               case "photos":
                 labelClass = "vkenhancerCounterPhoto";
-                if (!userData.is_closed) {
+                if (userData.can_access_closed) {
                   labelHref = `https://vk.com/albums${userData.id}?profile=1`;
                   labelOnclick = `return showAlbums(${userData.id}, {noHistory: true}, event);`;
                 }
                 break;
               case "audios":
                 labelClass = "vkenhancerCounterAudios";
-                if (!userData.is_closed) {
+                if (userData.can_access_closed) {
                   labelHref = `https://vk.com/audios${userData.id}`;
                   labelOnclick = `return page.showPageAudios(event, ${userData.id});`;
                 }
                 break;
               case "followers":
                 labelClass = "vkenhancerCounterFollowers";
-                if (!userData.is_closed) {
+                if (userData.can_access_closed) {
                   labelHref = `https://vk.com/friends?id=${userData.id}&section=subscribers`;
                   labelOnclick = `return page.showPageMembers(event, ${userData.id}, 'followers');`;
                 }
                 break;
               case "friends":
                 labelClass = "vkenhancerCounterFriends";
-                if (!userData.is_closed) {
+                if (userData.can_access_closed) {
                   labelHref = `https://vk.com/friends?id=${userData.id}&section=friends`;
                   labelOnclick = `return page.showPageMembers(event, ${userData.id}, 'friends');`;
                 }
                 break;
               case "user_photos":
                 labelClass = "vkenhancerCounterUserPhotos";
-                if (!userData.is_closed) {
+                if (userData.can_access_closed) {
                   labelHref = `https://vk.com/tag${userData.id}`;
                   labelOnclick = `return showPhotoTags(${userData.id}, {noHistory: true}, event);`;
                 }
@@ -1835,7 +1942,7 @@ deferredCallback(
                 break;
               case "videos":
                 labelClass = "vkenhancerCounterVideos";
-                if (!userData.is_closed) {
+                if (userData.can_access_closed) {
                   labelHref = `https://vk.com/videos${userData.id}`;
                   labelOnclick = `return page.showPageVideos(event, ${userData.id});`;
                 }
@@ -3311,6 +3418,7 @@ deferredCallback(
           });
           console.info("[VK ENH] Profile fetched");
           console.log(response[0]);
+		  if(!response[0].hidden) {
           let wasInSetb = getLang("profile_last_seen", "raw");
           let newLangArray = wasInSetb.map((item) => item.replace(/%s/, ""));
           let index = response[0].sex === 1 ? 2 : 1;
@@ -3343,7 +3451,7 @@ deferredCallback(
               ".ProfileIndicatorBadge__badgeOnlineMobile"
             );
             onlineBadgeMob.textContent = "Onlineᅠ​";
-          } catch (error) { }
+		} catch (error) { }}
           /*let styleElement = fromId("vken_box_online_classic");
           if (!styleElement) {
             styleElement = document.createElement("style");
