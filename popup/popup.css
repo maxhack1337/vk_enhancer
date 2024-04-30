@@ -1080,7 +1080,6 @@ option {
       --animation-duration: 1.5s;
       --animation-direction: normal;
       --pseudo-element-display: block;
-      /* Enable animation */
       background-color: var(--base-color);
       width: 100%;
       border-radius: 0.25rem;
@@ -1090,7 +1089,6 @@ option {
       user-select: none;
       overflow: hidden;
       z-index: 1;
-      /* Necessary for overflow: hidden to work correctly in Safari */
     }
     
     .react-loading-skeleton::after {
@@ -1114,7 +1112,6 @@ option {
     @media (prefers-reduced-motion) {
       .react-loading-skeleton {
         --pseudo-element-display: none;
-        /* Disable animation */
       }
     }
   
@@ -1574,29 +1571,7 @@ option {
       position: relative;
       z-index: var(--vkenhancer_internal--z_index_tabs)
     }
-  
-  
-    .nhrvqq5VEvgTUB5T {
-      cursor: ns-resize;
-      color: var(--vkui--color_icon_secondary)
-    }
-  
-  
-    .rLDyN4NWdDHxlGsC {
-      display: none;
-      color: var(--vkui--color_icon_tertiary)
-    }
     
-    .k_cREnE9DE1OuEyP {
-      color: var(--vkui--color_icon_accent)
-    }
-    
-    .LnQD1NH14oMA02wW:not(:checked)~.bRyXJqayllwHAvnU,
-    .LnQD1NH14oMA02wW:checked~.k_cREnE9DE1OuEyP {
-      display: block
-    }
-  
-  
     .vkenhancerCheckBoxClass {
       position: absolute !important;
       height: 1px;
