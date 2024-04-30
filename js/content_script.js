@@ -84,6 +84,13 @@ function create(name, styles, options) {
 function createReloadButton() {
   const topNav = fromId("top_nav");
   if (!topNav) return;
+  let styleElement = fromId("vkEnhButtonReload");
+  if (!styleElement) {
+    styleElement = document.createElement("style");
+    styleElement.id = "vkEnhButtonReload";
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML = "[scheme=vkcom_dark] .vkEnhancerRebootLoading > a > div > div{background-image: url(data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%23939393%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M8%203.25a4.75%204.75%200%200%200-4.149%207.065.75.75%200%201%201-1.31.732A6.25%206.25%200%201%201%208%2014.25a.75.75%200%200%201%20.001-1.5%204.75%204.75%200%201%200%200-9.5Z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E%0A)}.vkEnhancerRebootLoading > a > div > div > svg{display:none;}.vkEnhancerRebootLoading > a > div > div{ display: inline-block; width: 28px; height: 28px; animation-name: round_spinner; animation-duration: 700ms; animation-iteration-count: infinite; animation-timing-function: linear; background-image: url(data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2399a2ad%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M8%203.25a4.75%204.75%200%200%200-4.149%207.065.75.75%200%201%201-1.31.732A6.25%206.25%200%201%201%208%2014.25a.75.75%200%200%201%20.001-1.5%204.75%204.75%200%201%200%200-9.5Z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E%0A); background-size: 28px; background-position: center; background-repeat: no-repeat }@keyframes round_spinner { 0% { transform: rotate(0deg) } to { transform: rotate(360deg) } }";
   const reloadButton = create(
     "li",
     {},
@@ -98,6 +105,7 @@ function createReloadButton() {
     "showTooltip(this, { text: 'Перезагрузить функции VK Enhancer', black: true, shift: [4, 5] });"
   );
   reloadButton.addEventListener("click", (event) => {
+	reloadButton.classList.add("vkEnhancerRebootLoading");
     chrome.storage.local.get(
       [ "oldHoverState",
 	  "middleNameState",
@@ -195,7 +203,7 @@ middleNameState,
 oldHoverState
         )
     );
-  });
+    setTimeout(() => reloadButton.classList.remove("vkEnhancerRebootLoading"), 250);});
   topNav.appendChild(reloadButton);
 }
 document.addEventListener("DOMContentLoaded", createReloadButton);
