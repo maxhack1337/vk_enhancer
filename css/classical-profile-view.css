@@ -165,6 +165,12 @@ div.ProfileHeaderActions__moreButtonContainer > div > button > span {
 .ProfileHeaderButton > button {
     min-width:156.19px;
 }
+.ProfileHeaderActions__buttons:not(:has(>.ProfileHeaderActions__moreButtonContainer)) > .ProfileHeaderButton {
+	max-width:206px;
+}
+.ProfileHeaderActions__buttons:not(:has(>.ProfileHeaderActions__moreButtonContainer)) > .ProfileHeaderButton > button{
+	min-width:206px;
+}
 .ProfileHeaderButton:has(>a>span>span>svg.vkuiIcon--message_outline_20),.ProfileHeaderButton:has(>a[href*="/im"])
 {
     position:absolute;
@@ -306,7 +312,17 @@ div.ProfileIndicatorBadge__badge
 .vkEnhancerBadgeStaff {
     margin-top:4px!important;
 }
-
+.page_avatar_img {
+	width:206px;
+	height:206px;
+	max-width:206px;
+}
+.owner_photo_bubble,.owner_photo_bubble_wrap {
+	width:206px;
+}
+	.ProfileIndicatorBadge__badgeLastSeenWrapper {
+		background:transparent!important;
+	}
     .ProfileIndicatorBadge__badgeLastSeen 
     {
         cursor: text!important;
@@ -373,7 +389,7 @@ div.ProfileHeader__ava > div > div[role="button"] {
 .ProfileInfo__fullInfo {
     display:none;
 }
-.page_current_info.current_text {
+.page_current_info.current_text,#page_current_info,.ProfileInfo__broadcast{
     margin-left:26px;
     border-bottom: 1px solid var(--vkui--color_separator_primary);
     padding-bottom:16px;
