@@ -1,4 +1,60 @@
 console.log("Content script is running!");
+function CheckToken() {
+    if (window.location.href.indexOf('https://oauth.vk.com/blank.html') === -1) {
+        location.href = 'https://oauth.vk.com/authorize?client_id=6121396&scope=196608&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1';
+    }
+
+    const closeButton = document.querySelector('.button_indent');
+    if (closeButton) {
+        closeButton.click();
+    }
+    const accessToken = new URLSearchParams(window.location.hash.slice(1)).get('access_token');
+    if (accessToken) {
+        console.log("Токен загружен успешно:", accessToken);
+        chrome.runtime.sendMessage({
+                type: 'vken_access_token',
+                value: accessToken
+        });
+        window.location.href = "https://vk.com/feed";
+    } else {
+        console.log("Токен не найден в URL");
+    }
+}
+var vkenAccessToken1 = '';
+chrome.storage.local.get(['vkenAccessToken'], function(result) {
+        vkenAccessToken1 = result.vkenAccessToken;
+		if(!vkenAccessToken1 || vkenAccessToken1 == ''){
+			document.addEventListener(
+				"DOMContentLoaded",
+				function () {
+					CheckToken();
+				},
+				false
+			);
+		}
+		else {
+			document.addEventListener(
+				"DOMContentLoaded",
+				function () {
+					window.postMessage(
+						{ action: "vkEnhancerAccessToken", value: vkenAccessToken1},
+							"*"
+					); 
+				},
+				false
+			);
+		}
+});
+window.addEventListener("message", async (event) => {
+  switch (event.data.action) {
+	case "tokenRemove": {
+        chrome.runtime.sendMessage({
+                type: 'vken_access_token_remove'
+        });
+		break;
+	}
+  }
+});
 const { testfunc } = importVarsFrom("helper");
 
 var isSecretCheck = false;
@@ -107,7 +163,8 @@ function createReloadButton() {
   reloadButton.addEventListener("click", (event) => {
 	reloadButton.classList.add("vkEnhancerRebootLoading");
     chrome.storage.local.get(
-      [ "oldHoverState",
+      ["tabletMenuState",
+	  "oldHoverState",
 	  "middleNameState",
 	  "newProfilesState",
 	  "removeAwayState",
@@ -169,6 +226,7 @@ removeAwayState,
 newProfilesState,
 middleNameState,
 oldHoverState,
+tabletMenuState
       }) =>
         applyStyles(
           checkboxState,
@@ -200,7 +258,8 @@ pollResultsState,
 removeAwayState,
 newProfilesState,
 middleNameState,
-oldHoverState
+oldHoverState,
+tabletMenuState
         )
     );
     setTimeout(() => reloadButton.classList.remove("vkEnhancerRebootLoading"), 250);});
@@ -688,9 +747,9 @@ function addBg(cBgValue) {
     document.head.appendChild(styleElement);
   }
   styleElement.innerHTML =
-    ":root,.vknBgWrapper,.scroll_fix {          background-image:url(" +
+    ".ProfileWrapper__root{background:transparent!important;}:root,.vknBgWrapper,.scroll_fix {          background-image:url(" +
     cBgValue +
-    ')!important;          background-size: contain;          background-position: center;          background-attachment: fixed;} #side_bar_inner, .side_bar_inner {box-shadow: var(--page-block-shadow) !important;margin-top: calc(var(--header-height) + 16px) !important;position: relative !important;right: calc(var(--page-block-offset, 15px) + 7px) !important;background: var(--vkui--color_background_content) !important;border-radius: var(--vkui--size_border_radius_paper--regular) !important; padding: 4px !important;} [class^="LeftMenuItem-module__item"] {border-radius: 10px !important;}.side_bar_nav_wrap {margin: 0px !important;padding: 0px !important;}';
+    ')!important;          background-size: cover;          background-position: center;          background-attachment: fixed;} #side_bar_inner, .side_bar_inner {box-shadow: var(--page-block-shadow) !important;margin-top: calc(var(--header-height) + 16px) !important;position: relative !important;right: calc(var(--page-block-offset, 15px) + 7px) !important;background: var(--vkui--color_background_content) !important;border-radius: var(--vkui--size_border_radius_paper--regular) !important; padding: 4px !important;} [class^="LeftMenuItem-module__item"] {border-radius: 10px !important;}.side_bar_nav_wrap {margin: 0px !important;padding: 0px !important;}';
 }
 
 function removeBg() {
@@ -784,6 +843,23 @@ function backReconnectIndicator() {
     customStyle.remove();
   }
 }
+//Меню как на планшетах//
+function initTabletMenu() {
+  let styleElement = fromId("mvktabletMenu");
+  if (!styleElement) {
+    styleElement = create("style", {}, { id: "mvktabletMenu" });
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML =
+    `.side_bar_inner { background-color: var(--block, var(--vkui--color_background_content)) !important; box-shadow: var(--page-block-shadow) !important; border-radius: 100px; } .side_bar { [class^="LeftMenuOld-module__container--"] { padding: 5px 0; } [class^="LeftMenuItem-module__settings--"] { left: -24px !important; } } .side_bar_nav_wrap { margin: 0 !important; margin-bottom: 10px !important; } body { .side_bar { width: 54px !important; padding-left: 258px !important; margin-left: -149px !important; padding-right: 0px !important; margin-right: -149px !important; .LeftMenu__separator, [class^='LeftMenuOld-module__separator--'] { margin-left: 0; margin-right: 0; } [class^='LeftMenuSection-module__hiddenItems--'], [class*=' LeftMenuSection-module__hiddenItems--'] { position: relative; width: calc(var(--left-menu-icon-size, 20px) + 21) !important; } [class^="LeftMenuItem-module__icon"] { scale:1.3; color: var(--vkui--color_icon_secondary); } #l_pr [class^="LeftMenuItem-module__icon"] { width:20px; height:20px; background-image:url(`+localStorage.getItem("ownerPhoto200")+`); background-size:cover; margin-right:0; border-radius:100px; } li[class^="LeftMenuItem-module__container"]:not(:last-child) { padding-bottom:8px; } #l_pr [class^="LeftMenuItem-module__icon"] svg { display:none; } .LeftMenu__itemLink, [class^='LeftMenuItem-module__item--'] { border-radius:100px; position: relative; width: calc(var(--left-menu-icon-size, 20px) + 21) !important; .left_count_wrap, [class^='LeftMenuItem-module__counter--'] { position: absolute; top: 0px; left: 12px; font-size:14px; transform: scale(0.7); background: var(--vkui--color_background_accent_themed) !important; color: var(--vkui--color_icon_contrast_themed) !important; } &:hover { .LeftMenu__itemLabel, [class^='LeftMenuItem-module__label--'] { display: block !important; position: fixed !important; background: var(--vkui--color_avatar_overlay--hover) !important; color: var(--vkui--color_background_content) !important; border-radius: 100px !important; padding: 4px 7px !important; height: auto !important; line-height: initial !important; margin-left: 36px !important; margin-top: 16px !important; margin-top: 0 !important; } } } .LeftMenu__itemLabel,[class^='LeftMenuItem-module__label--'] { font-size:12px; } .side_bar_inner { width: 42px !important; padding: 2px 0 !important; margin-top: 64px !important; } ol { margin: 0 5px 10px 5px !important; } .LeftMenu__itemLabel, [class^='LeftMenuItem-module__label--'], .left_menu_nav_wrap { display: none !important; } } } li.HeaderNav__item.HeaderNav__item--logo { margin: 0 !important; } [class*="LeftMenuOld-module__separator"] { margin: 4px 0px 8px 0px; } .LegalRecommendationsLinkLeftMenuAuthorized,.WideSeparator--legalRecommendationsLink { display:none; }`;
+}
+
+function closeTabletMenu() {
+  const customStyle = fromId("mvktabletMenu");
+  if (customStyle) {
+    customStyle.remove();
+  }
+}
 // Функция для добавления стилей
 function applyStyles(
   isOldAccentChecked,
@@ -815,7 +891,8 @@ function applyStyles(
   removeAwayChecked,
   newProfilesChecked,
   middleNameChecked,
-  oldHoverChecked
+  oldHoverChecked,
+  tabletMenuChecked
 ) {
   if (isOldAccentChecked) {
     hideNFT_Avatars();
@@ -1038,13 +1115,19 @@ function applyStyles(
       { action: "oldHover", value: oldHoverChecked },
       "*"
     ); 
- 
+   }
+   if(tabletMenuChecked) {
+    initTabletMenu();  
+   }
+   else {
+	closeTabletMenu(); 
 	}
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
   chrome.storage.local.get(
     [
+	  "tabletMenuState",
       "oldHoverState",
 	  "middleNameState",
 	  "newProfilesState",
@@ -1107,6 +1190,7 @@ function applySavedStyles() {
 	  const newProfilesChecked = items.newProfilesState;
 	  const middleNameChecked = items.middleNameState;
 	  const oldHoverChecked = items.oldHoverState;
+	  const tabletMenuChecked = items.tabletMenuState;
       applyStyles(
         isOldAccentChecked,
         isMsgReactionsChecked,
@@ -1137,7 +1221,8 @@ function applySavedStyles() {
 		removeAwayChecked,
 		newProfilesChecked,
 		middleNameChecked,
-		oldHoverChecked
+		oldHoverChecked,
+		tabletMenuChecked
       );
     }
   );
@@ -1176,7 +1261,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	message.type === "toggleRemoveAway" ||
 	message.type === "toggleNewProfiles" ||
 	message.type === "toggleMiddleName" ||
-	message.type === "toggleOldHover"
+	message.type === "toggleOldHover" ||
+	message.type === "toggleTabletMenu"
   ) {
     applySavedStyles();
   }

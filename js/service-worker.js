@@ -22,8 +22,17 @@ function sendMessageToContentScript(tabId, message) {
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
-
-  if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups" || message.type === "toggleAltSB" || message.type === "toggleMuteStatus" || message.type === "toggleCameraPhoto" || message.type === "toggleHideButton" || message.type === "toggleNewDesign" || message.type === "toggleIntegrationMedia" || message.type === "toggleNechitalka" || message.type === "toggleNepisalka" || message.type === "togglePollResults" || message.type === "toggleRemoveAway" || message.type === "toggleNewProfiles" || message.type === "toggleMiddleName" || message.type === "toggleOldHover") {
+  if(message.type === "vken_access_token") {
+	 chrome.storage.local.set({
+		vkenAccessToken: message.value
+	  });
+  }
+  if(message.type === "vken_access_token_remove") {
+	 chrome.storage.local.set({
+		vkenAccessToken: ''
+	  });
+  }
+  if (message.type === "nameAva" || message.type === "toggleOldAccent" || message.type === "toggleMsgReactions" || message.type === "toggleSecretFunctions" || message.type === "togglePostReactions" || message.type === "toggleHider" || message.type === "toggleEmojiStatus" || message.type === "toggleRecentGroups" || message.type === "toggleAltSB" || message.type === "toggleMuteStatus" || message.type === "toggleCameraPhoto" || message.type === "toggleHideButton" || message.type === "toggleNewDesign" || message.type === "toggleIntegrationMedia" || message.type === "toggleNechitalka" || message.type === "toggleNepisalka" || message.type === "togglePollResults" || message.type === "toggleRemoveAway" || message.type === "toggleNewProfiles" || message.type === "toggleMiddleName" || message.type === "toggleOldHover" || message.type === "toggleTabletMenu") {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       if (tabs && tabs.length > 0) {
         const activeTabId = tabs[0].id;

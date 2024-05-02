@@ -79,6 +79,27 @@ var secretFunctions = false;
 let ajax_replaced = null;
 window.urls = null;
 
+deferredCallback(
+    async (_vk) => {
+		await getUserDataLocalStoragePhoto(vk.id);
+    },
+    { variable: "vk" }
+  );
+
+async function getUserDataLocalStoragePhoto(objectId) {
+        try {
+          var response = await vkApi.api("users.get", {
+            user_ids: objectId,
+            fields:
+              "photo_id,photo_200",
+          });
+          localStorage.setItem("ownerPhoto200",response[0].photo_200);
+        } catch (error) {
+          console.error(error);
+          return [];
+        }
+}
+
 function getLocalValue(item) {
   let store = localStorage.getItem(item);
   return store !== "undefined" && JSON.parse(store)
@@ -115,7 +136,13 @@ deferredCallback(
   () => {
     let log = vkApi.login;
     vkApi.login = function (e) {
-      if (!xuy.includes(e)) localStorage.setItem("convo_history", "[]");
+      if (!xuy.includes(e)) { 
+		  localStorage.setItem("convo_history", "[]");
+		  	window.postMessage(
+				{ action: "tokenRemove"},
+				"*"
+			); 
+	  }
       return log.apply(this, Array.prototype.slice.call(arguments));
     };
   },
@@ -283,6 +310,10 @@ window.addEventListener("message", async (event) => {
     }
     case "oldHover": {
       localStorage.setItem("isOldHover", event.data.value);
+      break;
+    }
+	case "vkEnhancerAccessToken": {
+      localStorage.setItem("vk_enhancer_access_token", event.data.value);
       break;
     }
     case "Init": {
@@ -530,6 +561,9 @@ deferredCallback(
 
       async function expandMore(userData) {
         var profileMoreInfo = document.querySelector(".profile_more_info");
+		if(!profileMoreInfo) {
+			return;
+		}
         let ProfileInfo = document.querySelector(".ProfileInfo");
         var profileLessLabel = document.querySelector(".profile_label_less");
         var profileMoreLabel = document.querySelector(".profile_label_more");
@@ -2864,7 +2898,7 @@ deferredCallback(
         var count = 0;
         var interval = setInterval(function () {
           if (count >= 1) {
-            console.log(count + " passed");
+            //console.log(count + " passed");
             clearInterval(interval);
             return;
           }
@@ -3080,11 +3114,42 @@ deferredCallback(
         profileMoreInfoLink.appendChild(profileLabelMore);
         profileMoreInfoLink.appendChild(profileLabelLess);
         profileMoreInfo.appendChild(profileMoreInfoLink);
-
-        profileShort.appendChild(profileMoreInfo);
-
-        pageCurrentInfo.appendChild(profileShort);
-
+		if (
+    (userData[0].home_town && userData[0].home_town !== "") ||
+    (userData[0].personal && userData[0].personal.langs_full) ||
+    (userData[0].relatives && userData[0].relatives.length > 0) ||
+    (userData[0].home_phone && userData[0].home_phone !== "") ||
+    (userData[0].mobile_phone && userData[0].mobile_phone !== "") ||
+    (userData[0].skype && userData[0].skype !== "") ||
+    (userData[0].career && userData[0].career.length > 0) ||
+    (userData[0].universities && userData[0].universities.length > 0) ||
+    (userData[0].schools && userData[0].schools.length > 0) ||
+    (userData[0].military && userData[0].military.length > 0) ||
+    (
+        userData[0].personal &&
+        (
+            (userData[0].personal.alcohol && userData[0].personal.alcohol !== 0) ||
+            (userData[0].personal.life_main && userData[0].personal.life_main !== 0) ||
+            (userData[0].personal.people_main && userData[0].personal.people_main !== 0) ||
+            (userData[0].personal.smoking && userData[0].personal.smoking !== 0) ||
+            (userData[0].personal.inspired_by && userData[0].personal.inspired_by !== "") ||
+            (userData[0].personal.religion && userData[0].personal.religion !== "")
+        ) &&
+        Object.keys(userData[0].personal).length > 0
+    ) ||
+    (userData[0].activities && userData[0].activities !== "") ||
+    (userData[0].interests && userData[0].interests !== "") ||
+    (userData[0].music && userData[0].music !== "") ||
+    (userData[0].movies && userData[0].movies !== "") ||
+    (userData[0].tv && userData[0].tv !== "") ||
+    (userData[0].books && userData[0].books !== "") ||
+    (userData[0].games && userData[0].games !== "") ||
+    (userData[0].quotes && userData[0].quotes !== "") ||
+    (userData[0].about && userData[0].about !== "")
+){
+			profileShort.appendChild(profileMoreInfo);
+		}
+		pageCurrentInfo.appendChild(profileShort);
         function createProfileInfoRow(label, content) {
           if (!content) return null;
           var clearFix = document.createElement("div");
@@ -3543,8 +3608,9 @@ async function changeBroadcastState() {
 	let expVa = await ajax.promisifiedPost("al_audio.php?act=status_tt", {});
 	let expVal = expVa[1].is_profile_active;
 	let j = ap.getCurrentAudio();
+	let o;
 	try {
-		let o = `${j[1]}_${j[0]}`;
+		o = `${j[1]}_${j[0]}`;
 	}
 	catch(error) {
 		return;
@@ -3606,13 +3672,13 @@ function appendActivityText(activityText) {
 					if(checkBoxChecked == "true") {
 						let statusInput = document.querySelector('.page_status_input');
 						statusInput.setAttribute("contenteditable", false);
-						console.log("Event listener added");
+						//console.log("Event listener added");
 						saveButtonStatus.addEventListener("click", changeBroadcastState);
 					}
 					else {
 						let statusInput = document.querySelector('.page_status_input');
 						statusInput.setAttribute("contenteditable", true);
-						console.log("Event listener removed");
+						//console.log("Event listener removed");
 						saveButtonStatus.removeEventListener("click", changeBroadcastState);
 					}
 				});
@@ -3621,7 +3687,7 @@ function appendActivityText(activityText) {
 				e.addEventListener("click", ()=>{page.audioStatusUpdate(window.vk.statusExportHash)});
 			});
 			let pHeaderAva = document.querySelectorAll('.OwnerPageAvatar')[1];
-			console.log(pHeaderAva);
+			//console.log(pHeaderAva);
 			pHeaderAva.remove();
 			let pHeaderAva1 = document.querySelectorAll('.ProfileHeader__ava')[1];
 			pHeaderAva1.style.position = "relative";
@@ -3646,7 +3712,7 @@ function appendActivityText(activityText) {
 						jopa.innerHTML = `<div class="owner_photo_top_bubble_wrap"> <div class="owner_photo_top_bubble"> <div class="ui_thumb_x_button" onclick="showFastBox(getLang('global_warning'), getLang('profile_really_delete_photo'), getLang('global_delete'),()=>{ vkApi.api('users.get',{fields:'photo_id'}).then(e=>{ vkApi.api('photos.delete',{owner_id:`+vk.id+`,photo_id:`+userDataOwner[0].photo_id.split("_")[1]+`}).then(e=>{ window.curBox().hide(true);location.reload(true); }) }) },getLang('global_cancel'))" data-title=`+getLang('profile_delete_photo')+` onmouseover="showTitle(this);" tabindex="0" role="button" aria-label=`+getLang('profile_delete_photo')+`> <div class="ui_thumb_x"></div> </div> </div> </div> <div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"><a id="profile_photo_link" href="https://vk.com/photo`+userPhotoAva+`" onclick="return showPhoto('`+userPhotoAva+`', 'album`+vk.id+`_0/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,&quot;y&quot;:&quot;`+photo200+`;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,&quot;z&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;w&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;x_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,604,499],&quot;y_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,807,667],&quot;z_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;w_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums`+vk.id+`&quot;}}, event)"><img class="page_avatar_img" src="`+photo200+`"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_update_photo')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_crop" data-task-click="Page/owner_edit_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`,&quot;hash&quot;:&quot;`+getPhotoEditHash()+`&quot;}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_edit_small_copy')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_effects" onclick="Page.ownerPhotoEffects('`+userPhotoAva+`', `+vk.id+`)" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_photo_action_effects')+`</span> </div> </div> </div>`;
 						}
 						catch(error) {
-							jopa.innerHTML = `<div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"> <a id="profile_photo_link" href="https://vk.com/photo` + userPhotoAva + `" onclick="return showPhoto('` + userPhotoAva + `', 'album` + vk.id + `_0/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;` + photo200 + `&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,&quot;y&quot;:&quot;` + photo200 + `;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,&quot;z&quot;:&quot;` + photo200 + `&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;w&quot;:&quot;` + photo200 + `&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;x_&quot;:[&quot;` + photo200 + `&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,604,499],&quot;y_&quot;:[&quot;` + photo200 + `&amp;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,807,667],&quot;z_&quot;:[&quot;` + photo200 + `&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;w_&quot;:[&quot;` + photo200 + `&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums` + vk.id + `&quot;}}, event)"><img class="page_avatar_img" src="` + photo200 + `"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update owner_photo_no_ava" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:` + vk.id + `}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_load_photo')+`</span> </div> </div> </div>`;
+							jopa.innerHTML = `<div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"> <a id="profile_photo_link"><img class="page_avatar_img" src="` + photo200 + `"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update owner_photo_no_ava" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:` + vk.id + `}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_load_photo')+`</span> </div> </div> </div>`;
 							let styleElement = fromId("vkenNoAva");
 							if (!styleElement) {
 								styleElement = document.createElement("style");
@@ -4110,11 +4176,17 @@ document.arrive(
       document.head.appendChild(styleElement);
     }
     styleElement.innerHTML =
-      ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{margin-top:-36px!important;}";
+      ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{margin-top:-72px!important;}";
     var clmno = document.createElement("a");
     clmno.innerHTML =
       '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular AudioMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#voice_outline_24" style="fill: currentcolor;"></use></svg></i><span class="ActionsMenuAction__title">' +
       getLang("mail_audio_message") +
+      "</span></button>";
+	  
+	var clmno1 = document.createElement("a");
+    clmno1.innerHTML =
+      '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular GraffitiMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M6.66738 12.4934C5.66072 12.4934 4.89771 13.2639 4.85288 14.219C4.78943 15.5707 4.14574 16.3782 3.56758 16.8697C4.09576 17.0241 4.83625 17.0816 5.79412 16.7965C7.69684 16.2301 8.48106 15.0732 8.48106 14.1836C8.48106 13.2865 7.70617 12.4934 6.66738 12.4934ZM3.35859 14.1483C3.44019 12.4098 4.84452 10.9918 6.66738 10.9918C8.4581 10.9918 9.977 12.3845 9.977 14.1836C9.977 15.9903 8.47815 17.5638 6.21942 18.2361C4.06158 18.8784 2.57907 18.2114 1.87062 17.688C1.78649 17.6258 1.66019 17.5141 1.57758 17.3353C1.48322 17.131 1.47952 16.9126 1.54181 16.7213C1.69148 16.2618 2.17858 16.0626 2.52898 15.7829C2.9113 15.4778 3.31759 15.0219 3.35859 14.1483Z"/><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M15.7019 2.00141C16.312 1.36368 17.3109 1.32806 17.9631 1.93024C18.6094 2.527 18.68 3.5332 18.1327 4.21788L12.0531 11.716C11.7923 12.0376 11.3212 12.0861 11.0008 11.8244C10.6804 11.5626 10.6321 11.0897 10.8928 10.7681L16.9669 3.27699C17.0242 3.20385 17.0127 3.09301 16.9503 3.0354C16.8833 2.97354 16.8169 3.009 16.7482 3.07474L9.74543 9.7831C9.44658 10.0694 8.97312 10.0583 8.68792 9.75831C8.40272 9.45834 8.41378 8.98309 8.71263 8.69681L15.7019 2.00141Z" fill="currentColor"/></svg></i><span class="ActionsMenuAction__title">' +
+      getLang("mail_added_graffiti") +
       "</span></button>";
     var newpanel = document.querySelector(
       ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper > div > .ActionsMenu"
@@ -4123,6 +4195,11 @@ document.arrive(
     if (!setElement) {
       newpanel.appendChild(clmno);
     }
+	var setElement1 = document.querySelector(".GraffitiMenuPopper");
+    if (!setElement1) {
+      newpanel.appendChild(clmno1);
+    }
+	setElement1 = document.querySelector(".GraffitiMenuPopper");
     setElement = document.querySelector(".AudioMenuPopper");
     var eventListenerSet = false;
     if (!eventListenerSet) {
@@ -4142,7 +4219,140 @@ document.arrive(
       });
       eventListenerSet = true;
     }
+	var eventListenerSet1 = false;
+    if (!eventListenerSet1) {
+      setElement1.addEventListener("click", async function () {
+	    let styleElement = fromId("vkenGraffity");
+		if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = "vkenGraffity";
+			document.head.appendChild(styleElement);
+		}
+		styleElement.innerHTML = `.vkEnhancerGraffitiList{padding:8px;}.vkEnhancerModalPageHeader{ background-color:var(--vkui--color_background_tertiary)!important; border-radius:8px 8px 0 0!important; } .vkEnhancerSeparator { display:none!important; } .vkEnhancerModalPage__header { border-bottom:1px solid var(--vkui--color_separator_primary)!important; } .vkEnhancerPanelHeader__in { justify-content:flex-start!important; } .vkEnhancerPanelHeader__content-in { font-family: var(--palette-vk-font,-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)!important; padding-left: 12px!important; font-size: 14px!important; color: var(--vkui--color_text_primary)!important; overflow: hidden!important; text-overflow: ellipsis!important; white-space: nowrap!important; font-weight:400!important; } .vkEnhancerTappable { background:var(--vkui--color_background_secondary)!important; border-radius:0px!important; --vkui_internal--icon_color:var(--vkui--color_text_link)!important; color:var(--vkui--color_text_link)!important; } .vkEnhancerTappable:hover { background: var(--vkui--color_background_secondary_alpha)!important; } .vkEnhancerDiv { padding:0!important; } div:has(>.vkEnhancerModalPage__in-wrap) { display:flex; justify-content:center; align-items: center; height:100%; inline-size: 100%; block-size: 100%; overflow: hidden; position: absolute; box-sizing: border-box; } .vkEnhancerModalPage__in-wrap { font-family:var(--vkui--font_family_base); max-inline-size: var(--vkui--size_popup_medium--regular); position: relative; align-items: initial; margin-block: 32px; margin-inline: 56px; block-size: auto; max-block-size: 640px; opacity: 0; transform: none; transition: opacity 340ms var(--vkui--animation_easing_platform); inline-size: 100%; inset-inline: 0; inset-block-end: 0; display: flex; } .vkEnhancerModalPage__in { block-size: auto; box-shadow: var(--vkui--elevation3); border-end-end-radius: var(--vkui--size_border_radius_paper--regular); border-end-start-radius: var(--vkui--size_border_radius_paper--regular); } .vkEnhancerModalPage__in { background-color: var(--vkui--color_background_modal); overflow: visible; position: relative; box-sizing: border-box; inline-size: 100%; display: flex; flex-direction: column; border-start-end-radius: var(--vkui--size_border_radius_paper--regular); border-start-start-radius: var(--vkui--size_border_radius_paper--regular); --vkui_internal--background: var(--vkui--color_background_modal); } .vkEnhancerModalPage__header { inline-size: 100%; } .vkEnhancerModalPageHeader { padding-inline: 8px; --vkui_internal--safe_area_inset_top: 0; } .vkEnhancerPanelHeader { position: relative; } .vkEnhancerPanelHeader__in { display:flex; justify-content:center; } .vkEnhancerPanelHeader__content { text-align: center; opacity: 1; transition: opacity .3s var(--vkui--animation_easing_platform); } .vkEnhancerPanelHeader__content-in { font-size:18px; color: var(--vkui--color_text_primary); font-weight: 500; font-family: var(--vkui--font_family_accent); user-select:none; } .vkEnhancerSeparator { color: var(--vkui--color_separator_primary); } .vkEnhancerSeparator__in { block-size: var(--vkui--size_border--regular); margin: 0; background: currentColor; color: inherit; border: 0; transform-origin: center top; } .vkEnhancerModalPage__content-wrap { position: relative; display: flex; block-size: 100%; flex-direction: column; overflow: hidden; border-end-start-radius: inherit; border-end-end-radius: inherit; } .vkEnhancerModalPage__content { overflow-y: auto; -webkit-overflow-scrolling: touch; block-size: 100%; overflow-x: hidden; box-sizing: border-box; } .vkEnhancerModalPage__content-in { block-size:100%; } .vkEnhancerDiv { padding-block: var(--vkui--size_base_padding_vertical--regular); padding-inline: var(--vkui--size_base_padding_horizontal--regular); } .vkEnhancerSpacing { position: relative; box-sizing: border-box; } .vkEnhancerTappable { min-height: 22px; --vkui_internal--icon_color: var(--vkui--color_icon_accent); color: var(--vkui--color_text_accent); justify-content: center; text-align: center; box-sizing: border-box; text-decoration: none; margin: 0; border: 0; inline-size: 100%; background: rgba(0,0,0,0); padding-block: 0; min-block-size: 44px; display: flex; align-items: center; white-space: nowrap; padding-inline: var(--vkui--size_base_padding_horizontal--regular); isolation: isolate; position: relative; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; transition: background-color .15s ease-out; } .vkEnhancerSimpleCell__before { padding-block: 4px; flex-grow: initial; max-inline-size: initial; display: flex; align-items: center; padding-inline-end: 12px; color: var(--vkui_internal--icon_color, var(--vkui--color_icon_accent)); position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__middle { flex-grow: initial; max-inline-size: initial; display: flex; flex-direction: column; justify-content: center; padding-block: 10px; min-inline-size: 0; overflow: hidden; position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__content { justify-content: flex-start; display: flex; align-content: flex-start; align-items: center; max-inline-size: 100%; } .vkEnhancerTypography { font-weight: var(--vkui--font_weight_accent3); font-size: var(--vkui--font_headline1--font_size--compact); line-height: var(--vkui--font_headline1--line_height--compact); color: inherit; text-overflow: ellipsis; overflow: hidden; display: block; margin: 0; padding: 0; } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; } .vkEnhancerTappable:hover{ background-color:var(--vkui--color_transparent--hover); } .vkEnhancerGraffitiList { display: grid; gap: 4px; grid-template-columns: repeat(4,1fr); } .vkEnhancerGraffitiList__item { height: 158px; width: 158px; align-items: center; background-color: var(--vkui--color_transparent--hover); border-radius: 10px; cursor: pointer; display: flex; justify-content: center; transition: all .15s ease; vertical-align: bottom; } .vkEnhancerGraffitiList__item:hover { background-color: var(--vkui--color_transparent--active); } .vkEnhancerGraffitiList__item--doc { background-position: 50%; background-repeat: no-repeat; background-size: contain; border-radius: 10px; height: 158px; width: 158px; } .vkEnhancerCloseButton { position: absolute; justify-content: center; inset-block-start: 0; inset-inline-end: -56px; inline-size: 56px; block-size: 56px; padding: 18px; box-sizing: border-box; color: var(--vkui--color_icon_contrast); transition: opacity .15s ease-out; isolation: isolate; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; } .vkEnhancerCloseButton:before { display: block; content: ""; inset: 14px; background: var(--vkui--color_overlay_primary); border-radius: 50%; position: absolute; } .vkEnhancerCloseButton:hover:before { background:var(--vkui--color_overlay_primary--hover); } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; z-index: var(--vkui_internal--z_index_tappable_element); }`;
+		await VKEnhancerGraffitiBox();
+    });
+	eventListenerSet1 = true;
+	}
+	async function VKEnhancerGraffitiBox() {
+		let boxG = document.createElement("div");
+		boxG.classList.add("vkEnhancerGraffityMainBox");
+		boxG.innerHTML = `<div class="vkEnhancerModalPage__in-wrap" style="opacity: 1;"> <div class="vkEnhancerModalPage__in"> <div class="vkEnhancerModalPage__header"> <div class="vkEnhancerModalPageHeader vkEnhancerModalPageHeader--withGaps vkEnhancerModalPageHeader--desktop"> <div class="vkEnhancerPanelHeader"> <div class="vkEnhancerPanelHeader__in" data-onboarding-tooltip-container="fixed"> <div class="vkEnhancerPanelHeader__content"> <h2 class="vkEnhancerPanelHeader__content-in" id=":r1:-label">`+getLang("mail_added_graffiti")+`</h2> </div> </div> </div> <div class="vkEnhancerSeparator"> <hr class="vkEnhancerSeparator__in"> </div> </div> </div> <div class="vkEnhancerModalPage__content-wrap"> <div class="vkEnhancerModalPage__content"> <div class="vkEnhancerModalPage__content-in"> <div class="vkEnhancerDiv"> <div class="vkEnhancerTappable" role="button" tabindex="0"> <div class="vkEnhancerSimpleCell__before"> <img src="https://vk.com/images/icons/upload_icon.png"> </div> <div class="vkEnhancerSimpleCell__middle"> <div class="vkEnhancerSimpleCell__content"><span class="vkEnhancerTypography">`+getLang("calls_translation_planned_preview_download")+`<input class="vkEnhancerVisuallyHidden" type="file" accept="image/png"></span></div> </div> </div> <div class="vkEnhancerGraffitiList"> </div> </div> </div> </div> </div> <div class="vkEnhancerCloseButton" role="button" tabindex="0"><span class="vkEnhancerVisuallyHidden">Закрыть</span> <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"> <path fill="currentColor" fill-rule="evenodd" d="M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06" clip-rule="evenodd"></path> </svg> </div> </div> </div>`;
+		let boxLayer = document.getElementById('box_layer');
+		boxG.style.top = "0px";
+		boxG.style.zIndex = "999999";
+		boxG.style.backgroundColor = "#000000B3";
+		document.body.appendChild(boxG);
+		let responseGraffiti = await vkApi.api("messages.getRecentGraffities",{});
+		var graffitiList = document.querySelector('.vkEnhancerGraffitiList');
+		responseGraffiti.forEach(function(graffiti) {
+			var itemDiv = document.createElement('div');
+			itemDiv.classList.add('vkEnhancerGraffitiList__item');
+			var docDiv = document.createElement('div');
+			docDiv.classList.add('vkEnhancerGraffitiList__item--doc');
+			docDiv.style.backgroundImage = `url("${graffiti.url}")`;
+			itemDiv.appendChild(docDiv);
+			graffitiList.appendChild(itemDiv);
+			var idG = graffiti.id;
+			var oidG = graffiti.owner_id;
+			var gUrl = graffiti.url.replace("https://vk.com/", "");
+			itemDiv.addEventListener("click",async function () {
+				var peerId = new URL(window.location.href).pathname.split("/").at(-1);
+				await vkApi.api("messages.send", {
+					peer_id: peerId,
+					attachment: gUrl,
+					random_id: Math.floor(Math.random() * 2147483647),
+				});
+				onClose();
+			});
+		});
+		let closeButton = document.querySelector('.vkEnhancerCloseButton');
+		closeButton.addEventListener("click",function () {
+			onClose();
+		});
+		boxG.addEventListener("click", function(event) {
+			if (!event.target.closest('.vkEnhancerModalPage__in-wrap')) {
+				onClose();
+			}
+		});
+		const graffityFileInput = document.querySelector(".vkEnhancerVisuallyHidden");
+		graffityFileInput.addEventListener("change", function () {
+			if (graffityFileInput.files.length > 0) {
+				boxG.style.display="none";
+				handleGraffity();
+			}
+		});
+		document.querySelector('.vkEnhancerTappable').addEventListener("click", function(event) {
+			graffityFileInput.click();
+		});
+	}
+	
+	async function handleGraffity() {
+      const graffityFileInput = document.querySelector(".vkEnhancerVisuallyHidden");
+      const file = graffityFileInput.files[0];
+      await sendGraffity(file);
+    }
+async function sendGraffity(fileNameOutput) {
+    /** Получаем URL для загрузки */
+    const url1 = "https://api.vk.com/method/docs.getMessagesUploadServer?v=5.231&client_id=5776857&access_token=" + localStorage.getItem("vk_enhancer_access_token") + "&type=graffiti";
 
+    fetch(url1)
+        .then((response) => response.json())
+        .then(async (data) => {
+            const uploadUrlGraf = data.response.upload_url;
+            //console.log("I got upload url: " + uploadUrlGraf);
+
+            /** Загружаем файл */
+            let file = await uploadFile123(uploadUrlGraf, fileNameOutput);
+
+            /** Сохраняем */
+            const parsedData = JSON.parse(file);
+            console.info("[VK ENH] File uploaded");
+            console.log(parsedData["file"]);
+            let doc = await vkApi.api("docs.save", { file: parsedData["file"] });
+            doc = doc.graffiti;
+
+            /** Отправляем */
+            var peerId = new URL(window.location.href).pathname.split("/").at(-1);
+            await vkApi.api("messages.send", {
+                peer_id: peerId,
+                attachment: `doc${doc.owner_id}_${doc.id}_${doc.access_key}`,
+                random_id: Math.floor(Math.random() * 2147483647),
+            });
+            onClose();
+        })
+        .catch((error) => {
+            console.error("Ошибка:", error);
+        });
+}
+async function uploadFile123(uploadUrl, file) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await fetch(uploadUrl, {
+            method: "POST",
+            body: formData
+        });
+
+        if (response.ok) {
+            return response.text();
+        } else {
+            throw new Error("Upload failed. Status: " + response.status);
+        }
+    } catch (error) {
+        throw new Error("Upload failed. Network error: " + error.message);
+    }
+}
+
+	
+	function onClose() {
+		const customStyle = fromId("vkenGraffity");
+		if (customStyle) {
+			customStyle.remove();
+		}
+		let mainGrafBox = document.querySelector('.vkEnhancerGraffityMainBox');
+		mainGrafBox.remove();
+	}
     async function VKEnhancerMessageBox(
       title,
       content,
