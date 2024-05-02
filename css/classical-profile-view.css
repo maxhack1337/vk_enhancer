@@ -1,9 +1,17 @@
+.ProfileInfo__fillInformationLink {
+	display:none;
+}
 #profile_skeleton {
 	display:none!important;
 }
-#profile_redesigned > div > div > div > div.vkuiPopoutRoot.vkuiSplitLayout > div > div.vkuiSplitCol.vkuiSplitCol--viewWidth-smallTabletPlus.vkuiInternalSplitCol--viewWidth-tabletPlus.vkuiSplitCol--spaced-none.vkuiInternalSplitCol--spaced-none.Profile__column
+#profile_redesigned > div > div > div:has(>div.ProfileHeader a[href="/edit"]) > div.vkuiPopoutRoot.vkuiSplitLayout > div > div.vkuiSplitCol.vkuiSplitCol--viewWidth-smallTabletPlus.vkuiInternalSplitCol--viewWidth-tabletPlus.vkuiSplitCol--spaced-none.vkuiInternalSplitCol--spaced-none.Profile__column
 {
     margin-top:calc(var(--vkenhancer-info-height) - 280px);
+}
+
+#profile_redesigned > div > div > div > div.vkuiPopoutRoot.vkuiSplitLayout > div > div.vkuiSplitCol.vkuiSplitCol--viewWidth-smallTabletPlus.vkuiInternalSplitCol--viewWidth-tabletPlus.vkuiSplitCol--spaced-none.vkuiInternalSplitCol--spaced-none.Profile__column
+{
+    margin-top:calc(var(--vkenhancer-info-height) - 320px);
 }
 /*Левая колонка*/
 .ProfileWrapper .vkuiSplitLayout__inner, .ProfileSkeleton__layout
@@ -60,8 +68,9 @@ div[class*="RichAvatar-module__rootNft"][style="width: 150px; height: 150px;"] >
     display: none !important;
 }
 .OwnerVideosListItem {
-    width: 200px;
+    width: 200px!important;
     margin-left: 8px;
+	padding-bottom:8px;
 }
 
 .ProfileWrapper .ScrollStickyWrapper .vkuiSpacing {
