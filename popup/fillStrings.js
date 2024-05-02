@@ -32,6 +32,7 @@ function fillStrings() {
     document.querySelector('#Photo > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.returnCamera);
     document.querySelector('#PollsRes > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.showPollResults);
     document.querySelector('#CallsM > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.doNotDisturb);
+	document.querySelector('#TabletMenu > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.tabletMenu);
     document.querySelector('#NewProfiles > div > div > .vkenhancerChoosePickerText1').innerHTML = '<span class="newSpan"><img class="newFire" src="assets/new.png"></span>' + getLocalizedString(strings.classicProfileInterface);
     document.querySelector('#NewMessenger > div > div > .vkenhancerChoosePickerText1').innerHTML = '<span class="newSpan"><img class="newFire" src="assets/new.png"></span>' + getLocalizedString(strings.newMessengerDesign);
     document.querySelector('#SecretOldDesign > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.additionalVKEnhancerFunctions);
