@@ -5,7 +5,7 @@
     "default_title": "Настройки VK Enhancer"
   },
   "name": "VK Enhancer - улучшение ВКонтакте",
-  "version": "3.4",
+  "version": "3.5",
   "icons": {
     "128": "assets/icon128.png",
     "16": "assets/icon16.png",
@@ -17,7 +17,8 @@
   },
   "description": "Расширение, делающее времяпрепровождение в VK удобнее и приятнее!",
   "host_permissions": [
-    "*://vk.com/*"
+    "*://vk.com/*",
+    "*://oauth.vk.com/*"
   ],
   "permissions": [
     "browsingData",
@@ -35,7 +36,7 @@
   "content_scripts": [
     {
       "matches": [
-        "*://vk.com/*"
+        "*://vk.com/*","*://oauth.vk.com/*"
       ],
       "js": [
         "js/modules-start.js",
@@ -75,7 +76,7 @@
         "css/classical-profile-view.css"
       ],
       "matches": [
-        "*://vk.com/*"
+        "*://vk.com/*","*://oauth.vk.com/*"
       ]
     }
   ]
