@@ -473,7 +473,9 @@ deferredCallback(
 				}
 				addCounters(userData[0], userData[0].counters);
 				appearVariable();
-				buttonrun();
+				if(vk.id != userData[0].id) {
+					buttonrun();
+				}
 				expandMore(userData);
 			}
 			else {
