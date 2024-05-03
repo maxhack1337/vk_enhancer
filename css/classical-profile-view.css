@@ -206,6 +206,17 @@ div.ProfileHeaderActions__moreButtonContainer > div > button > span {
     flex-wrap: wrap;
     justify-content: center;
 }
+.ProfileHeaderActions__buttons > .ProfileGifts__all > a:hover {
+	background-color:var(--vkui--color_background_accent_themed--hover);
+}
+.ProfileHeaderActions__buttons > .ProfileGifts__all > a > span > svg {
+	width:20px;
+	height:20px;
+	padding-right:6px;
+}
+.ProfileHeaderActions__buttons > .ProfileGifts__all > a > span > .vkuiButton__content {
+	padding-right:0px;
+}
 .ProfileHeaderButton>a:has(>span>span>svg.vkuiIcon--message_outline_20) > span:before,.ProfileHeaderButton >a[href*="/im"] >span:before
 {
     font-size: var(--vkui--font_headline2--font_size--compact);
@@ -217,10 +228,29 @@ div.ProfileHeaderActions__moreButtonContainer > div > button > span {
 }
 .ProfileHeaderButton>a:has(>span>span>svg.vkuiIcon--message_outline_20),.ProfileHeaderButton >a[href*="/im"]
 {
+	border-right:1px solid var(--vkui--color_separator_primary2x--active);
+	border-radius:8px 0 0 8px;
     max-width:440px;
-    width:206px;
+    width:160px;
     background-color:var(--vkui--color_text_accent_themed);
     color:var(--vkui--color_text_contrast_themed);
+}
+.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a>span>span>svg.vkuiIcon--message_outline_20)>.ProfileGifts__all,.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a[href*="/im"])>.ProfileGifts__all {
+	display: flex;
+    flex-direction: row-reverse;
+}
+.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a>span>span>svg.vkuiIcon--message_outline_20)>.ProfileGifts__all>a,.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a[href*="/im"])>.ProfileGifts__all>a {
+	width:26px!important;
+	max-width:26px;
+}
+.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a>span>span>svg.vkuiIcon--message_outline_20)>.ProfileGifts__all>a>span,.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a[href*="/im"])>.ProfileGifts__all>a>span {
+    justify-content: flex-end!important;
+}
+.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a>span>span>svg.vkuiIcon--message_outline_20)>.ProfileGifts__all>a>span>svg,.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a[href*="/im"])>.ProfileGifts__all>a>span>svg {
+	padding-right:14px!important;
+}
+.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a>span>span>svg.vkuiIcon--message_outline_20)>.ProfileGifts__all>a>span>span,.ProfileHeaderActions__buttons:has(>.ProfileHeaderButton>a[href*="/im"])>.ProfileGifts__all>a>span>span {
+	display:none;
 }
 .ProfileHeaderButton:has(>button > span > span > svg.vkuiIcon--user_check_outline_20) {
     margin-left:0!important;
