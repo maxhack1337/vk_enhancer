@@ -83,7 +83,7 @@ deferredCallback(
     async (_vk) => {
 		await getUserDataLocalStoragePhoto(vk.id);
     },
-    { variable: "vk" }
+    { variable: "vkApi" }
   );
 
 async function getUserDataLocalStoragePhoto(objectId) {
@@ -473,14 +473,15 @@ deferredCallback(
 				}
 				addCounters(userData[0], userData[0].counters);
 				appearVariable();
-				if (userData[0].can_write_private_message === 0) {
-					buttonrun();
-				}
+				buttonrun();
 				expandMore(userData);
 			}
 			else {
+				try {
 				let pMoreInfo = document.querySelector('.profile_more_info');
 					pMoreInfo.style.display = 'none';
+				}
+				catch(error){}
 				let styleElement = fromId("classicalProfilesDELETED");
 				if (!styleElement) {
 					styleElement = create("style", {}, { id: "classicalProfilesDELETED" });
@@ -1893,6 +1894,30 @@ deferredCallback(
         return sorted;
       }
 
+function formatCounterValue(value) {
+    if (value >= 1000000000) {
+        return (value / 1000000000).toFixed(1) + 'B';
+    } else if (value >= 1000000) {
+        return (value / 1000000).toFixed(1) + 'M';
+    } else if (value >= 10000) {
+        return (value / 1000).toFixed(1) + 'K';
+    } else {
+        return value.toString();
+    }
+}
+
+function formatValueInt(value) {
+    if (value >= 1000000000) {
+        return Math.floor(value / 1000000000)*1000000000;
+    } else if (value >= 1000000) {
+        return Math.floor(value / 1000000)*1000000;
+    } else if (value >= 10000) {
+        return Math.floor(value / 1000)*1000;
+    } else {
+        return value;
+    }
+}
+
       function addCounters(userData, countersData) {
         var countsModule = document.createElement("div");
         countsModule.classList.add("counts_module");
@@ -1916,12 +1941,13 @@ deferredCallback(
         for (var counterType in countersData) {
           var value = countersData[counterType];
           if (value !== 0) {
+			var formValue = formatCounterValue(value);
             var counterDiv = document.createElement("a");
             counterDiv.classList.add("counter");
-
+			value = formatValueInt(value);
             var valueDiv = document.createElement("div");
             valueDiv.classList.add("value");
-            valueDiv.textContent = value;
+            valueDiv.textContent = formValue;
             counterDiv.appendChild(valueDiv);
 
             var labelDiv = document.createElement("div");
@@ -2921,6 +2947,7 @@ deferredCallback(
                         <a onclick="window.Profile.showGiftBox(${objectId},${vk.id
                 },'profile_module')" class="Button-module__root--enpNU vkuiButton vkuiButton--size-s vkuiButton--mode-secondary vkuiButton--appearance-accent vkuiButton--align-center vkuiButton--stretched vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible">
                             <span class="vkuiButton__in">
+								<svg><g fill="none" fill-rule="evenodd"><path d="M0 0h20v20H0z"></path><path fill="currentColor" fill-rule="nonzero" d="M14.846 2.314c1.026 1.026 1.23 2.875-.257 4.186h.911a3 3 0 0 1 3 3v.49c0 .827-.093 1.16-.267 1.487-.174.326-.43.582-.756.756a1.9 1.9 0 0 1-.477.182v1.618c0 1.56-.162 2.126-.467 2.696a3.2 3.2 0 0 1-1.324 1.324l-.202.101c-.48.224-1.037.349-2.229.364l-5.291.002c-1.56 0-2.126-.162-2.696-.467a3.2 3.2 0 0 1-1.324-1.324l-.101-.202c-.224-.48-.349-1.037-.364-2.229L3 12.415a1.9 1.9 0 0 1-.477-.182 1.8 1.8 0 0 1-.756-.756c-.16-.299-.251-.605-.265-1.29L1.5 9.5a3 3 0 0 1 3-3h.911c-1.487-1.31-1.283-3.16-.257-4.186C6.369 1.099 8.738 1.038 10 3.569c1.262-2.531 3.631-2.47 4.846-1.255M9.25 12.499 4.5 12.5l.001 1.762.009.399c.021.604.083.924.202 1.2l.078.161q.246.462.708.708l.162.078c.33.143.724.203 1.598.211l1.991-.001zm6.251.001-4.751-.001v4.519l1.993.001.399-.009c.604-.021.924-.083 1.2-.202l.161-.078a1.7 1.7 0 0 0 .708-.708c.186-.348.267-.688.286-1.551l.004-.438zM9.159 7.999 4.5 8A1.5 1.5 0 0 0 3 9.5v.638l.007.232c.012.227.037.315.083.4a.32.32 0 0 0 .14.14c.11.059.223.085.632.09l5.387-.001.002-3L9.16 8zM15.5 8l-4.661-.001h-.09v3h5.39c.408-.004.521-.03.63-.089a.32.32 0 0 0 .141-.14c.065-.122.09-.248.09-.78V9.5A1.5 1.5 0 0 0 15.5 8M9.223 6.159c-.43-3.101-1.96-3.834-3.009-2.785C5.165 4.424 5.898 5.952 9 6.384l.257.032Zm1.554 0-.024.191.007.062.241-.029c3.101-.43 3.834-1.96 2.785-3.009-1.05-1.049-2.578-.316-3.01 2.785"></path></g></svg>
                                 <span class="vkuiButton__content">${getLang(
                   "profile_send_gift"
                 )}</span>
@@ -3007,6 +3034,201 @@ deferredCallback(
             break;
         }
       }
+	  
+	  function getRegDateLabel(lang) {
+		switch(lang) {
+	case 0:
+      return "Дата регистрации:";
+      break;
+    case 1:
+      return "Дата реєстрації:";
+      break;
+    case 454:
+      return "Дата реєстрації:";
+      break;
+    case 114:
+      return "Дата рэгістрацыі:";
+      break;
+    case 2:
+      return "Дата рэгістрацыі:";
+      break;
+    case 777:
+      return "Дата заведения досье:";
+      break;
+    case 97:
+      return "Тіркеу күні:";
+      break;
+    case 100:
+      return "Дата рѣгистрацiи:";
+      break;
+    default:
+      return "Registration date:";
+      break;
+		}
+	  }
+	  
+function getZodiacSigns(lang) {
+    switch(lang) {
+        case 0:
+            return ["Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"];
+        case 1:
+        case 454:
+            return ["Овен", "Телец", "Близнюки", "Рак", "Лев", "Діва", "Терези", "Скорпіон", "Стрілець", "Козеріг", "Водолій", "Риби"];
+        case 2:
+        case 114:
+            return ["Баран", "Тэлец", "Блізнюкі", "Рак", "Лев", "Дзева", "Вагі", "Шкапец", "Стралец", "Козераг", "Вадалей", "Рыбы"];
+        case 777:
+        case 100:
+            return ["Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"];
+        case 97:
+            return ["Овен", "Телец", "Близнесін", "Рак", "Лев", "Дева", "Терезе", "Ақшақар", "Оят", "Козерге", "Суғайыр", "Балық"];
+        default:
+            return ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+    }
+}
+
+async function getRegDateValue(id) {
+    const regDateAlready = Number(localStorage.getItem(`regDate_${id}`));
+    if (regDateAlready) return formatRegDate(regDateAlready);
+    
+    const foafGet = await fetch(`https://vk.com/foaf.php?id=${id}`);
+    const response = await foafGet.text();
+    const [, regDateReady] = response.match(/ya:created dc:date="(.+?)"/) || [];
+    if (regDateReady) {
+        const regDateReadyUNIX = new Date(regDateReady).getTime();
+        localStorage.setItem(`regDate_${id}`, regDateReadyUNIX);
+        return formatRegDate(regDateReadyUNIX);
+    }
+}
+
+function formatRegDate(unixTimestamp) {
+    const date = new Date(unixTimestamp);
+    const formattedDate = [
+        `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`,
+        `(${padZero(date.getHours())}:${padZero(date.getMinutes())})`
+    ];
+    return formattedDate;
+}
+
+function padZero(num) {
+    return num < 10 ? `0${num}` : num;
+}
+
+function getZodiacIndex(den, month) {
+    var value = "";
+	den = Number(den);
+	month = Number(month);
+switch (month) {
+    case 1:
+        if (den <= 19)
+            value = getZodiacSigns(vk.lang)[9];
+        else
+            value = getZodiacSigns(vk.lang)[10];
+        break;
+    case 2:
+        if (den <= 18)
+            value = getZodiacSigns(vk.lang)[10];
+        else
+            value = getZodiacSigns(vk.lang)[11];
+        break;
+    case 3:
+        if (den <= 20)
+            value = getZodiacSigns(vk.lang)[11];
+        else
+            value = getZodiacSigns(vk.lang)[0];
+        break;
+    case 4:
+        if (den <= 19)
+            value = getZodiacSigns(vk.lang)[0];
+        else
+            value = getZodiacSigns(vk.lang)[1];
+        break;
+    case 5:
+        if (den <= 20)
+            value = getZodiacSigns(vk.lang)[1];
+        else
+            value = getZodiacSigns(vk.lang)[2];
+        break;
+    case 6:
+        if (den <= 21)
+            value = getZodiacSigns(vk.lang)[2];
+        else
+            value = getZodiacSigns(vk.lang)[3];
+        break;
+    case 7:
+        if (den <= 22)
+            value = getZodiacSigns(vk.lang)[3];
+        else
+            value = getZodiacSigns(vk.lang)[4];
+        break;
+    case 8:
+        if (den <= 22)
+            value = getZodiacSigns(vk.lang)[4];
+        else
+            value = getZodiacSigns(vk.lang)[5];
+        break;
+    case 9:
+        if (den <= 22)
+            value = getZodiacSigns(vk.lang)[5];
+        else
+            value = getZodiacSigns(vk.lang)[6];
+        break;
+    case 10:
+        if (den <= 22)
+            value = getZodiacSigns(vk.lang)[6];
+        else
+            value = getZodiacSigns(vk.lang)[7];
+        break;
+    case 11:
+        if (den <= 22)
+            value = getZodiacSigns(vk.lang)[7];
+        else
+            value = getZodiacSigns(vk.lang)[8];
+        break;
+    case 12:
+        if (den <= 21)
+            value = getZodiacSigns(vk.lang)[8];
+        else
+            value = getZodiacSigns(vk.lang)[9];
+        break;
+    default:
+          value = 'Zodiac parsing failed'
+}
+return value;
+}
+
+function getLangYearsOld(e, t, n) {
+        const o = window.langConfig;
+        if (!t || !o) {
+          if (!(0, r.isNumeric)(e)) {
+            const t = new Error("Non-numeric value passed to langNumeric");
+            throw (console.log(e, t), t);
+          }
+          return String(e);
+        }
+        let i;
+        Array.isArray(t)
+          ? ((i = t[1]),
+            e != Math.floor(e)
+              ? (i = t[o.numRules.float])
+              : (o.numRules.int || []).some((n) => {
+                if ("*" === n[0]) return (i = t[n[2]]), !0;
+                const r = n[0] ? e % n[0] : e;
+                return Array.isArray(n[1]) && n[1].includes(r)
+                  ? ((i = t[n[2]]), !0)
+                  : void 0;
+              }))
+          : (i = t);
+        let a = String(e);
+        if (n) {
+          const e = a.split("."),
+            t = [];
+          for (let n = e[0].length - 3; n > -3; n -= 3)
+            t.unshift(e[0].slice(n > 0 ? n : 0, n + 3));
+          (e[0] = t.join(o.numDel)), (a = e.join(o.numDec));
+        }
+        return (i = (i || "%s").replace("%s", a)), i;
+      }
 
       async function appearStarts(userData) {
         var pageCurrentInfo = document.querySelector(".ProfileInfo");
@@ -3015,14 +3237,49 @@ deferredCallback(
         profileShort.classList.add("profile_info", "profile_info_short");
         profileShort.id = "profile_short";
 
-        var birthdayRow = createProfileInfoRow(
-          getLang("profile_info_birth_date"),
-          formatBirthday(userData[0].bdate)
-        );
-        if (birthdayRow) {
-          profileShort.appendChild(birthdayRow);
-        }
+var birthday = userData[0].bdate;
+if(birthday){
+var formattedBirthday = formatBirthday(birthday);
+var ageAndZodiac = '';
 
+var parts = birthday.split('.');
+if (parts.length === 3) {
+    var birthYear = parseInt(parts[2], 10);
+    var currentYear = new Date().getFullYear();
+    var age = currentYear - birthYear;
+    ageAndZodiac = `${getLangYearsOld(age,getLang("global_years_accusative","raw"))}, ${getZodiacIndex(parts[0], parts[1])}`
+}
+else if (parts.length === 2) {
+	ageAndZodiac = `${getZodiacIndex(parts[0], parts[1])}`
+}
+
+var birthdayRow = createProfileInfoRow(
+    getLang("profile_info_birth_date"),
+    `${formattedBirthday} (${ageAndZodiac})`
+);
+if (birthdayRow) {
+    profileShort.appendChild(birthdayRow);
+}
+}
+		
+		try
+		{
+			var regDateText = getRegDateLabel(vk.lang);
+			let regDateValue1 = await getRegDateValue(userData[0].id);
+			var regDateDate = formatRegister(regDateValue1[0]);
+			regDateDate += " "+regDateValue1[1];
+			var registrationRow = createProfileInfoRow(
+				regDateText,
+				regDateDate
+			);
+			if (registrationRow) {
+				profileShort.appendChild(registrationRow);
+			}
+		}
+		catch(error) {
+			console.error("[VKENH Error]: There is no registration date for user "+userData[0].id);
+		}
+		
         var relationText = await getRelationText(userData[0].relation);
         var relationRow = createProfileInfoRow(
           getLang("profile_family"),
@@ -3183,6 +3440,25 @@ deferredCallback(
             formattedDate += ` ${yearLink}`;
           }
           return `<a href="https://vk.com/search?c[section]=people&c[bday]=${day}&c[bmonth]=${parts[1]}">${formattedDate}</a>`;
+        }
+		
+		
+		function formatRegister(bdate) {
+          if (!bdate) return null;
+          var parts = bdate.split(".");
+          var day = parts[0];
+          var month = getMonthName(parts[1]);
+          var year = parts[2];
+          var formattedDate = `${day} ${month}`;
+          var profileBDayYearLetter = getLang("profile_birthday_year_date");
+          let regex = /{year}(.*?){\/link_year}/;
+          let match = profileBDayYearLetter.match(regex);
+          let formattedYearLetter = match ? match[1].replace(/\s/g, "") : "";
+          var yearLink = year;
+          if (year) {
+            formattedDate += ` ${yearLink}`;
+          }
+          return `${formattedDate}`;
         }
 
         function langReplacePrep(e, t) {
@@ -4528,7 +4804,7 @@ function updateMarginLeft() {
 ///РЕЗУЛЬТАТЫ ОПРОСА БЕЗ ГОЛОСОВАНИЯ///
 if (localStorage.getItem("pollResultsValue") == "true") {
   document.arrive(
-    "[class^='PollPrimaryAttachment-module__voting']",
+    "[class^='PrimaryAttachmentPoll-module__voting']",
     { existing: true },
     function (e) {
       let styleElement = fromId("PollResultsShow");
@@ -4560,6 +4836,89 @@ if (localStorage.getItem("pollResultsValue") == "true") {
       });
     }
   );
+document.arrive(
+    ".media_voting",
+    { existing: true },
+    async function (e) {
+        let pollOid = e.dataset.ownerId;
+        let pollId = e.dataset.id;
+        let pollRes = await vkApi.api("polls.getById",{owner_id: pollOid, poll_id: pollId});
+
+        pollRes.answers.forEach(option => {
+            let optionWrap = document.querySelector(`._media_voting_option${option.id}`);
+            if (optionWrap) {
+                let percentElem = optionWrap.querySelector('.media_voting_option_percent');
+                percentElem.textContent = option.rate;
+
+                let barElem = optionWrap.querySelector('.media_voting_option_bar');
+                barElem.style.transform = `scaleX(${option.rate / 100})`;
+
+                let countElem = optionWrap.querySelector('.media_voting_option_count');
+                countElem.classList.remove('media_voting_option_count_hidden');
+                countElem.querySelector('.media_voting_option_counter').innerHTML = `<span class="media_voting_separator">⋅</span><span>${option.votes}</span>`;
+            }
+        });
+		let styleElement = fromId("PollResultsShowSecondary");
+      if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "PollResultsShowSecondary";
+        document.head.appendChild(styleElement);
+      }
+      styleElement.innerHTML =
+        '.media_voting_multiple .media_voting_option_text::after{right:52px!important;}';
+    }
+);
+
+document.arrive(
+    ".AttachPoll__answers",
+    { existing: true },
+    async function (e) {
+        const answerElements = e.querySelectorAll('.AttachPoll__answer');
+        answerElements.forEach(element => {
+            const [votes, rate] = getAnswerProps(element);
+            const revealAnswers = document.createElement("span");
+            revealAnswers.classList.add("vkEnAnswerCount");
+            revealAnswers.textContent = `${rate}%`;
+            const rightAnswer = element.getElementsByClassName("AttachPoll__answerRight")[0];
+            rightAnswer.prepend(revealAnswers);
+			const revealVotes = document.createElement("span");
+			revealVotes.classList.add("vkEnAnswerVotes");
+			revealVotes.textContent = ` ⋅ ${votes}`;
+			rightAnswer.parentNode.insertBefore(revealVotes, rightAnswer);
+			const answerBar = element.getElementsByClassName("AttachPoll__answerBar")[0];
+			answerBar.style.transform = `scaleX(${rate / 100})`;
+        });
+    }
+);
+	
+	let styleElement = fromId("PollResultsShowAttach");
+      if (!styleElement) {
+        styleElement = document.createElement("style");
+        styleElement.id = "PollResultsShowAttach";
+        document.head.appendChild(styleElement);
+      }
+      styleElement.innerHTML =
+        '.AttachPoll__answer--voted .vkEnAnswerVotes, .AttachPoll__answer--voted .vkEnAnswerCount{display:none!important;}.vkEnAnswerVotes{display:contents;color:var(--vkui--color_text_subhead);}.vkEnAnswerCount{padding-right: 6px; line-height: 16px; font-size: 13px; color: var(--vkui--color_text_primary); font-weight: 600; -webkit-font-smoothing: subpixel-antialiased; -moz-osx-font-smoothing: auto; white-space: nowrap; text-align: right; z-index: 1; transition: opacity .1s,transform .1s;}';
+
+
+function getAnswerProps(elem) {
+    const t = {};
+    let n = 0;
+    for (const o of Object.keys(elem)) {
+        if (o.startsWith("__reactFiber")) {
+            t.fiber = elem[o];
+            ++n;
+        } else if (o.startsWith("__reactProps")) {
+            t.props = elem[o];
+            ++n;
+        }
+        if (n === 2) break;
+    }
+    const votes = t.fiber.return.memoizedProps.answer.votes;
+    const rate = t.fiber.return.memoizedProps.answer.rate;
+    return [votes, rate];
+}
+
 }
 ///КОНЕЦ РЕЗУЛЬТАТОВ ОПРОСА БЕЗ ГОЛОСОВАНИЯ///
 ///НАЧАЛО ХОВЕРА НА ТЕГ В НОВОМ ДИЗАЙНЕ///
