@@ -1,4 +1,4 @@
-console.log('Версия 3.6 Release');
+console.log('Версия 3.7 Release');
 var accentC = document.getElementById('oldaccent');
 var msgreact = document.getElementById('messagereactions');
 var recentgroups = document.getElementById('recentgroups');
@@ -663,7 +663,7 @@ checkId.addEventListener('click', (event) => {
     });
 });
 resetLogo.addEventListener('click', (event) => {
-    customLogoText.value = "undefined";
+    customLogoText.value = "";
     chrome.storage.local.set({
         customLogo: customLogoText.value,
     });
@@ -679,7 +679,7 @@ resetLogo.addEventListener('click', (event) => {
     });
 });
 resetFont.addEventListener('click', (event) => {
-    customFontText.value = "undefined";
+    customFontText.value = "";
     chrome.storage.local.set({
         customFont: customFontText.value,
     });
@@ -695,7 +695,7 @@ resetFont.addEventListener('click', (event) => {
     });
 });
 resetBg.addEventListener('click', (event) => {
-    customBgText.value = "undefined";
+    customBgText.value = "";
     chrome.storage.local.set({
         customBg: customBgText.value,
     });
@@ -1109,9 +1109,15 @@ function loadSavedCheckBoxes() {
         } else {
             colorPickerText.value = items.colorPickerText;
         }
-        customLogoText.value = items.customLogo;
-        customBgText.value = items.customBg;
-        customFontText.value = items.customFont;
+		if(items.customLogo && items.customLogo != "undefined") {
+			customLogoText.value = items.customLogo;
+		}
+		if(items.customBgText && items.customBgText != "undefined") {
+			customBgText.value = items.customBg;
+		}
+		if(items.customFont && items.customFont != "undefined") {
+			customFontText.value = items.customFont;
+		}
         addSticker.checked = items.addstickerState;
         cameraphoto.checked = items.cameraPhotoState;
         hidebutton.checked = items.hideButtonState;

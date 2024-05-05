@@ -69,7 +69,7 @@ const strings = {
     messenger: ['Мессенджер', 'Messenger', 'Месенджер'],
     other: ['Прочее', 'Other', 'Інше'],
     information: ['Информация', 'Information', 'Інформація'],
-	versionNumber: ['Версия 3.6 Release', 'v. 3.6 Release', 'Версія 3.6 Release'],
+	versionNumber: ['Версия 3.7 Release', 'v. 3.7 Release', 'Версія 3.7 Release'],
 	errorUpdating: ['Не обновляется расширение? Нажмите CTRL+M в любом месте браузера и расширение перезагрузится, при этом, обновившись до новейшей версии', 'Extension not updating? Press CTRL+M anywhere in the browser and the extension will reload, updating to the latest version', 'Чи не оновлюється розширення? Натисніть CTRL+M будь-де браузера і розширення перезавантажиться, при цьому, оновившись до новітньої версії'],
 	lang: ['Язык:', 'Language:', 'Мова:'],
 	notGroupOrUserId: ['Данный элемент не является пользователем или группой', 'This element is not a user profile or group', 'Цей елемент не є користувачем або групою'],
