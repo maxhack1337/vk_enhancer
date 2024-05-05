@@ -45,6 +45,10 @@ const newDesignFunctions = [
   "me_vkcom_api_feature_flags",
   "vkm_hide_forward_author",
   "vkm_theme_styles_settings",
+  "vkm_delete_chat",
+  "vkm_admin_can_delete_message",
+  "vkm_photo_save_to_album", 
+  "vkm_media_viewer_report",
 ];
 const adsSelector = [
   ".page_block.feed_blog_reminder_large",
@@ -412,6 +416,10 @@ if (getLocalValue("isMiddleName")) {
   }
 }
 ///КОНЕЦ ДОБАВЛЕНИЯ ОТЧЕСТВА///
+///НАЧАЛО ДОБАВЛЕНИЯ СТИКЕРА ВО ВЛОЖЕНИЯ///
+
+
+///КОНЕЦ ДОБАВЛЕНИЯ СТИКЕРА ВО ВЛОЖЕНИЯ///
 ///НАЧАЛО КЛАССИЧЕСКОГО ДИЗАЙНА ПРОФИЛЯ///
 deferredCallback(
   () => {
@@ -438,7 +446,7 @@ deferredCallback(
             styleElement.id = "vken_box_message_classic";
             styleElement.innerHTML =
               `.ProfileHeaderButton > button:has(> span > span > svg.vkuiIcon--user_check_outline_20) > span:before{content:"` +
-              getLang("global_friends") +
+              getLang("me_in_your_friends") +
               `"}.ProfileHeaderButton>a:has(>span>span>svg.vkuiIcon--message_outline_20) > span:before,.ProfileHeaderButton >a[href*="/im"] >span:before{content: "` +
               getLang("profile_send_msg") +
               `"}`;
@@ -491,7 +499,11 @@ deferredCallback(
 				}
 				styleElement.innerHTML = ".vkuiInternalGroup:has(>.PlaceholderMessageBlock) {display: none !important;}";
 				let pInfoShort = document.querySelector('.profile_info.profile_info_short');
-				let pModuleText = document.querySelector('.vkuiInternalGroup:has(>.PlaceholderMessageBlock) [class^="Placeholder-module__text"]').innerHTML;
+				let pModuleText = '';
+				try{
+					pModuleText = document.querySelector('.vkuiInternalGroup:has(>.PlaceholderMessageBlock) [class^="Placeholder-module__text"]').innerHTML;
+				}
+				catch(error) {}
 				let pModuleDiv = document.createElement('div');
 				let pModuleSpan = document.createElement('span');
 				pModuleSpan.innerHTML = pModuleText;
@@ -507,7 +519,9 @@ deferredCallback(
 				pModuleSpan.style.textAlign = "center";
 				pModuleSpan.style.color = "var(--vkui--color_text_secondary)";
 				pModuleDiv.appendChild(pModuleSpan);
-				pInfoShort.appendChild(pModuleDiv);
+				if(pModuleText!='') {
+					pInfoShort.appendChild(pModuleDiv);
+				}
 				if(userData[0].blacklisted == 1 && !userData[0].deactivated) {
 					let styleElement = fromId("classicalProfilesBlackListed");
 					if (!styleElement) {
@@ -541,6 +555,7 @@ deferredCallback(
 					}
 				styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}";
 				}
+				appearVariable();
 			}
 			} catch (error) {
             console.error(error);
@@ -548,6 +563,273 @@ deferredCallback(
         }
       );
 
+var friendsSection;
+var imReady;
+document.arrive(".ProfileGroup", { existing: true }, async function (e) {
+			const profileGroups = document.querySelectorAll('section.ProfileGroup');
+			profileGroups.forEach(profileGroup => {
+			const content = profileGroup.textContent;
+			if (
+				content.includes(getLang("profile_followers")) ||
+				content.includes(getLang("profile_common_friends")) ||
+				content.includes(getLang("profile_friends")) ||
+				content.includes(getLang("profile_closed_profile_banner_closed_btn"))
+			) {
+				//console.log("Removed: "+profileGroup.innerHTML);
+				profileGroup.remove();
+			}
+		});
+      });
+document.arrive(".page_counter", { existing: true }, async function (e) {
+	let i = document.querySelectorAll('.vkuiInternalGroupCard:not(.ProfileGroup)');
+i.forEach(elem =>
+    {
+        if(elem.textContent.includes(getLang("profile_unknown_error")))
+        {
+			elem.remove();
+        }
+    }    
+);
+});
+document.arrive(".imReadyForShowingFriends", { existing: true }, async function (e) {
+	if(friendsSection != null && imReady) {
+		document.querySelector('.ScrollStickyWrapper > div').prepend(friendsSection);
+	}
+	let i = document.querySelectorAll('.vkuiInternalGroupCard:not(.ProfileGroup)');
+i.forEach(elem =>
+    {
+        if(elem.textContent.includes(getLang("profile_unknown_error")))
+        {
+			elem.remove();
+        }
+    }    
+);
+});
+	  
+document.arrive("#profile_redesigned", { existing: true }, async function (e) {
+imReady = false;
+let objectId1 = await getId();
+let userdata = await getUserDataWithoutOnline(objectId1);
+let friends;
+let frenCount = {count:0};
+if((!userdata[0].is_closed || userdata[0].can_access_closed) && !userdata[0].blacklisted == 1 && !userdata[0].deactivated) {
+	try {
+		friends = await vkApi.api("friends.get",{user_id:userdata[0].id,fields:'photo_100,online,domain',count:10000});
+		frenCount = await vkApi.api("friends.get",{user_id:userdata[0].id,count:10000});
+	}
+	catch(error) {}
+}
+if (frenCount.count > 0 && !document.querySelector('.ProfileFriends')) {
+    friendsSection = document.createElement('section');
+    friendsSection.classList.add('vkuiInternalGroup', 'vkuiGroup', 'vkuiGroup--mode-card', 'vkuiInternalGroup--mode-card', 'vkuiGroup--padding-m', 'vkuiInternalGroupCard', 'ProfileFriends', 'vkEnhancerProfileFriends');
+    friendsSection.innerHTML = `
+        <a href="/friends?id=${userdata[0].id}&section=all" data-allow-link-onclick-web="1" class="Header-module__tappable--mabke ProfileGroupHeader vkuiTappable vkuiInternalTappable vkuiTappable--hasActive vkui-focus-visible">
+            <div style="padding:7px 0 0 17px;" class="vkEnhancerFriendsPadding vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
+                <div class="vkuiHeader__main">
+                    <div class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__content vkuiHeadline--sizeY-compact vkuiHeadline--level-1">
+                        <span class="vkuiHeader__content-in">
+                            <div class="Header-module__content--F5x_X">
+                                <div class="TextClamp-module__singleLine--mRCrF">`+getLang("profile_friends")+`</div>
+                            </div>
+                        </span>
+                        <span class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__indicator vkuiFootnote">${frenCount.count}</span>
+                    </div>
+                </div>
+                <span class="vkuiTypography vkuiHeader__aside vkuiParagraph"></span>
+            </div>
+        </a>
+        <div class="vkuiSpacing" style="height: 4px; padding: 2px 0px;"></div>
+        <div class="ProfileGroupHorizontalCells vkEnhancerHorizontalCells">
+		<div class="PrimaryCells"></div>
+        </div>
+        <div class="vkuiSpacing" style="height: 4px; padding: 2px 0px;"></div>
+    `;
+	friendsSection.style.marginBottom = "16px";
+	friendsSection.style.padding = "0px";
+    const friendsContainer = friendsSection.querySelector('.ProfileGroupHorizontalCells');
+	const friendsContainer1 = friendsSection.querySelector('.PrimaryCells');
+	const randomFriends = friends.items.sort(() => 0.5 - Math.random()).slice(0, 6);
+    randomFriends.forEach(friend => {
+        const friendItem = document.createElement('div');
+        friendItem.classList.add('vkuiHorizontalCell', 'vkuiHorizontalCell--size-s', 'ProfileFriends__item', 'HorizontalCell-module__root--XStwI', 'HorizontalCell-module__rootSizeS--JwyO0');
+        friendItem.innerHTML = `
+            <a href="/${friend.domain}" class="vkuiHorizontalCell__body vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible vkEnhancerFriend">
+                <div class="vkuiHorizontalCell__image">
+                    <div class="vkuiImageBase vkuiImageBase--loaded vkuiAvatar" style="width: 52px; height: 52px;"><img class="vkuiImageBase__img" src="${friend.photo_100}">${friend.online === 1 ? '' : ''}</div>
+                </div>
+                <div class="vkuiHorizontalCell__content">
+                    <span class="vkuiTypography vkuiTypography--normalize vkuiCaption--level-1"><div class="TextClamp-module__singleLine--mRCrF">${friend.first_name}</div></span>
+                </div>
+            </a>
+        `;
+        if (friend.online === 1) {
+            const onlineBadge = document.createElement('div');
+            onlineBadge.classList.add('vkuiImageBaseBadge', 'vkuiImageBaseBadge--background-stroke', 'vkuiAvatarBadge', 'vkuiAvatarBadge--preset-onlineMobile', 'Badge-module__root--dY2bH', 'Badge-module__rootBottomRight--HIk3W');
+            if(friend.online_mobile && friend.online_mobile == 1) {
+			onlineBadge.innerHTML = `
+                <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-8 vkuiIcon--h-12 vkuiIcon--online_mobile_12" viewBox="0 0 8 12" width="8" height="12" style="width: 8px; height: 12px;">
+                    <use xlink:href="#online_mobile_12" style="fill: currentcolor;"></use>
+                </svg>
+            `; }
+			else {
+			onlineBadge.innerHTML = `
+                <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-12 vkuiIcon--h-12 vkuiIcon--circle_12" viewBox="0 0 12 12" width="12" height="12" style="width: 12px; height: 12px;">
+					<path fill="currentColor" d="M10 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0"></path>
+				</svg>
+            `;
+			onlineBadge.classList.remove('vkuiAvatarBadge--preset-onlineMobile');
+			onlineBadge.classList.add('vkuiAvatarBadge--preset-online');
+			}
+            friendItem.querySelector('.vkuiImageBase').appendChild(onlineBadge);
+        }
+
+        friendsContainer1.appendChild(friendItem);
+    });
+if (vk.id === userdata[0].id) {
+    const onlineFriends = friends.items.filter(friend => friend.online === 1);
+    const countOnline = onlineFriends.length;
+    if (countOnline > 0) {
+        const onlineFriendsHeader = document.createElement('a');
+        onlineFriendsHeader.href = `/friends?id=${vk.id}&section=online`;
+        onlineFriendsHeader.classList.add('Header-module__tappable--mabke', 'ProfileGroupHeader', 'vkuiTappable', 'vkuiInternalTappable', 'vkuiTappable--hasActive', 'vkui-focus-visible','vkEnhFriendsOnline');
+        onlineFriendsHeader.innerHTML = `
+            <div style="padding-top:0px; padding-bottom:0px;" class="vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
+                <div class="vkuiHeader__main">
+                    <div class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__content vkuiHeadline--sizeY-compact vkuiHeadline--level-1">
+                        <span class="vkuiHeader__content-in">
+                            <div class="Header-module__content--F5x_X">
+                                <div class="TextClamp-module__singleLine--mRCrF">`+getLang("profile_friendsonln")+`</div>
+                            </div>
+                        </span>
+                        <span class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__indicator vkuiFootnote">${countOnline}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        friendsContainer.appendChild(onlineFriendsHeader);
+
+        const onlineFriendsContainer = document.createElement('div');
+        onlineFriendsContainer.classList.add('ProfileGroupHorizontalCells');
+		onlineFriendsContainer.style.paddingLeft = "8px";
+		onlineFriendsContainer.style.paddingRight = "8px";
+		onlineFriendsContainer.style.paddingBottom = "8px";
+        onlineFriends.sort(() => 0.5 - Math.random()).slice(0, 3).forEach(onlineFriend => {
+            const friendItem = document.createElement('div');
+            friendItem.classList.add('vkuiHorizontalCell', 'vkuiHorizontalCell--size-s', 'ProfileFriends__item', 'HorizontalCell-module__root--XStwI', 'HorizontalCell-module__rootSizeS--JwyO0');
+            friendItem.innerHTML = `
+                <a href="/${onlineFriend.domain}" class="vkuiHorizontalCell__body vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible vkEnhancerFriend">
+                    <div class="vkuiHorizontalCell__image">
+                        <div class="vkuiImageBase vkuiImageBase--loaded vkuiAvatar" style="width: 52px; height: 52px;"><img class="vkuiImageBase__img" src="${onlineFriend.photo_100}"></div>
+                    </div>
+                    <div class="vkuiHorizontalCell__content">
+                        <span class="vkuiTypography vkuiTypography--normalize vkuiCaption--level-1"><div class="TextClamp-module__singleLine--mRCrF">${onlineFriend.first_name}</div></span>
+                    </div>
+                </a>
+            `;
+        if (onlineFriend.online === 1) {
+            const onlineBadge = document.createElement('div');
+            onlineBadge.classList.add('vkuiImageBaseBadge', 'vkuiImageBaseBadge--background-stroke', 'vkuiAvatarBadge', 'vkuiAvatarBadge--preset-onlineMobile', 'Badge-module__root--dY2bH', 'Badge-module__rootBottomRight--HIk3W');
+            if(onlineFriend.online_mobile && onlineFriend.online_mobile == 1) {
+			onlineBadge.innerHTML = `
+                <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-8 vkuiIcon--h-12 vkuiIcon--online_mobile_12" viewBox="0 0 8 12" width="8" height="12" style="width: 8px; height: 12px;">
+                    <use xlink:href="#online_mobile_12" style="fill: currentcolor;"></use>
+                </svg>
+            `; }
+			else {
+			onlineBadge.innerHTML = `
+                <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-12 vkuiIcon--h-12 vkuiIcon--circle_12" viewBox="0 0 12 12" width="12" height="12" style="width: 12px; height: 12px;">
+					<path fill="currentColor" d="M10 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0"></path>
+				</svg>
+            `;
+			onlineBadge.classList.remove('vkuiAvatarBadge--preset-onlineMobile');
+			onlineBadge.classList.add('vkuiAvatarBadge--preset-online');
+			}
+            friendItem.querySelector('.vkuiImageBase').appendChild(onlineBadge);
+        }
+            onlineFriendsContainer.appendChild(friendItem);
+        });
+        friendsContainer.appendChild(onlineFriendsContainer);
+    }
+}
+let myFriendsResponse = {items:['']};
+try {
+	myFriendsResponse = await vkApi.api('friends.get', { user_id: vk.id });
+}
+catch(error){}
+let myFriends = myFriendsResponse.items;
+let commonFriends = friends.items.filter(friend => myFriends.includes(friend.id));
+if (commonFriends.length > 0 && userdata[0].id != vk.id) {
+    const commonFriendsHeader = document.createElement('div');
+    commonFriendsHeader.tabIndex = "0";
+    commonFriendsHeader.role = "button";
+    commonFriendsHeader.dataset.allowLinkOnclickWeb = "1";
+    commonFriendsHeader.classList.add('Header-module__tappable--mabke', 'ProfileGroupHeader', 'vkuiTappable', 'vkuiInternalTappable', 'vkuiTappable--hasActive', 'vkui-focus-visible');
+    commonFriendsHeader.innerHTML = `
+	<a href="/friends?id=${userdata[0].id}&amp;section=common" data-allow-link-onclick-web="1" class="Header-module__tappable--mabke ProfileGroupHeader vkuiTappable vkuiInternalTappable vkuiTappable--hasActive vkui-focus-visible">
+        <div class="vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
+            <div class="vkuiHeader__main">
+                <div class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__content vkuiHeadline--sizeY-compact vkuiHeadline--level-1">
+                    <span class="vkuiHeader__content-in">
+                        <div class="Header-module__content--F5x_X">
+                            <div class="TextClamp-module__singleLine--mRCrF">`+getLang("profile_common_friends")+`</div>
+                        </div>
+                    </span>
+                    <span class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__indicator vkuiFootnote">${commonFriends.length}</span>
+                </div>
+            </div>
+        </div>
+	</a>
+    `;
+
+	const jopaContainer = document.createElement('div');
+	jopaContainer.classList.add("vkEnhancerMutualFriends");
+    jopaContainer.appendChild(commonFriendsHeader);
+    const commonFriendsContainer = document.createElement('div');
+    commonFriendsContainer.classList.add('ProfileGroupHorizontalCells');
+
+    commonFriends.slice(0, 3).forEach(commonFriend => {
+        const friendItem = document.createElement('div');
+        friendItem.classList.add('vkuiHorizontalCell', 'vkuiHorizontalCell--size-s', 'ProfileFriends__item', 'HorizontalCell-module__root--XStwI', 'HorizontalCell-module__rootSizeS--JwyO0');
+        friendItem.innerHTML = `
+            <a href="/${commonFriend.domain}" class="vkuiHorizontalCell__body vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible vkEnhancerFriend">
+                <div class="vkuiHorizontalCell__image">
+                    <div class="vkuiImageBase vkuiImageBase--loaded vkuiAvatar" style="width: 52px; height: 52px;"><img class="vkuiImageBase__img" src="${commonFriend.photo_100}"><div aria-hidden="true" class="vkuiImageBase__border"></div></div>
+                </div>
+                <div class="vkuiHorizontalCell__content">
+                    <span class="vkuiTypography vkuiTypography--normalize vkuiCaption--level-1"><div class="TextClamp-module__singleLine--mRCrF">${commonFriend.first_name}</div></span>
+                </div>
+            </a>
+        `;
+		if (commonFriend.online === 1) {
+            const onlineBadge = document.createElement('div');
+            onlineBadge.classList.add('vkuiImageBaseBadge', 'vkuiImageBaseBadge--background-stroke', 'vkuiAvatarBadge', 'vkuiAvatarBadge--preset-onlineMobile', 'Badge-module__root--dY2bH', 'Badge-module__rootBottomRight--HIk3W');
+            if(commonFriend.online_mobile && commonFriend.online_mobile == 1) {
+			onlineBadge.innerHTML = `
+                <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-8 vkuiIcon--h-12 vkuiIcon--online_mobile_12" viewBox="0 0 8 12" width="8" height="12" style="width: 8px; height: 12px;">
+                    <use xlink:href="#online_mobile_12" style="fill: currentcolor;"></use>
+                </svg>
+            `; }
+			else {
+			onlineBadge.innerHTML = `
+                <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-12 vkuiIcon--h-12 vkuiIcon--circle_12" viewBox="0 0 12 12" width="12" height="12" style="width: 12px; height: 12px;">
+					<path fill="currentColor" d="M10 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0"></path>
+				</svg>
+            `;
+			onlineBadge.classList.remove('vkuiAvatarBadge--preset-onlineMobile');
+			onlineBadge.classList.add('vkuiAvatarBadge--preset-online');
+			}
+            friendItem.querySelector('.vkuiImageBase').appendChild(onlineBadge);
+        }
+        commonFriendsContainer.appendChild(friendItem);
+    });
+    jopaContainer.appendChild(commonFriendsContainer);
+	friendsSection.prepend(jopaContainer);
+}
+}
+imReady = true;
+let readyElement = document.createElement('div');
+readyElement.classList.add("imReadyForShowingFriends");
+document.body.appendChild(readyElement);});
       document.arrive(".label.fl_l", { existing: true }, async function (e) {
         appearVariable();
       });
@@ -2027,8 +2309,10 @@ function formatValueInt(value) {
         pageCounter.classList.add("page_counter");
         pageCounter.appendChild(countsModule);
 
-        var countsContainer = document.querySelector(".ProfileInfo");
-        countsContainer.appendChild(pageCounter);
+		if(countsModule.children.length > 0) {
+			var countsContainer = document.querySelector(".ProfileInfo");
+			countsContainer.appendChild(pageCounter);
+		}
       }
 
       function getLangBottom(e, t, n) {
@@ -2997,8 +3281,8 @@ function formatValueInt(value) {
             break;
           case 1:
             return [
-              "Показать подробную информацию",
-              "Скрыть подробную информацию",
+              "Показати детальну інформацію",
+              "Приховати детальну інформацію",
             ];
             break;
           case 454:
@@ -3806,6 +4090,62 @@ if (birthdayRow) {
             );
             onlineBadgeMob.textContent = "Onlineᅠ​";
 		} catch (error) { }}
+		if(response[0].online_info.status && response[0].online_info.status == "recently") {
+			try {
+				let lastSeenRecently = getLang("global_online_was_recently","raw");
+				let indexRecently = response[0].sex === 1 ? 2 : 1;
+				let recentlyCurrent = lastSeenRecently[indexRecently];
+				let parentBadge = document.querySelector('.ProfileIndicatorBadge');
+				let innerBadge = document.createElement('div');
+				innerBadge.classList.add('ProfileIndicatorBadge__badge');
+				innerBadge.setAttribute('aria-hidden',"true");
+				innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
+				parentBadge.appendChild(innerBadge);
+			}
+			catch(error){}
+		}
+		if(response[0].online_info.status && response[0].online_info.status == "last_week") {
+			try {
+				let lastSeenRecently = getLang("global_online_was_week","raw");
+				let indexRecently = response[0].sex === 1 ? 2 : 1;
+				let recentlyCurrent = lastSeenRecently[indexRecently];
+				let parentBadge = document.querySelector('.ProfileIndicatorBadge');
+				let innerBadge = document.createElement('div');
+				innerBadge.classList.add('ProfileIndicatorBadge__badge');
+				innerBadge.setAttribute('aria-hidden',"true");
+				innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
+				parentBadge.appendChild(innerBadge);
+			}
+			catch(error){}
+		}
+		if(response[0].online_info.status && response[0].online_info.status == "last_month") {
+			try {
+				let lastSeenRecently = getLang("global_online_this_month","raw");
+				let indexRecently = response[0].sex === 1 ? 2 : 1;
+				let recentlyCurrent = lastSeenRecently[indexRecently];
+				let parentBadge = document.querySelector('.ProfileIndicatorBadge');
+				let innerBadge = document.createElement('div');
+				innerBadge.classList.add('ProfileIndicatorBadge__badge');
+				innerBadge.setAttribute('aria-hidden',"true");
+				innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
+				parentBadge.appendChild(innerBadge);
+			}
+			catch(error){}
+		}
+		if(response[0].online_info.status && response[0].online_info.status == "long_ago") {
+			try {
+				let lastSeenRecently = getLang("global_online_long_ago","raw");
+				let indexRecently = response[0].sex === 1 ? 2 : 1;
+				let recentlyCurrent = lastSeenRecently[indexRecently];
+				let parentBadge = document.querySelector('.ProfileIndicatorBadge');
+				let innerBadge = document.createElement('div');
+				innerBadge.classList.add('ProfileIndicatorBadge__badge');
+				innerBadge.setAttribute('aria-hidden',"true");
+				innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
+				parentBadge.appendChild(innerBadge);
+			}
+			catch(error){}
+		}
           /*let styleElement = fromId("vken_box_online_classic");
           if (!styleElement) {
             styleElement = document.createElement("style");
@@ -4454,7 +4794,7 @@ document.arrive(
       document.head.appendChild(styleElement);
     }
     styleElement.innerHTML =
-      ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{margin-top:-72px!important;}";
+      ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{margin-top:-108px!important;}";
     var clmno = document.createElement("a");
     clmno.innerHTML =
       '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular AudioMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#voice_outline_24" style="fill: currentcolor;"></use></svg></i><span class="ActionsMenuAction__title">' +
@@ -4465,6 +4805,11 @@ document.arrive(
     clmno1.innerHTML =
       '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular GraffitiMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M6.66738 12.4934C5.66072 12.4934 4.89771 13.2639 4.85288 14.219C4.78943 15.5707 4.14574 16.3782 3.56758 16.8697C4.09576 17.0241 4.83625 17.0816 5.79412 16.7965C7.69684 16.2301 8.48106 15.0732 8.48106 14.1836C8.48106 13.2865 7.70617 12.4934 6.66738 12.4934ZM3.35859 14.1483C3.44019 12.4098 4.84452 10.9918 6.66738 10.9918C8.4581 10.9918 9.977 12.3845 9.977 14.1836C9.977 15.9903 8.47815 17.5638 6.21942 18.2361C4.06158 18.8784 2.57907 18.2114 1.87062 17.688C1.78649 17.6258 1.66019 17.5141 1.57758 17.3353C1.48322 17.131 1.47952 16.9126 1.54181 16.7213C1.69148 16.2618 2.17858 16.0626 2.52898 15.7829C2.9113 15.4778 3.31759 15.0219 3.35859 14.1483Z"/><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M15.7019 2.00141C16.312 1.36368 17.3109 1.32806 17.9631 1.93024C18.6094 2.527 18.68 3.5332 18.1327 4.21788L12.0531 11.716C11.7923 12.0376 11.3212 12.0861 11.0008 11.8244C10.6804 11.5626 10.6321 11.0897 10.8928 10.7681L16.9669 3.27699C17.0242 3.20385 17.0127 3.09301 16.9503 3.0354C16.8833 2.97354 16.8169 3.009 16.7482 3.07474L9.74543 9.7831C9.44658 10.0694 8.97312 10.0583 8.68792 9.75831C8.40272 9.45834 8.41378 8.98309 8.71263 8.69681L15.7019 2.00141Z" fill="currentColor"/></svg></i><span class="ActionsMenuAction__title">' +
       getLang("mail_added_graffiti") +
+      "</span></button>";
+	var clmno2 = document.createElement("a");
+    clmno2.innerHTML =
+      '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular StickerMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#smile_outline_24" style="fill: currentcolor;"></use></svg></i><span class="ActionsMenuAction__title">' +
+      getLang("mail_added_sticker") +
       "</span></button>";
     var newpanel = document.querySelector(
       ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper > div > .ActionsMenu"
@@ -4477,6 +4822,19 @@ document.arrive(
     if (!setElement1) {
       newpanel.appendChild(clmno1);
     }
+	var setElement2 = document.querySelector(".StickerMenuPopper");
+    if (!setElement2) {
+		let imURL1 = new URL(window.location.href);
+		let imId1 = imURL1.href.split("/").at(-1);
+		if(getImSendHash(imId1) != "error")
+		{
+			newpanel.appendChild(clmno2);
+		}
+		else {
+			styleElement.innerHTML = ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{margin-top:-72px!important;}";
+		}
+    }
+	setElement2 = document.querySelector(".StickerMenuPopper");
 	setElement1 = document.querySelector(".GraffitiMenuPopper");
     setElement = document.querySelector(".AudioMenuPopper");
     var eventListenerSet = false;
@@ -4511,6 +4869,231 @@ document.arrive(
     });
 	eventListenerSet1 = true;
 	}
+	var eventListenerSet2 = false;
+    if (!eventListenerSet2) {
+      setElement2.addEventListener("click", async function () {
+	  	  let styleElement = fromId("vkenSticker");
+		if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = "vkenSticker";
+			document.head.appendChild(styleElement);
+		}
+		styleElement.innerHTML = `#stickerInput,#attachmentInput{    background: 0 0;
+    padding: 8px 70px 8px 12px;
+    border: 1px solid var(--vkui--vkontakte_color_input_border);
+    border-radius: 8px;
+    width: 80%;}
+	.vkEnGroupInput {display:flex;
+	padding: 10px 20px;
+    align-items: center;}.vkEnText
+	{    font-weight: 400;
+    font-size: 14px;
+    padding-right: 8px;}
+	#okButton{
+	    color: var(--vkui--color_text_contrast_themed);
+    font-weight: var(--vkui--font_weight_accent2);
+    font-size: var(--vkui--font_headline2--font_size--compact);
+    font-family: var(--vkui--font_headline2--font_family--regular);
+    background-color: var(--vkui--color_background_accent_themed);
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 8px;
+    margin: 8px 20px;
+    float: right;
+	cursor: pointer;}.vkEnhancerGraffitiList{padding:8px;}.vkEnhancerModalPageHeader{ background-color:var(--vkui--color_background_tertiary)!important; border-radius:8px 8px 0 0!important; } .vkEnhancerSeparator { display:none!important; } .vkEnhancerModalPage__header { border-bottom:1px solid var(--vkui--color_separator_primary)!important; } .vkEnhancerPanelHeader__in { justify-content:flex-start!important; } .vkEnhancerPanelHeader__content-in { font-family: var(--palette-vk-font,-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)!important; padding-left: 12px!important; font-size: 14px!important; color: var(--vkui--color_text_primary)!important; overflow: hidden!important; text-overflow: ellipsis!important; white-space: nowrap!important; font-weight:400!important; } .vkEnhancerTappable { background:var(--vkui--color_background_secondary)!important; border-radius:0px!important; --vkui_internal--icon_color:var(--vkui--color_text_link)!important; color:var(--vkui--color_text_link)!important; } .vkEnhancerTappable:hover { background: var(--vkui--color_background_secondary_alpha)!important; } .vkEnhancerDiv { padding:0!important; } div:has(>.vkEnhancerModalPage__in-wrap) { display:flex; justify-content:center; align-items: center; height:100%; inline-size: 100%; block-size: 100%; overflow: hidden; position: absolute; box-sizing: border-box; } .vkEnhancerModalPage__in-wrap { font-family:var(--vkui--font_family_base); max-inline-size: var(--vkui--size_popup_medium--regular); position: relative; align-items: initial; margin-block: 32px; margin-inline: 56px; block-size: auto; max-block-size: 640px; opacity: 0; transform: none; transition: opacity 340ms var(--vkui--animation_easing_platform); inline-size: 100%; inset-inline: 0; inset-block-end: 0; display: flex; } .vkEnhancerModalPage__in { block-size: auto; box-shadow: var(--vkui--elevation3); border-end-end-radius: var(--vkui--size_border_radius_paper--regular); border-end-start-radius: var(--vkui--size_border_radius_paper--regular); } .vkEnhancerModalPage__in { background-color: var(--vkui--color_background_modal); overflow: visible; position: relative; box-sizing: border-box; inline-size: 100%; display: flex; flex-direction: column; border-start-end-radius: var(--vkui--size_border_radius_paper--regular); border-start-start-radius: var(--vkui--size_border_radius_paper--regular); --vkui_internal--background: var(--vkui--color_background_modal); } .vkEnhancerModalPage__header { inline-size: 100%; } .vkEnhancerModalPageHeader { padding-inline: 8px; --vkui_internal--safe_area_inset_top: 0; } .vkEnhancerPanelHeader { position: relative; } .vkEnhancerPanelHeader__in { display:flex; justify-content:center; } .vkEnhancerPanelHeader__content { text-align: center; opacity: 1; transition: opacity .3s var(--vkui--animation_easing_platform); } .vkEnhancerPanelHeader__content-in { font-size:18px; color: var(--vkui--color_text_primary); font-weight: 500; font-family: var(--vkui--font_family_accent); user-select:none; } .vkEnhancerSeparator { color: var(--vkui--color_separator_primary); } .vkEnhancerSeparator__in { block-size: var(--vkui--size_border--regular); margin: 0; background: currentColor; color: inherit; border: 0; transform-origin: center top; } .vkEnhancerModalPage__content-wrap { position: relative; display: flex; block-size: 100%; flex-direction: column; overflow: hidden; border-end-start-radius: inherit; border-end-end-radius: inherit; } .vkEnhancerModalPage__content { overflow-y: auto; -webkit-overflow-scrolling: touch; block-size: 100%; overflow-x: hidden; box-sizing: border-box; } .vkEnhancerModalPage__content-in { block-size:100%; } .vkEnhancerDiv { padding-block: var(--vkui--size_base_padding_vertical--regular); padding-inline: var(--vkui--size_base_padding_horizontal--regular); } .vkEnhancerSpacing { position: relative; box-sizing: border-box; } .vkEnhancerTappable { min-height: 22px; --vkui_internal--icon_color: var(--vkui--color_icon_accent); color: var(--vkui--color_text_accent); justify-content: center; text-align: center; box-sizing: border-box; text-decoration: none; margin: 0; border: 0; inline-size: 100%; background: rgba(0,0,0,0); padding-block: 0; min-block-size: 44px; display: flex; align-items: center; white-space: nowrap; padding-inline: var(--vkui--size_base_padding_horizontal--regular); isolation: isolate; position: relative; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; transition: background-color .15s ease-out; } .vkEnhancerSimpleCell__before { padding-block: 4px; flex-grow: initial; max-inline-size: initial; display: flex; align-items: center; padding-inline-end: 12px; color: var(--vkui_internal--icon_color, var(--vkui--color_icon_accent)); position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__middle { flex-grow: initial; max-inline-size: initial; display: flex; flex-direction: column; justify-content: center; padding-block: 10px; min-inline-size: 0; overflow: hidden; position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__content { justify-content: flex-start; display: flex; align-content: flex-start; align-items: center; max-inline-size: 100%; } .vkEnhancerTypography { font-weight: var(--vkui--font_weight_accent3); font-size: var(--vkui--font_headline1--font_size--compact); line-height: var(--vkui--font_headline1--line_height--compact); color: inherit; text-overflow: ellipsis; overflow: hidden; display: block; margin: 0; padding: 0; } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; } .vkEnhancerTappable:hover{ background-color:var(--vkui--color_transparent--hover); } .vkEnhancerGraffitiList { display: grid; gap: 4px; grid-template-columns: repeat(4,1fr); } .vkEnhancerGraffitiList__item { height: 158px; width: 158px; align-items: center; background-color: var(--vkui--color_transparent--hover); border-radius: 10px; cursor: pointer; display: flex; justify-content: center; transition: all .15s ease; vertical-align: bottom; } .vkEnhancerGraffitiList__item:hover { background-color: var(--vkui--color_transparent--active); } .vkEnhancerGraffitiList__item--doc { background-position: 50%; background-repeat: no-repeat; background-size: contain; border-radius: 10px; height: 158px; width: 158px; } .vkEnhancerCloseButton { position: absolute; justify-content: center; inset-block-start: 0; inset-inline-end: -56px; inline-size: 56px; block-size: 56px; padding: 18px; box-sizing: border-box; color: var(--vkui--color_icon_contrast); transition: opacity .15s ease-out; isolation: isolate; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; } .vkEnhancerCloseButton:before { display: block; content: ""; inset: 14px; background: var(--vkui--color_overlay_primary); border-radius: 50%; position: absolute; } .vkEnhancerCloseButton:hover:before { background:var(--vkui--color_overlay_primary--hover); } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; z-index: var(--vkui_internal--z_index_tappable_element); }`;
+		
+	    await VKEnhancerStickerBox();
+    });
+	eventListenerSet1 = true;
+	}
+async function VKEnhancerStickerBox() {
+    let boxG = document.createElement("div");
+    boxG.classList.add("vkEnhancerGraffityMainBox");
+    boxG.innerHTML = `<div class="vkEnhancerModalPage__in-wrap" style="opacity: 1;">
+                        <div class="vkEnhancerModalPage__in">
+                            <div class="vkEnhancerModalPage__header">
+                                <div class="vkEnhancerModalPageHeader vkEnhancerModalPageHeader--withGaps vkEnhancerModalPageHeader--desktop">
+                                    <div class="vkEnhancerPanelHeader">
+                                        <div class="vkEnhancerPanelHeader__in" data-onboarding-tooltip-container="fixed">
+                                            <div class="vkEnhancerPanelHeader__content">
+                                                <h2 class="vkEnhancerPanelHeader__content-in" id=":r1:-label">${getLang("mail_added_sticker")}</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="vkEnhancerSeparator">
+                                        <hr class="vkEnhancerSeparator__in">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="vkEnhancerModalPage__content-wrap">
+                                <div class="vkEnhancerModalPage__content">
+                                    <div class="vkEnhancerModalPage__content-in">
+                                        <div class="vkEnhancerDiv">
+										<div class="vkEnGroupInput">
+											<div class="vkEnText">`+getLang("mail_added_sticker")+`</div>
+                                            <input type="text" id="stickerInput" placeholder="`+getAddStickerText(vk.lang)[0]+`">
+                                            <br>
+										</div>
+										<div class="vkEnGroupInput">
+											<div class="vkEnText">`+getLang("me_convo_attaches_app")+`</div>
+                                            <input type="text" id="attachmentInput" placeholder="`+getAddStickerText(vk.lang)[1]+`">
+                                            <br>
+										</div>
+                                            <button id="okButton">`+getLang("mail_send2")+`</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="vkEnhancerCloseButton" role="button" tabindex="0">
+                                <span class="vkEnhancerVisuallyHidden">Закрыть</span>
+                                <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;">
+                                    <path fill="currentColor" fill-rule="evenodd" d="M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>`;
+
+    let boxLayer = document.getElementById('box_layer');
+    boxG.style.top = "0px";
+    boxG.style.zIndex = "999999";
+    boxG.style.backgroundColor = "#000000B3";
+    document.body.appendChild(boxG);
+
+    let closeButton = document.querySelector('.vkEnhancerCloseButton');
+    closeButton.addEventListener("click", onClose);
+
+    boxG.addEventListener("click", function(event) {
+        if (!event.target.closest('.vkEnhancerModalPage__in-wrap')) {
+            onClose();
+        }
+    });
+
+    // Добавляем обработчик для кнопки OK
+    let okButton = document.getElementById('okButton');
+    okButton.addEventListener("click", function() {
+		let commonAttach = document.getElementById("attachmentInput").value;
+		let res = splitString(commonAttach);
+		let type1 = res.type;
+		let second1 = res.secondary_attach;
+		let imURL = new URL(window.location.href);
+		let imId = imURL.href.split("/").at(-1);
+		let stickerId = document.getElementById("stickerInput").value;
+		runStickerAdder(imId,stickerId,getImSendHash(imId),type1,second1);
+		onClose();
+	});
+}
+
+function getAddStickerText(lang) {
+        switch (lang) {
+          case 0:
+            return [
+              'Введите ID стикера',
+              'Доп. вложение в формате типID_IDВЛОЖЕНИЯ',
+            ];
+            break;
+          case 1:
+            return [
+              'Введіть ID стікера',
+              'Дод. вкладення у форматі типID_IDВЛОЖЕННЯ',
+            ];
+            break;
+          case 454:
+            return [
+              'Введіть ID стікера',
+              'Дод. вкладення у форматі типID_IDВЛОЖЕННЯ',
+            ];
+            break;
+          case 114:
+            return [
+              'Увядзіце ID стыкера',
+              'Дад. ўкладанне ў фармаце тыпID_IDУКЛАДАННЯ',
+            ];
+            break;
+          case 2:
+            return [
+              'Увядзіце ID стыкера',
+              'Дад. ўкладанне ў фармаце тыпID_IDУКЛАДАННЯ',
+            ];
+            break;
+          case 777:
+            return ['Введите ID марки', 'Доп. компромат в формате типID_IDКОМПРОМАТА'];
+            break;
+          case 97:
+            return ['Стикер идентификаторын енгізіңіз', 'қосу. typeID_IDATTACHMENT пішіміндегі тіркеме'];
+            break;
+          case 100:
+			return [
+				'Ввѣдитѣ ID стикѣра',
+				'Допъ. вложѣнiя въ форматѣ типID_IDВЛОЖЕНИЯ',
+			];
+            break;
+          default:
+            return ['Enter sticker ID', 'Add. attachment in the format typeID_ID ATTACHMENTS'];
+            break;
+        }
+      }
+
+function splitString(str) {
+    const match = str.match(/^([a-zA-Z]+)(-?\d+_\d+)$/);
+    if (match) {
+        const type = match[1];
+        const secondary_attach = match[2];
+        return { type, secondary_attach };
+    } else {
+        return null;
+    }
+}
+
+
+function runStickerAdder(id, sticker_id, hash, type, second_attach) {
+	fetch("https://vk.com/al_im.php?act=a_send", {
+  "headers": {
+    "accept": "*/*",
+    "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+    "cache-control": "no-cache",
+    "content-type": "application/x-www-form-urlencoded",
+    "pragma": "no-cache",
+    "sec-ch-ua": "\"Google Chrome\";v=\"113\", \"Chromium\";v=\"113\", \"Not-A.Brand\";v=\"24\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "x-requested-with": "XMLHttpRequest"
+  },
+  "referrer": "https://vk.com/im?sel="+id,
+  "referrerPolicy": "strict-origin-when-cross-origin",
+	"body": "act=a_send&al=1&cancelled_shares[0]=sticker%2C"+sticker_id+"&entrypoint=list_all&gid=0&guid="+Math.floor(Math.random() * 2147483647)+"&hash="+hash+"&im_v=3&media=sticker%3A"+sticker_id+"%3Aundefined%2C"+type+"%3A"+second_attach+"%3Aundefined&module=im&msg=&random_id="+Math.floor(Math.random() * 2147483647)+"&to="+id,
+  "method": "POST",
+  "mode": "cors",
+  "credentials": "include"
+});
+}
+
+
+function getImSendHash(id) {
+    let script = Array.from(document.querySelectorAll('script')).find(e=>e.innerHTML.includes('IM.init'));
+    let scriptContent;
+	try {
+		scriptContent = script.innerHTML;
+	}
+	catch(error) {return "error"}
+    let startIndex = scriptContent.indexOf('"'+id+'":{');
+	let endIndex;
+	if(id>2000000000) {
+		endIndex = scriptContent.indexOf('","sex":', startIndex) + 1;
+	}
+	else {
+		endIndex = scriptContent.indexOf('","online":', startIndex) + 1;
+	}
+    let hashesString = scriptContent.substring(startIndex, endIndex);
+    let braceIndex = hashesString.indexOf('{');
+    hashesString = hashesString.substring(braceIndex) + '}';
+	console.log(hashesString);
+    let hashesObject = JSON.parse(hashesString);
+    let avatarEditHash = hashesObject.hash;
+    return avatarEditHash;
+}
 	async function VKEnhancerGraffitiBox() {
 		let boxG = document.createElement("div");
 		boxG.classList.add("vkEnhancerGraffityMainBox");
@@ -4624,7 +5207,11 @@ async function uploadFile123(uploadUrl, file) {
 
 	
 	function onClose() {
-		const customStyle = fromId("vkenGraffity");
+		let customStyle = fromId("vkenGraffity");
+		if (customStyle) {
+			customStyle.remove();
+		}
+		customStyle = fromId("vkenSticker");
 		if (customStyle) {
 			customStyle.remove();
 		}
@@ -5600,7 +6187,7 @@ deferredCallback(
 
       document.arrive(
         "#spa_root > .vkui__root:not(.VKCOMMessenger__reforgedRoot--settingsScreen)",
-        { existing: false, fireOnAttributesModification: true },
+        { existing: true},
         async function (e) {
           var currentPageURL12 = window.location.href;
 
