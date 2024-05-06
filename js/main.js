@@ -573,7 +573,8 @@ document.arrive(".ProfileGroup", { existing: true }, async function (e) {
 				content.includes(getLang("profile_followers")) ||
 				content.includes(getLang("profile_common_friends")) ||
 				content.includes(getLang("profile_friends")) ||
-				content.includes(getLang("profile_closed_profile_banner_closed_btn"))
+				content.includes(getLang("profile_closed_profile_banner_closed_btn")) ||
+				content.includes(getLang("profile_narratives"))
 			) {
 				//console.log("Removed: "+profileGroup.innerHTML);
 				profileGroup.remove();
@@ -604,6 +605,12 @@ i.forEach(elem =>
         }
     }    
 );
+});
+
+document.arrive(".OwnerPageCover", { existing: true }, async function (e) {
+	if(!document.querySelector('#profile_redesigned .ProfileHeader').classList.contains('ProfileHeader--noCover')) {
+		document.querySelector('#profile_redesigned .ProfileHeader').classList.add('ProfileHeader--noCover');
+	}
 });
 	  
 document.arrive("#profile_redesigned", { existing: true }, async function (e) {
@@ -668,7 +675,7 @@ if (frenCount.count > 0 && !document.querySelector('.ProfileFriends')) {
             if(friend.online_mobile && friend.online_mobile == 1) {
 			onlineBadge.innerHTML = `
                 <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-8 vkuiIcon--h-12 vkuiIcon--online_mobile_12" viewBox="0 0 8 12" width="8" height="12" style="width: 8px; height: 12px;">
-                    <use xlink:href="#online_mobile_12" style="fill: currentcolor;"></use>
+                    <path fill="currentColor" d="M5.99 0C7.1 0 8 .9 8 2.01v7.98C8 11.1 7.1 12 5.99 12H2.01C.9 12 0 11.1 0 9.99V2.01C0 .9.9 0 2.01 0zm.008 3H2.003a.5.5 0 0 0-.503.502v4.996c0 .277.225.502.503.502h3.995a.5.5 0 0 0 .502-.502V3.503A.5.5 0 0 0 5.997 3"></path>
                 </svg>
             `; }
 			else {
@@ -732,7 +739,7 @@ if (vk.id === userdata[0].id) {
             if(onlineFriend.online_mobile && onlineFriend.online_mobile == 1) {
 			onlineBadge.innerHTML = `
                 <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-8 vkuiIcon--h-12 vkuiIcon--online_mobile_12" viewBox="0 0 8 12" width="8" height="12" style="width: 8px; height: 12px;">
-                    <use xlink:href="#online_mobile_12" style="fill: currentcolor;"></use>
+                    <path fill="currentColor" d="M5.99 0C7.1 0 8 .9 8 2.01v7.98C8 11.1 7.1 12 5.99 12H2.01C.9 12 0 11.1 0 9.99V2.01C0 .9.9 0 2.01 0zm.008 3H2.003a.5.5 0 0 0-.503.502v4.996c0 .277.225.502.503.502h3.995a.5.5 0 0 0 .502-.502V3.503A.5.5 0 0 0 5.997 3"></path>
                 </svg>
             `; }
 			else {
@@ -806,7 +813,7 @@ if (commonFriends.length > 0 && userdata[0].id != vk.id) {
             if(commonFriend.online_mobile && commonFriend.online_mobile == 1) {
 			onlineBadge.innerHTML = `
                 <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-8 vkuiIcon--h-12 vkuiIcon--online_mobile_12" viewBox="0 0 8 12" width="8" height="12" style="width: 8px; height: 12px;">
-                    <use xlink:href="#online_mobile_12" style="fill: currentcolor;"></use>
+                    <path fill="currentColor" d="M5.99 0C7.1 0 8 .9 8 2.01v7.98C8 11.1 7.1 12 5.99 12H2.01C.9 12 0 11.1 0 9.99V2.01C0 .9.9 0 2.01 0zm.008 3H2.003a.5.5 0 0 0-.503.502v4.996c0 .277.225.502.503.502h3.995a.5.5 0 0 0 .502-.502V3.503A.5.5 0 0 0 5.997 3"></path>
                 </svg>
             `; }
 			else {
@@ -4258,6 +4265,209 @@ function getPhotoEditHash() {
     return avatarEditHash;
 }
 
+async function replaceTabsWithPhotosModule() {
+    // Найти элемент section с классом vkuiInternalGroup
+    let section = document.querySelector('section.vkuiInternalGroup:has(>.OwnerContentTabs)');
+
+    if (!section) {
+        console.error("Элемент section не найден");
+        return;
+    }
+
+    // Найти элемент с классом OwnerContentTabs внутри section
+    let tabs = section.querySelector('.OwnerContentTabs');
+
+    if (!tabs) {
+        console.error("Элемент OwnerContentTabs не найден");
+        return;
+    }
+
+    // Удалить элемент OwnerContentTabs
+    tabs.remove();
+
+    // Создать новый элемент для модуля фотографий
+    let photosModule = document.createElement('div');
+	let ownerId = await getId();
+    photosModule.classList.add('module', 'clear', 'photos_module');
+    photosModule.id = 'profile_photos_module';
+	let photodata = await vkApi.api('photos.getAll',{owner_id: ownerId, count: 4, skip_hidden: true});
+	let userDataPi = await getUserDataPhoto(ownerId);
+	let userNamePi = userDataPi[0].first_name_gen;
+    photosModule.innerHTML = `
+        <div class="header_right_link fl_r"></div>
+        <a href="/albums${ownerId}" onclick="return showAlbums(${ownerId}, {noHistory: true}, event);" class="module_header">
+            <div class="header_top clear_fix">
+                <span class="header_label fl_l">${getLang("photos_feed_title_breadcrumb")} ${userNamePi}</span>
+                <span class="header_count fl_l">${photodata.count}</span>
+            </div>
+        </a>
+        <div id="page_photos_module" class="page_photos_module"></div>
+    `;
+
+    if (!photodata || !photodata.items) {
+        console.error("Данные фотографий не найдены");
+        return;
+    }
+
+    let pagePhotosModule = photosModule.querySelector('#page_photos_module');
+	let countAddedPhotos = 0;
+    photodata.items.forEach(item => {
+        let photoLink = item.sizes[item.sizes.length - 1].url;
+        let photoId = `${item.owner_id}_${item.id}`;
+
+        let photoElement = document.createElement('a');
+        photoElement.classList.add('page_square_photo', 'crisp_image');
+        photoElement.dataset.photoId = photoId;
+        photoElement.href = `/${photoId}?all=1`;
+        photoElement.onclick = () => showPhoto(photoId, `photos(${item.owner_id})`, {
+            temp: {
+                x: photoLink,
+                y: photoLink,
+                z: photoLink,
+                w: photoLink,
+                x_: [photoLink, 604, 340],
+                y_: [photoLink, 807, 454],
+                z_: [photoLink, 1280, 720],
+                w_: [photoLink, 1920, 1080],
+                base: ''
+            }
+        });
+
+        photoElement.style.backgroundImage = `url(${photoLink})`;
+        photoElement.setAttribute('aria-label', 'Фотография');
+        photoElement.innerHTML = '<span class="blind_label">Фотография</span>';
+		countAddedPhotos++;
+        pagePhotosModule.appendChild(photoElement);
+    });
+	let photosLoadModule = document.createElement('section');
+	photosLoadModule.classList.add("vkEnhancerLoadPhotoModule");
+	photosLoadModule.innerHTML = `
+	 <a id="photos_choose_upload_area_vkEnhancer" class="photos_choose_upload_area" title="${getLang("market_drop_to_upload")}" style="display: block;" onclick="cur.meUploadPhoto ? cur.meUploadPhoto() : document.querySelector('.ProfileTabsPhotoUploadInput').click();">
+    <div class="photos_choose_upload_area_uploadvkEnhancer">
+	  <svg fill="none" height="32" viewBox="0 0 56 56" width="32" xmlns="http://www.w3.org/2000/svg"><clipPath id="camera_outline_56__a"><path d="M0 0h56v56H0z"></path></clipPath><g clip-path="url(#camera_outline_56__a)" clip-rule="evenodd" fill="currentColor" fill-rule="evenodd"><path d="M19.08 6.66A4.74 4.74 0 0 1 22 5.5h12c1.21 0 2.21.6 2.92 1.16a12.69 12.69 0 0 1 2.27 2.44l.98 1.23c.13.16.48.42 1.09.63.57.21 1.22.32 1.74.32h1c2.45 0 4.5 1.27 5.87 3.14A11.86 11.86 0 0 1 52 21.44h-3c0-2.12-.6-3.97-1.54-5.24A4.27 4.27 0 0 0 44 14.28h-1c-.89 0-1.87-.18-2.75-.49-.85-.3-1.8-.8-2.42-1.59l-1.02-1.27-.33-.42a50.36 50.36 0 0 0-.12-.15c-.4-.49-.84-.98-1.31-1.36-.49-.38-.83-.5-1.05-.5H22c-.22 0-.56.12-1.05.5a9.84 9.84 0 0 0-1.33 1.39l-.1.12-.33.42-1.02 1.27a5.42 5.42 0 0 1-2.42 1.6c-.88.3-1.86.48-2.75.48h-1c-1.32 0-2.53.67-3.46 1.92A8.88 8.88 0 0 0 7 21.44H4c0-2.67.76-5.16 2.13-7.02A7.26 7.26 0 0 1 12 11.28h1c.52 0 1.17-.11 1.74-.32.61-.21.96-.47 1.09-.63l.98-1.23.53-.67c.41-.49 1.02-1.2 1.74-1.77zM17 46.5V45h21c4.72 0 6.88-1.09 8.5-2.82.66-.7 1.24-1.7 1.73-2.8.35-.78.56-1.84.66-2.9.1-1.05.11-1.99.11-2.48V21.44h3V34c0 .5 0 1.56-.12 2.76a12.73 12.73 0 0 1-3.18 7.45C46.34 46.74 43.28 48 38 48H17zm-9.72-2.3a11.69 11.69 0 0 1-2.3-3.63c-.38-.9-.6-2.35-.75-3.53A30.5 30.5 0 0 1 4 34V21.44h3V34c0 .42.07 1.5.2 2.68.15 1.22.35 2.28.55 2.75.43 1.04 1.02 2 1.72 2.72l.05.05.04.05a7.25 7.25 0 0 0 3.2 2.01c1.38.5 2.9.74 4.24.74v3c-1.67 0-3.54-.3-5.25-.91a10.25 10.25 0 0 1-4.47-2.89z"></path><path d="M18 28a10 10 0 1 1 20 0 10 10 0 0 1-20 0zm10-7a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"></path></g></svg>
+      <span id="photos_choose_upload_area_labelvkEnhancer" class="photos_choose_upload_area_label">
+        ${getLang("stories_create_add_photo")}
+      </span>
+    </div>
+    <div class="photos_choose_upload_area_dropvkEnhancer">
+      <div class="photos_choose_upload_area_drop_label">
+        <svg fill="none" height="56" viewBox="0 0 56 56" width="56" xmlns="http://www.w3.org/2000/svg"><clipPath id="camera_outline_56__a"><path d="M0 0h56v56H0z"></path></clipPath><g clip-path="url(#camera_outline_56__a)" clip-rule="evenodd" fill="currentColor" fill-rule="evenodd"><path d="M19.08 6.66A4.74 4.74 0 0 1 22 5.5h12c1.21 0 2.21.6 2.92 1.16a12.69 12.69 0 0 1 2.27 2.44l.98 1.23c.13.16.48.42 1.09.63.57.21 1.22.32 1.74.32h1c2.45 0 4.5 1.27 5.87 3.14A11.86 11.86 0 0 1 52 21.44h-3c0-2.12-.6-3.97-1.54-5.24A4.27 4.27 0 0 0 44 14.28h-1c-.89 0-1.87-.18-2.75-.49-.85-.3-1.8-.8-2.42-1.59l-1.02-1.27-.33-.42a50.36 50.36 0 0 0-.12-.15c-.4-.49-.84-.98-1.31-1.36-.49-.38-.83-.5-1.05-.5H22c-.22 0-.56.12-1.05.5a9.84 9.84 0 0 0-1.33 1.39l-.1.12-.33.42-1.02 1.27a5.42 5.42 0 0 1-2.42 1.6c-.88.3-1.86.48-2.75.48h-1c-1.32 0-2.53.67-3.46 1.92A8.88 8.88 0 0 0 7 21.44H4c0-2.67.76-5.16 2.13-7.02A7.26 7.26 0 0 1 12 11.28h1c.52 0 1.17-.11 1.74-.32.61-.21.96-.47 1.09-.63l.98-1.23.53-.67c.41-.49 1.02-1.2 1.74-1.77zM17 46.5V45h21c4.72 0 6.88-1.09 8.5-2.82.66-.7 1.24-1.7 1.73-2.8.35-.78.56-1.84.66-2.9.1-1.05.11-1.99.11-2.48V21.44h3V34c0 .5 0 1.56-.12 2.76a12.73 12.73 0 0 1-3.18 7.45C46.34 46.74 43.28 48 38 48H17zm-9.72-2.3a11.69 11.69 0 0 1-2.3-3.63c-.38-.9-.6-2.35-.75-3.53A30.5 30.5 0 0 1 4 34V21.44h3V34c0 .42.07 1.5.2 2.68.15 1.22.35 2.28.55 2.75.43 1.04 1.02 2 1.72 2.72l.05.05.04.05a7.25 7.25 0 0 0 3.2 2.01c1.38.5 2.9.74 4.24.74v3c-1.67 0-3.54-.3-5.25-.91a10.25 10.25 0 0 1-4.47-2.89z"></path><path d="M18 28a10 10 0 1 1 20 0 10 10 0 0 1-20 0zm10-7a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"></path></g></svg>
+        <div class="photos_choose_upload_area_drop_label_tex">${getLang("market_drop_to_upload")}</div>
+      </div>
+    </div>
+  </a>`;
+
+    if(countAddedPhotos != 0 && ownerId != vk.id) {
+		section.appendChild(photosModule);
+	}
+	else if(countAddedPhotos == 0 && ownerId != vk.id){section.remove();}
+	else if(ownerId == vk.id) {section.appendChild(photosLoadModule);}
+}
+
+document.arrive('.ProfileGroup', { existing: true }, async function (e) {
+	let scrollSticky = document.querySelector('.ScrollStickyWrapper > div');
+	///ДЛЯ ФОТОАЛЬБОМОВ///
+	let userIDHereWeGoAgain = await getId();
+	let profileCheckIsClosed = await getUserDataWithoutOnline(userIDHereWeGoAgain);
+	let albumsGetter;
+	if(!profileCheckIsClosed[0].is_closed || profileCheckIsClosed[0].can_access_closed) {
+		albumsGetter = await vkApi.api('photos.getAlbums',{owner_id:userIDHereWeGoAgain,need_covers:true});
+	}
+	else {
+		albumsGetter = {count:0};
+	}
+	let newAlbumElement = document.createElement('section');
+	newAlbumElement.classList = "vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM Group-module__groupModeCard vkuiInternalGroupCard ProfileGroupEnhancer ProfileAlbumsEnhancer";
+	newAlbumElement.innerHTML = ` <div class="vkuiGroup__header">
+    <a href="/albums${userIDHereWeGoAgain}" data-allow-link-onclick-web="1" class="Header-module__tappable--mabke ProfileGroupHeader vkuiTappable vkuiInternalTappable vkuiTappable--hasActive vkui-focus-visible">
+      <div class="vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
+        <div class="vkuiHeader__main">
+          <div class="vkAlbumTypography vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__content vkuiHeadline--sizeY-compact vkuiHeadline--level-1"><span class="vkuiHeader__content-in"><div class="Header-module__content--F5x_X"><div class="TextClamp-module__singleLine--mRCrF">${getLang("photos_feed_album_tab")}</div></div></span><span class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__indicator vkuiFootnote">${albumsGetter.count}</span></div>
+        </div>
+      </div>
+    </a>
+    <div class="vkuiSpacing" style="height: 4px; padding: 2px 0px;"></div>
+  </div>
+  <div class="vkuiSpacing" style="height: 4px; padding: 2px 0px;"></div>
+  <div class="ProfileVideos__items">
+    <div class="Group-module__horizontalContentExpanded--yxlH5 vkuiInternalGroupExpandedContent">
+      <div class="OwnerVideosList">
+        <div class="vkuiHorizontalScroll vkuiInternalHorizontalScroll">
+          <div class="vkuiHorizontalScroll__in">
+            <div class="vkuiHorizontalScroll__in-wrapper">
+              <div class="OwnerAlbumsList__items"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="vkuiSpacing" style="height: 12px; padding: 6px 0px;"></div>`;
+  if(albumsGetter.count > 0 && !document.querySelector('.ProfileAlbumsEnhancer')) {
+	scrollSticky.appendChild(newAlbumElement);
+  
+  let appendHereAlbum = document.querySelector('.OwnerAlbumsList__items');
+  albumsGetter.items.slice(0, 2).forEach(async item => { 
+	let thumb = await vkApi.api('photos.get',{owner_id:item.owner_id,photo_ids:item.thumb_id,album_id:item.id});
+	let thumbSrc;
+	try {
+	thumbSrc = thumb.items[0].sizes[thumb.items[0].sizes.length - 1].url;
+	}
+	catch(error) {thumbSrc="https://vk.com/images/camera_big.png"};
+	let albumElement = document.createElement('div');
+	if(item.thumb_id != 0) {
+	albumElement.innerHTML = `<a href="/album${item.owner_id}_${item.id}" data-href="album${item.owner_id}_${item.id}?rev=1" onclick="return showPhoto('${item.owner_id}_${item.thumb_id}', 'album${item.owner_id}_${item.id}/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;${thumbSrc}&quot;,&quot;y&quot;:&quot;${thumbSrc}&quot;,&quot;z&quot;:&quot;${thumbSrc}&quot;,&quot;w&quot;:&quot;${thumbSrc}&quot;,&quot;x_&quot;:[&quot;${thumbSrc}&quot;,431,604],&quot;y_&quot;:[&quot;${thumbSrc}&quot;,576,807],&quot;z_&quot;:[&quot;${thumbSrc}&quot;,771,1080],&quot;w_&quot;:[&quot;${thumbSrc}&quot;,1542,2160],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums${item.owner_id}&quot;}}, event); return nav.go(this, event)" class="img_link  photos_album_w_description vkenh">
+    <div class="photos_album_thumb_wrap vkenh">
+      <div class="photos_album_thumb crisp_image vkenh" style="background-image: url(${thumbSrc})">
+        
+        <div class="photos_album_title_wrap vkenh">
+          <div class="clear_fix">
+            <div class="photos_album_counter vkenh fl_r">${item.size}</div>
+            <div class="photos_album_title ge_photos_album vkenh" title="${item.title}">${item.title}</div>
+          </div>
+          <div class="photos_album_description_wrap"><div class="photos_album_description description"></div></div>
+        </div>
+      </div>
+    </div>
+  </a>`;
+	}
+	else {
+	albumElement.innerHTML = `<a href="/album${item.owner_id}_${item.id}" data-href="album${item.owner_id}_${item.id}?rev=1" class="img_link  photos_album_w_description vkenh">
+    <div class="photos_album_thumb_wrap vkenh">
+      <div class="photos_album_thumb crisp_image vkenh" style="background-image: url(${thumbSrc}); background-size: 60px 48px; background-position: center;">
+        
+        <div class="photos_album_title_wrap vkenh">
+          <div class="clear_fix">
+            <div class="photos_album_counter vkenh fl_r">${item.size}</div>
+            <div class="photos_album_title ge_photos_album vkenh" title="${item.title}">${item.title}</div>
+          </div>
+          <div class="photos_album_description_wrap"><div class="photos_album_description description"></div></div>
+        </div>
+      </div>
+    </div>
+  </a>`;
+	}
+  appendHereAlbum.appendChild(albumElement);
+  });
+	///ДЛЯ ВИДЕО///
+	try {
+	let videos = document.querySelector('.ProfileVideos').innerHTML;
+	let popec = document.querySelector('.ProfileVideos');
+	popec.remove();
+	let newElem = document.createElement('section');
+	newElem.classList = "vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM Group-module__groupModeCard vkuiInternalGroupCard ProfileGroupEnhancer ProfileVideosEnhancer";
+	newElem.innerHTML = videos;
+	scrollSticky.appendChild(newElem);//ДОБАВЛЕНИЕ БЛОКА ВИДЕО
+	}
+	catch(error) {}
+  }
+});
+
+
+document.arrive('.OwnerContentTabs', { existing: true }, async function (e) {
+	await replaceTabsWithPhotosModule();
+});
+
 function appendActivityText(activityText) {
     getIdAntiAsync().then(objectId => {
 		let broadcast = document.querySelector('.ProfileInfo__broadcast');
@@ -4356,7 +4566,7 @@ async function getUserDataPhoto(objectId) {
           var response = await vkApi.api("users.get", {
             user_ids: objectId,
             fields:
-              "photo_id,photo_200",
+              "photo_id,photo_200,first_name_gen",
           });
           return response;
         } catch (error) {
