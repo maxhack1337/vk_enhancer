@@ -15,7 +15,7 @@ section:has(>[class^="ClosedProfileBlock-module__container"]) {
 	font-weight:400!important;
 	font-size:13px!important;
 	margin-top:6px!important;
-	margin-bottom:6px!important;
+	margin-bottom:6px;
 }
 #profile_skeleton {
 	display:none!important;
@@ -66,6 +66,12 @@ div[class*="RichAvatar-module__rootNft"][style="width: 150px; height: 150px;"] >
 	border-top:1px solid var(--vkui--color_separator_primary);
 	border-radius:0px!important;
 }
+.ProfileVideosEnhancer {
+	margin-bottom:16px;
+}
+.ProfileVideosEnhancer > .vkuiDiv {
+	display:none;
+}
 .vkEnhancerMutualFriends {
 	border-bottom:1px solid var(--vkui--color_separator_primary);
 	border-radius:0px!important;
@@ -83,6 +89,62 @@ div[class*="RichAvatar-module__rootNft"][style="width: 150px; height: 150px;"] >
 .ProfileGroupHorizontalCells .vkuiHorizontalCell .vkuiHorizontalCell__content
 {
     max-width: 67.333px!important;
+}
+#profile_photos_module {
+	border:0!important;
+}
+.page_photos_module {
+	padding:8px 12px 12px!important;
+}
+#profile_redesigned .module_header .header_top {
+	line-height: 32px;
+	font-size:13px;
+	padding:0 12px;
+}
+.ProfileAlbumsEnhancer {
+	margin-bottom:14px;
+}
+.photos_album_thumb.crisp_image.vkenh {
+	width: 198px;
+    height: 138px;
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center 35%;
+    background-color: var(--vkui--color_image_placeholder);
+	border-radius:8px;
+}
+.photos_album_title_wrap.vkenh {
+	color: var(--white);
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    width: 198px;
+    padding: 35px 12px 9px;
+    background: url(https://vk.com/images/album_top_shadow.png);
+	border-radius: 0 0 8px 8px;
+}
+.ge_photos_album.vkenh {
+	font-weight: 700;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 12.5px;
+    line-height: 1.2em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.photos_album_counter.vkenh {
+	font-size: var(--vkui--font_text--font_size--compact);
+    opacity: .9;
+    padding: 0 0 0 5px;
+    line-height: 14px;
+}
+.photos_album_thumb_wrap.vkenh {
+	padding:6px 8px;
+}
+.vkAlbumTypography {
+	margin-bottom:0px!important;
 }
 .ProfileGroupHorizontalCells .vkuiHorizontalCell.vkuiHorizontalCell--size-s {
 	max-width: var(--max-cell-width)!important;
@@ -141,19 +203,40 @@ div[class*="RichAvatar-module__rootNft"][style="width: 150px; height: 150px;"] >
 .ProfileHeader:not(:has(>.ProfileHeader__in a[href="/edit"])){
     height: 320px;
     width: 230px;
-    margin: 32px 0 0;
+    margin: 0px 0 0;
 }
-
+#photos_choose_upload_area_vkEnhancer {
+	background: var(--vkui--color_background_secondary);
+    padding: 8.5px 10px;
+    text-align: center;
+    color: var(--vkui--color_text_link);
+    display: contents!important;
+    float: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+#photos_choose_upload_area_vkEnhancer:hover {
+	background: var(--vkui--color_background_secondary_alpha);
+    text-decoration: none;
+}
+#photos_choose_upload_area_labelvkEnhancer {
+	background:none!important;
+    padding: 5px 5px 5px 15px;
+    display: inline-block;
+}
+.photos_choose_upload_area_uploadvkEnhancer {
+	padding:22px;
+	display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.photos_choose_upload_area_dropvkEnhancer {
+	display:none;
+}
 .ProfileHeader:has(>.ProfileHeader__in a[href="/edit"]){
     height: 276px;
     width: 230px;
-    margin: 32px 0 0;
-}
-
-#profile_redesigned > div > div > .vkuiSplitCol > div.vkuiSpacing:nth-child(1){
-	height:1px!important;
-	padding:0!important;
-	margin:9px!important;
+    margin: 0px 0 0;
 }
 
 .ProfileHeader a[href="/edit"]{
