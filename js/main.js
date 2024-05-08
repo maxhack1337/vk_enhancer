@@ -352,20 +352,9 @@ let userIDHereWeGoAgain2;
   }
   styleElement.innerHTML =
     `.vkuiButton--mode-vkEnhancer:hover{background-color:rgba(255, 255, 255, 0.08)!important;}`;
-	const parsePhotoId = () => {
-    const url = window.location.href;
-    const match = url.match(/photo(\d+_\d+)/);
-    if (match) {
-        const photoId = match[1];
-        userIDHereWeGoAgain2 = photoId.split('_')[0];
+        userIDHereWeGoAgain2 = cur.pvCurPhoto.id.split('_')[0];
 		if(vk.id == userIDHereWeGoAgain2) e.parentElement.prepend(updateButton);
-    } else {
-        console.log("[VKENH] Failed to parse photo_id. Retry in 1 second");
-        setTimeout(parsePhotoId, 1000); // Вызываем повторно через 1 секунду
-    }
-};
 
-parsePhotoId(); // Запускаем первый раз
 	try {
 	updateButton.addEventListener('click', async function(){
 		e.parentElement.querySelector('#photoUpdateInput').click();
@@ -394,16 +383,7 @@ parsePhotoId(); // Запускаем первый раз
       let file = await uploadUpdatePhoto(uploadUrl, fileNameOutput);
       /** Сохраняем */
       const data = JSON.parse(file);
-	  const url = window.location.href;
-	  const match = url.match(/photo(\d+_\d+)/);
-	  let photoId;
-		if (match) {
-			photoId = match[1];
-			console.log(photoId);
-		} else {
-			console.log("Идентификатор фотографии не найден");
-			return;
-		}
+	  let photoId = cur.pvCurPhoto.id;
       let doc = await vkApi.api("photos.savePhotoEditor", { response_json: file, photo: photoId});
 	  nav.reload();
     }
