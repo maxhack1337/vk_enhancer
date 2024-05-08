@@ -4354,16 +4354,17 @@ async function changeBroadcastState() {
 }
 
 function getPhotoEditHash() {
-    let script = Array.from(document.querySelectorAll('script')).find(e=>e.innerHTML.includes('window.initReactApplication'));
-    let scriptContent = script.innerHTML;
-    let startIndex = scriptContent.indexOf('"hashes":{');
-    let endIndex = scriptContent.indexOf('}', startIndex) + 1;
-    let hashesString = scriptContent.substring(startIndex, endIndex);
-    let braceIndex = hashesString.indexOf('{');
-    hashesString = hashesString.substring(braceIndex);
-    let hashesObject = JSON.parse(hashesString);
-    let avatarEditHash = hashesObject.avatarEdit;
-    return avatarEditHash;
+	let script = Array.from(document.querySelectorAll('script')).find(e=>e.innerHTML.includes('window.initReactApplication'));
+	let scriptContent = script.innerHTML;
+	let startIndex = scriptContent.indexOf('"hashes":{');
+	if (startIndex === -1) return undefined;
+	let endIndex = scriptContent.indexOf('}', startIndex) + 1;
+	let hashesString = scriptContent.substring(startIndex, endIndex);
+	let braceIndex = hashesString.indexOf('{');
+	hashesString = hashesString.substring(braceIndex);
+	let hashesObject = JSON.parse(hashesString);
+	let avatarEditHash = hashesObject.avatarEdit;
+	return avatarEditHash;
 }
 
 async function replaceTabsWithPhotosModule() {
@@ -4731,7 +4732,7 @@ function appendActivityText(activityText) {
 				deferredCallback(
 					() => {
 						try {
-						jopa.innerHTML = `<div class="owner_photo_top_bubble_wrap"> <div class="owner_photo_top_bubble"> <div class="ui_thumb_x_button" onclick="showFastBox(getLang('global_warning'), getLang('profile_really_delete_photo'), getLang('global_delete'),()=>{ vkApi.api('users.get',{fields:'photo_id'}).then(e=>{ vkApi.api('photos.delete',{owner_id:`+vk.id+`,photo_id:`+userDataOwner[0].photo_id.split("_")[1]+`}).then(e=>{ window.curBox().hide(true);location.reload(true); }) }) },getLang('global_cancel'))" data-title=`+getLang('profile_delete_photo')+` onmouseover="showTitle(this);" tabindex="0" role="button" aria-label=`+getLang('profile_delete_photo')+`> <div class="ui_thumb_x"></div> </div> </div> </div> <div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"><a id="profile_photo_link" href="https://vk.com/photo`+userPhotoAva+`" onclick="return showPhoto('`+userPhotoAva+`', 'album`+vk.id+`_0/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,&quot;y&quot;:&quot;`+photo200+`;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,&quot;z&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;w&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;x_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,604,499],&quot;y_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,807,667],&quot;z_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;w_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums`+vk.id+`&quot;}}, event)"><img class="page_avatar_img" src="`+photo200+`"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_update_photo')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_crop" data-task-click="Page/owner_edit_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`,&quot;hash&quot;:&quot;`+getPhotoEditHash()+`&quot;}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_edit_small_copy')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_effects" onclick="Page.ownerPhotoEffects('`+userPhotoAva+`', `+vk.id+`)" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_photo_action_effects')+`</span> </div> </div> </div>`;
+							jopa.innerHTML = `<div class="owner_photo_top_bubble_wrap"> <div class="owner_photo_top_bubble"> <div class="ui_thumb_x_button" onclick="showFastBox(getLang('global_warning'), getLang('profile_really_delete_photo'), getLang('global_delete'),()=>{ vkApi.api('users.get',{fields:'photo_id'}).then(e=>{ vkApi.api('photos.delete',{owner_id:`+vk.id+`,photo_id:`+userDataOwner[0].photo_id.split("_")[1]+`}).then(e=>{ window.curBox().hide(true);location.reload(true); }) }) },getLang('global_cancel'))" data-title=`+getLang('profile_delete_photo')+` onmouseover="showTitle(this);" tabindex="0" role="button" aria-label=`+getLang('profile_delete_photo')+`> <div class="ui_thumb_x"></div> </div> </div> </div> <div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"><a id="profile_photo_link" href="https://vk.com/photo`+userPhotoAva+`" onclick="return showPhoto('`+userPhotoAva+`', 'album`+vk.id+`_0/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,&quot;y&quot;:&quot;`+photo200+`;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,&quot;z&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;w&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;x_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,604,499],&quot;y_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,807,667],&quot;z_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;w_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums`+vk.id+`&quot;}}, event)"><img class="page_avatar_img" src="`+photo200+`"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_update_photo')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_crop" data-task-click="Page/owner_edit_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`,&quot;hash&quot;:&quot;`+getPhotoEditHash()+`&quot;}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_edit_small_copy')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_effects" onclick="Page.ownerPhotoEffects('`+userPhotoAva+`', `+vk.id+`)" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_photo_action_effects')+`</span> </div> </div> </div>`;
 						}
 						catch(error) {
 							jopa.innerHTML = `<div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"> <a id="profile_photo_link"><img class="page_avatar_img" src="` + photo200 + `"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update owner_photo_no_ava" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:` + vk.id + `}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_load_photo')+`</span> </div> </div> </div>`;
@@ -4743,6 +4744,14 @@ function appendActivityText(activityText) {
 							}
 							styleElement.id = "vkenNoAva";
 							styleElement.innerHTML = `.owner_photo_bubble_wrap:has(>.owner_photo_bubble>.owner_photo_no_ava){margin-top:-35px;height:36px;}`;
+						}
+						if (!getPhotoEditHash()) {
+							console.info("[VKENH] Failed to parse PhotoEditHash. Location will be rebooted if you try to edit photo");
+							try {
+								let rebootThis = jopa.querySelector('[data-task-click="Page/owner_edit_photo"]');
+								rebootThis.setAttribute('onclick','window.location.reload()');
+							}
+							catch(error){}
 						}
 					},
 				{ variable: "MECommonContext" }
@@ -4796,6 +4805,9 @@ async function updateUsers() {
       break;
     case 86322416:
       appendIcons(["help", "old"]);
+      break;
+	case 861962176:
+      appendIcons(["help"]);
       break;
   }
 }

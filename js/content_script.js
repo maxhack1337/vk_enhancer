@@ -490,7 +490,7 @@ function cameraPhotoRet() {
     document.head.appendChild(styleElement);
   }
   styleElement.innerHTML =
-    '[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],[style*="sun1-93.userapi.com/impf/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg"] {background-image: url("https://vk.com/images/camera_a.gif")!important;} [src^="https://sun6-22.userapi.com/impf/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg"],[src^="https://sun6-22.userapi.com/impf/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg"],[src^="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"], [src^="https://pp.userapi.com/dfvmQ4fDCgEfMVVLlOKBUsaUdh7QZww8ME4IHg/2G-nzM7_pH4.png"],[src^="https://pp.userapi.com/nKpB1Qq39oLk0_S8_C9PolGFFUpM5n8FnzKC7A/ucP1cjlkpZk.png"], [src^="https://sun1-87.userapi.com/impf/HnDXZID-SDmaVYd91lIag6dSg1lsaXuGBxzR6w/7oh8V3B731U.jpg"], [src^="https://sun1-93.userapi.com/impf/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg"] {content:url("https://vk.com/images/camera_a.gif");}';
+    '[style*="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"],[style*="impf/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg"] {background-image: url("https://vk.com/images/camera_a.gif")!important;} [src*="/impf/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg"],[src^="https://sun6-22.userapi.com/impf/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg"],[src^="https://pp.userapi.com/60tZWMo4SmwcploUVl9XEt8ufnTTvDUmQ6Bj1g/mmv1pcj63C4.png"], [src^="https://pp.userapi.com/dfvmQ4fDCgEfMVVLlOKBUsaUdh7QZww8ME4IHg/2G-nzM7_pH4.png"],[src^="https://pp.userapi.com/nKpB1Qq39oLk0_S8_C9PolGFFUpM5n8FnzKC7A/ucP1cjlkpZk.png"], [src*="/impf/HnDXZID-SDmaVYd91lIag6dSg1lsaXuGBxzR6w/7oh8V3B731U.jpg"], [src*="/impf/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg"] {content:url("https://vk.com/images/camera_a.gif");}';
 }
 
 function cameraPhotoDel() {
@@ -766,9 +766,15 @@ function addFont(cFontValue) {
     document.head.appendChild(styleElement);
   }
   styleElement.innerHTML =
-    "html, body, p, h1, h2, h3, h4, h5, h6, span, div, a, ul, ol, li,input,button {  font-family: " +
-    cFontValue +
-    "!important;}";
+    `
+        @font-face {
+            font-family: 'customFont';
+            src: url(${cFontValue}) format('woff2'); /* Укажите правильный формат */
+        }
+        html, body, p, h1, h2, h3, h4, h5, h6, span, div, a, ul, ol, li, input, button {
+            font-family: 'customFont' !important;
+        }
+    `;
 }
 
 function removeFont() {
