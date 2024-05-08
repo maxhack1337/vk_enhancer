@@ -138,17 +138,16 @@ let xuy = ["get_unread_notifications", "get_accounts"];
 
 deferredCallback(
   () => {
-    let log = vkApi.login;
-    vkApi.login = function (e) {
-      if (!xuy.includes(e)) { 
+	let currentVKID = localStorage.getItem("currentVKID");
+	let currID = currentVKID ? parseInt(currentVKID) : 0;
+      if (vk.id != currID) { 
 		  localStorage.setItem("convo_history", "[]");
 		  	window.postMessage(
 				{ action: "tokenRemove"},
 				"*"
 			); 
+		  localStorage.setItem("currentVKID", vk.id);
 	  }
-      return log.apply(this, Array.prototype.slice.call(arguments));
-    };
   },
   { variable: "vkApi" }
 );
@@ -334,6 +333,103 @@ window.addEventListener("message", async (event) => {
 document.arrive(".OwnerPageName__icons", { existing: true }, function (e) {
   updateUsers();
 });
+///ОБНОВЛЕНИЕ ПОДМЕНА ФОТОГРАФИИ///
+document.arrive("#pv_delete", { existing: true }, async function (e) {
+let userIDHereWeGoAgain2;
+
+	let updateButton = document.createElement('div');
+	updateButton.style.float = 'left';
+	updateButton.style.marginRight = '8px';
+	updateButton.style.marginTop = '-8px';
+	updateButton.innerHTML = `<div class="vkEnhancerUpdateButton">
+	<a style="background-color:rgba(255, 255, 255, 0.04);color:white" class="Button-module__root--enpNU vkuiButton vkuiButton--size-m vkuiButton--mode-vkEnhancer vkuiButton--appearance-accent vkuiButton--align-center vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible">
+	<span class="vkuiButton__in"><span class="vkuiButton__content">${getLang("global_notify_refresh")}</span></span></a></div>
+	<input id="photoUpdateInput" class="file" type="file" size="28" accept="image/jpeg,image/png,image/gif,image/heic,image/heif,image/webp" multiple="" name="photo" style="visibility: hidden; position: absolute;">`;
+	let styleElement = fromId("mode-vkEnhancer");
+  if (!styleElement) {
+    styleElement = create("style", {}, { id: "mode-vkEnhancer" });
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML =
+    `.vkuiButton--mode-vkEnhancer:hover{background-color:rgba(255, 255, 255, 0.08)!important;}`;
+	const parsePhotoId = () => {
+    const url = window.location.href;
+    const match = url.match(/photo(\d+_\d+)/);
+    if (match) {
+        const photoId = match[1];
+        userIDHereWeGoAgain2 = photoId.split('_')[0];
+		if(vk.id == userIDHereWeGoAgain2) e.parentElement.prepend(updateButton);
+    } else {
+        console.log("[VKENH] Failed to parse photo_id. Retry in 1 second");
+        setTimeout(parsePhotoId, 1000); // Вызываем повторно через 1 секунду
+    }
+};
+
+parsePhotoId(); // Запускаем первый раз
+	try {
+	updateButton.addEventListener('click', async function(){
+		e.parentElement.querySelector('#photoUpdateInput').click();
+	});
+	e.parentElement.querySelector('#photoUpdateInput').addEventListener("change", function () {
+			if (e.parentElement.querySelector('#photoUpdateInput').files.length > 0) {
+				handleUpdatePhoto();
+			}
+		});
+	}
+	catch(error){}
+
+});
+    async function handleUpdatePhoto() {
+      const filesInputUpdate = document.getElementById("photoUpdateInput");
+      const file = filesInputUpdate.files[0];
+      await sendUpdatePhoto(file);
+    }
+    async function sendUpdatePhoto(fileNameOutput) {
+      /** Получаем URL для загрузки */
+      const uploadUrl1 = await vkApi.api("photos.getPhotoEditorUploadServer", {
+      });
+      const uploadUrl = uploadUrl1["upload_url"];
+
+      /** Загружаем файл */
+      let file = await uploadUpdatePhoto(uploadUrl, fileNameOutput);
+      /** Сохраняем */
+      const data = JSON.parse(file);
+	  const url = window.location.href;
+	  const match = url.match(/photo(\d+_\d+)/);
+	  let photoId;
+		if (match) {
+			photoId = match[1];
+			console.log(photoId);
+		} else {
+			console.log("Идентификатор фотографии не найден");
+			return;
+		}
+      let doc = await vkApi.api("photos.savePhotoEditor", { response_json: file, photo: photoId});
+	  nav.reload();
+    }
+
+    async function uploadUpdatePhoto(uploadUrl, fileNameOutput) {
+      const formData = new FormData();
+      formData.append("file", fileNameOutput);
+      const xhr = new XMLHttpRequest();
+      return new Promise((resolve, reject) => {
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            resolve(xhr.responseText);
+          } else {
+            reject(new Error("Upload failed. Status: " + xhr.status));
+          }
+        };
+
+        xhr.onerror = function () {
+          reject(new Error("Upload failed. Network error"));
+        };
+
+        xhr.open("POST", uploadUrl);
+        xhr.send(formData);
+      });
+    }
+///КОНЕЦ ОБНОВЛЕНИЯ ПОДМЕНЫ ФОТОГРАФИИ///
 ///НАЧАЛО ДОБАВЛЕНИЯ ОТЧЕСТВА///
 if (getLocalValue("isMiddleName")) {
   document.arrive("#owner_page_name", { existing: true }, async function (e) {
@@ -564,6 +660,7 @@ deferredCallback(
       );
 
 var friendsSection;
+var aHrefSectionFrens;
 var imReady;
 document.arrive(".ProfileGroup", { existing: true }, async function (e) {
 			const profileGroups = document.querySelectorAll('section.ProfileGroup');
@@ -595,6 +692,7 @@ i.forEach(elem =>
 document.arrive(".imReadyForShowingFriends", { existing: true }, async function (e) {
 	if(friendsSection != null && imReady) {
 		document.querySelector('.ScrollStickyWrapper > div').prepend(friendsSection);
+		document.querySelector('.vkEnhancerFrenBox').appendChild(aHrefSectionFrens);
 	}
 	let i = document.querySelectorAll('.vkuiInternalGroupCard:not(.ProfileGroup)');
 i.forEach(elem =>
@@ -629,11 +727,24 @@ if((!userdata[0].is_closed || userdata[0].can_access_closed) && !userdata[0].bla
 if (frenCount.count > 0 && !document.querySelector('.ProfileFriends')) {
     friendsSection = document.createElement('section');
     friendsSection.classList.add('vkuiInternalGroup', 'vkuiGroup', 'vkuiGroup--mode-card', 'vkuiInternalGroup--mode-card', 'vkuiGroup--padding-m', 'vkuiInternalGroupCard', 'ProfileFriends', 'vkEnhancerProfileFriends');
-    friendsSection.innerHTML = `
+	aHrefSectionFrens = document.createElement('a');
+	if(vk.id != objectId1) {
+		aHrefSectionFrens.href = `/friends?id=${objectId1}&section=online`;
+		aHrefSectionFrens.style.marginLeft = "auto";
+		aHrefSectionFrens.style.marginRight = "23px";
+		aHrefSectionFrens.textContent = getLang("profile_friendsonln").toLowerCase();
+	}
+	else {
+		aHrefSectionFrens.href = `/feed?section=updates`;
+		aHrefSectionFrens.style.marginLeft = "auto";
+		aHrefSectionFrens.style.marginRight = "23px";
+		aHrefSectionFrens.textContent = getLang("news_title_updates").toLowerCase();
+	}
+	friendsSection.innerHTML = `
         <a href="/friends?id=${userdata[0].id}&section=all" data-allow-link-onclick-web="1" class="Header-module__tappable--mabke ProfileGroupHeader vkuiTappable vkuiInternalTappable vkuiTappable--hasActive vkui-focus-visible">
             <div style="padding:7px 0 0 17px;" class="vkEnhancerFriendsPadding vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
                 <div class="vkuiHeader__main">
-                    <div class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__content vkuiHeadline--sizeY-compact vkuiHeadline--level-1">
+                    <div class="vkEnhancerFrenBox vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__content vkuiHeadline--sizeY-compact vkuiHeadline--level-1">
                         <span class="vkuiHeader__content-in">
                             <div class="Header-module__content--F5x_X">
                                 <div class="TextClamp-module__singleLine--mRCrF">`+getLang("profile_friends")+`</div>
@@ -3537,9 +3648,19 @@ var ageAndZodiac = '';
 
 var parts = birthday.split('.');
 if (parts.length === 3) {
-    var birthYear = parseInt(parts[2], 10);
-    var currentYear = new Date().getFullYear();
-    var age = currentYear - birthYear;
+	let bDayFull = userData[0].bdate;
+	let ptsOfAfe = bDayFull.split('.');
+	let birthYear1 = parseInt(ptsOfAfe[2], 10);
+    let birthMonth1 = parseInt(ptsOfAfe[1], 10);
+    let birthDay1 = parseInt(ptsOfAfe[0], 10);
+	let todayDate1 = new Date();
+    let currentYear1 = todayDate1.getFullYear();
+    let currentMonth1 = todayDate1.getMonth() + 1;
+    let currentDay1 = todayDate1.getDate();
+	let age = currentYear1 - birthYear1;
+	if (currentMonth1 < birthMonth1 || (currentMonth1 === birthMonth1 && currentDay1 < birthDay1)) {
+      age--;
+    }
     ageAndZodiac = `${getLangYearsOld(age,getLang("global_years_accusative","raw"))}, ${getZodiacIndex(parts[0], parts[1])}`
 }
 else if (parts.length === 2) {
@@ -5167,13 +5288,28 @@ document.arrive(
 			styleElement.id = "vkenGraffity";
 			document.head.appendChild(styleElement);
 		}
-		styleElement.innerHTML = `.vkEnhancerGraffitiList{padding:8px;}.vkEnhancerModalPageHeader{ background-color:var(--vkui--color_background_tertiary)!important; border-radius:8px 8px 0 0!important; } .vkEnhancerSeparator { display:none!important; } .vkEnhancerModalPage__header { border-bottom:1px solid var(--vkui--color_separator_primary)!important; } .vkEnhancerPanelHeader__in { justify-content:flex-start!important; } .vkEnhancerPanelHeader__content-in { font-family: var(--palette-vk-font,-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)!important; padding-left: 12px!important; font-size: 14px!important; color: var(--vkui--color_text_primary)!important; overflow: hidden!important; text-overflow: ellipsis!important; white-space: nowrap!important; font-weight:400!important; } .vkEnhancerTappable { background:var(--vkui--color_background_secondary)!important; border-radius:0px!important; --vkui_internal--icon_color:var(--vkui--color_text_link)!important; color:var(--vkui--color_text_link)!important; } .vkEnhancerTappable:hover { background: var(--vkui--color_background_secondary_alpha)!important; } .vkEnhancerDiv { padding:0!important; } div:has(>.vkEnhancerModalPage__in-wrap) { display:flex; justify-content:center; align-items: center; height:100%; inline-size: 100%; block-size: 100%; overflow: hidden; position: absolute; box-sizing: border-box; } .vkEnhancerModalPage__in-wrap { font-family:var(--vkui--font_family_base); max-inline-size: var(--vkui--size_popup_medium--regular); position: relative; align-items: initial; margin-block: 32px; margin-inline: 56px; block-size: auto; max-block-size: 640px; opacity: 0; transform: none; transition: opacity 340ms var(--vkui--animation_easing_platform); inline-size: 100%; inset-inline: 0; inset-block-end: 0; display: flex; } .vkEnhancerModalPage__in { block-size: auto; box-shadow: var(--vkui--elevation3); border-end-end-radius: var(--vkui--size_border_radius_paper--regular); border-end-start-radius: var(--vkui--size_border_radius_paper--regular); } .vkEnhancerModalPage__in { background-color: var(--vkui--color_background_modal); overflow: visible; position: relative; box-sizing: border-box; inline-size: 100%; display: flex; flex-direction: column; border-start-end-radius: var(--vkui--size_border_radius_paper--regular); border-start-start-radius: var(--vkui--size_border_radius_paper--regular); --vkui_internal--background: var(--vkui--color_background_modal); } .vkEnhancerModalPage__header { inline-size: 100%; } .vkEnhancerModalPageHeader { padding-inline: 8px; --vkui_internal--safe_area_inset_top: 0; } .vkEnhancerPanelHeader { position: relative; } .vkEnhancerPanelHeader__in { display:flex; justify-content:center; } .vkEnhancerPanelHeader__content { text-align: center; opacity: 1; transition: opacity .3s var(--vkui--animation_easing_platform); } .vkEnhancerPanelHeader__content-in { font-size:18px; color: var(--vkui--color_text_primary); font-weight: 500; font-family: var(--vkui--font_family_accent); user-select:none; } .vkEnhancerSeparator { color: var(--vkui--color_separator_primary); } .vkEnhancerSeparator__in { block-size: var(--vkui--size_border--regular); margin: 0; background: currentColor; color: inherit; border: 0; transform-origin: center top; } .vkEnhancerModalPage__content-wrap { position: relative; display: flex; block-size: 100%; flex-direction: column; overflow: hidden; border-end-start-radius: inherit; border-end-end-radius: inherit; } .vkEnhancerModalPage__content { overflow-y: auto; -webkit-overflow-scrolling: touch; block-size: 100%; overflow-x: hidden; box-sizing: border-box; } .vkEnhancerModalPage__content-in { block-size:100%; } .vkEnhancerDiv { padding-block: var(--vkui--size_base_padding_vertical--regular); padding-inline: var(--vkui--size_base_padding_horizontal--regular); } .vkEnhancerSpacing { position: relative; box-sizing: border-box; } .vkEnhancerTappable { min-height: 22px; --vkui_internal--icon_color: var(--vkui--color_icon_accent); color: var(--vkui--color_text_accent); justify-content: center; text-align: center; box-sizing: border-box; text-decoration: none; margin: 0; border: 0; inline-size: 100%; background: rgba(0,0,0,0); padding-block: 0; min-block-size: 44px; display: flex; align-items: center; white-space: nowrap; padding-inline: var(--vkui--size_base_padding_horizontal--regular); isolation: isolate; position: relative; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; transition: background-color .15s ease-out; } .vkEnhancerSimpleCell__before { padding-block: 4px; flex-grow: initial; max-inline-size: initial; display: flex; align-items: center; padding-inline-end: 12px; color: var(--vkui_internal--icon_color, var(--vkui--color_icon_accent)); position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__middle { flex-grow: initial; max-inline-size: initial; display: flex; flex-direction: column; justify-content: center; padding-block: 10px; min-inline-size: 0; overflow: hidden; position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__content { justify-content: flex-start; display: flex; align-content: flex-start; align-items: center; max-inline-size: 100%; } .vkEnhancerTypography { font-weight: var(--vkui--font_weight_accent3); font-size: var(--vkui--font_headline1--font_size--compact); line-height: var(--vkui--font_headline1--line_height--compact); color: inherit; text-overflow: ellipsis; overflow: hidden; display: block; margin: 0; padding: 0; } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; } .vkEnhancerTappable:hover{ background-color:var(--vkui--color_transparent--hover); } .vkEnhancerGraffitiList { display: grid; gap: 4px; grid-template-columns: repeat(4,1fr); } .vkEnhancerGraffitiList__item { height: 158px; width: 158px; align-items: center; background-color: var(--vkui--color_transparent--hover); border-radius: 10px; cursor: pointer; display: flex; justify-content: center; transition: all .15s ease; vertical-align: bottom; } .vkEnhancerGraffitiList__item:hover { background-color: var(--vkui--color_transparent--active); } .vkEnhancerGraffitiList__item--doc { background-position: 50%; background-repeat: no-repeat; background-size: contain; border-radius: 10px; height: 158px; width: 158px; } .vkEnhancerCloseButton { position: absolute; justify-content: center; inset-block-start: 0; inset-inline-end: -56px; inline-size: 56px; block-size: 56px; padding: 18px; box-sizing: border-box; color: var(--vkui--color_icon_contrast); transition: opacity .15s ease-out; isolation: isolate; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; } .vkEnhancerCloseButton:before { display: block; content: ""; inset: 14px; background: var(--vkui--color_overlay_primary); border-radius: 50%; position: absolute; } .vkEnhancerCloseButton:hover:before { background:var(--vkui--color_overlay_primary--hover); } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; z-index: var(--vkui_internal--z_index_tappable_element); }`;
+		styleElement.innerHTML = `.vkEnhancerRemoveGraffityButton{
+    position: relative;
+    height: 0px!important;
+    width: 0px!important;
+    color: white;
+    top: 5px;
+    left: 5px;
+	cursor: pointer;
+		}.vkEnhancerRemoveGraffityButton svg{ 
+	cusros:pointer;
+	background: var(--vkui--color_overlay_primary);
+    border-radius: 100%;
+    padding: 3px;}
+	.vkEnhancerRemoveGraffityButton svg:hover{
+	background:var(--vkui--color_overlay_primary--hover);
+	}.vkEnhancerGraffitiList{padding:8px;}.vkEnhancerModalPageHeader{ background-color:var(--vkui--color_background_tertiary)!important; border-radius:8px 8px 0 0!important; } .vkEnhancerSeparator { display:none!important; } .vkEnhancerModalPage__header { border-bottom:1px solid var(--vkui--color_separator_primary)!important; } .vkEnhancerPanelHeader__in { justify-content:flex-start!important; } .vkEnhancerPanelHeader__content-in { font-family: var(--palette-vk-font,-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)!important; padding-left: 12px!important; font-size: 14px!important; color: var(--vkui--color_text_primary)!important; overflow: hidden!important; text-overflow: ellipsis!important; white-space: nowrap!important; font-weight:400!important; } .vkEnhancerTappable { background:var(--vkui--color_background_secondary)!important; border-radius:0px!important; --vkui_internal--icon_color:var(--vkui--color_text_link)!important; color:var(--vkui--color_text_link)!important; } .vkEnhancerTappable:hover { background: var(--vkui--color_background_secondary_alpha)!important; } .vkEnhancerDiv { padding:0!important; } div:has(>.vkEnhancerModalPage__in-wrap) { display:flex; justify-content:center; align-items: center; height:100%; inline-size: 100%; block-size: 100%; overflow: hidden; position: absolute; box-sizing: border-box; } .vkEnhancerModalPage__in-wrap { font-family:var(--vkui--font_family_base); max-inline-size: var(--vkui--size_popup_medium--regular); position: relative; align-items: initial; margin-block: 32px; margin-inline: 56px; block-size: auto; max-block-size: 640px; opacity: 0; transform: none; transition: opacity 340ms var(--vkui--animation_easing_platform); inline-size: 100%; inset-inline: 0; inset-block-end: 0; display: flex; } .vkEnhancerModalPage__in { block-size: auto; box-shadow: var(--vkui--elevation3); border-end-end-radius: var(--vkui--size_border_radius_paper--regular); border-end-start-radius: var(--vkui--size_border_radius_paper--regular); } .vkEnhancerModalPage__in { background-color: var(--vkui--color_background_modal); overflow: visible; position: relative; box-sizing: border-box; inline-size: 100%; display: flex; flex-direction: column; border-start-end-radius: var(--vkui--size_border_radius_paper--regular); border-start-start-radius: var(--vkui--size_border_radius_paper--regular); --vkui_internal--background: var(--vkui--color_background_modal); } .vkEnhancerModalPage__header { inline-size: 100%; } .vkEnhancerModalPageHeader { padding-inline: 8px; --vkui_internal--safe_area_inset_top: 0; } .vkEnhancerPanelHeader { position: relative; } .vkEnhancerPanelHeader__in { display:flex; justify-content:center; } .vkEnhancerPanelHeader__content { text-align: center; opacity: 1; transition: opacity .3s var(--vkui--animation_easing_platform); } .vkEnhancerPanelHeader__content-in { font-size:18px; color: var(--vkui--color_text_primary); font-weight: 500; font-family: var(--vkui--font_family_accent); user-select:none; } .vkEnhancerSeparator { color: var(--vkui--color_separator_primary); } .vkEnhancerSeparator__in { block-size: var(--vkui--size_border--regular); margin: 0; background: currentColor; color: inherit; border: 0; transform-origin: center top; } .vkEnhancerModalPage__content-wrap { position: relative; display: flex; block-size: 100%; flex-direction: column; overflow: hidden; border-end-start-radius: inherit; border-end-end-radius: inherit; } .vkEnhancerModalPage__content { overflow-y: auto; -webkit-overflow-scrolling: touch; block-size: 100%; overflow-x: hidden; box-sizing: border-box; } .vkEnhancerModalPage__content-in { block-size:100%; } .vkEnhancerDiv { padding-block: var(--vkui--size_base_padding_vertical--regular); padding-inline: var(--vkui--size_base_padding_horizontal--regular); } .vkEnhancerSpacing { position: relative; box-sizing: border-box; } .vkEnhancerTappable { min-height: 22px; --vkui_internal--icon_color: var(--vkui--color_icon_accent); color: var(--vkui--color_text_accent); justify-content: center; text-align: center; box-sizing: border-box; text-decoration: none; margin: 0; border: 0; inline-size: 100%; background: rgba(0,0,0,0); padding-block: 0; min-block-size: 44px; display: flex; align-items: center; white-space: nowrap; padding-inline: var(--vkui--size_base_padding_horizontal--regular); isolation: isolate; position: relative; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; transition: background-color .15s ease-out; } .vkEnhancerSimpleCell__before { padding-block: 4px; flex-grow: initial; max-inline-size: initial; display: flex; align-items: center; padding-inline-end: 12px; color: var(--vkui_internal--icon_color, var(--vkui--color_icon_accent)); position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__middle { flex-grow: initial; max-inline-size: initial; display: flex; flex-direction: column; justify-content: center; padding-block: 10px; min-inline-size: 0; overflow: hidden; position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__content { justify-content: flex-start; display: flex; align-content: flex-start; align-items: center; max-inline-size: 100%; } .vkEnhancerTypography { font-weight: var(--vkui--font_weight_accent3); font-size: var(--vkui--font_headline1--font_size--compact); line-height: var(--vkui--font_headline1--line_height--compact); color: inherit; text-overflow: ellipsis; overflow: hidden; display: block; margin: 0; padding: 0; } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; } .vkEnhancerTappable:hover{ background-color:var(--vkui--color_transparent--hover); } .vkEnhancerGraffitiList { display: grid; gap: 4px; grid-template-columns: repeat(4,1fr); } .vkEnhancerGraffitiList__item { height: 158px; width: 158px; align-items: center; background-color: var(--vkui--color_transparent--hover); border-radius: 10px; cursor: pointer; display: flex; justify-content: center; transition: all .15s ease; vertical-align: bottom; } .vkEnhancerGraffitiList__item:hover { background-color: var(--vkui--color_transparent--active); } .vkEnhancerGraffitiList__item--doc { background-position: 50%; background-repeat: no-repeat; background-size: contain; border-radius: 10px; height: 158px; width: 158px; } .vkEnhancerCloseButton { position: absolute; justify-content: center; inset-block-start: 0; inset-inline-end: -56px; inline-size: 56px; block-size: 56px; padding: 18px; box-sizing: border-box; color: var(--vkui--color_icon_contrast); transition: opacity .15s ease-out; isolation: isolate; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; } .vkEnhancerCloseButton:before { display: block; content: ""; inset: 14px; background: var(--vkui--color_overlay_primary); border-radius: 50%; position: absolute; } .vkEnhancerCloseButton:hover:before { background:var(--vkui--color_overlay_primary--hover); } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; z-index: var(--vkui_internal--z_index_tappable_element); }`;
 		await VKEnhancerGraffitiBox();
     });
 	eventListenerSet1 = true;
 	}
 	var eventListenerSet2 = false;
-    if (!eventListenerSet2) {
+    if (!eventListenerSet2 && setElement2) {
       setElement2.addEventListener("click", async function () {
 	  	  let styleElement = fromId("vkenSticker");
 		if (!styleElement) {
@@ -5392,7 +5528,7 @@ function getImSendHash(id) {
     let hashesString = scriptContent.substring(startIndex, endIndex);
     let braceIndex = hashesString.indexOf('{');
     hashesString = hashesString.substring(braceIndex) + '}';
-	console.log(hashesString);
+	//console.log(hashesString);
     let hashesObject = JSON.parse(hashesString);
     let avatarEditHash = hashesObject.hash;
     return avatarEditHash;
@@ -5409,13 +5545,26 @@ function getImSendHash(id) {
 		let responseGraffiti = await vkApi.api("messages.getRecentGraffities",{});
 		var graffitiList = document.querySelector('.vkEnhancerGraffitiList');
 		responseGraffiti.forEach(function(graffiti) {
+			var ultraItemDiv = document.createElement('div');
+			ultraItemDiv.classList.add('vkEnhancerGraffitiUltraItem');
 			var itemDiv = document.createElement('div');
 			itemDiv.classList.add('vkEnhancerGraffitiList__item');
 			var docDiv = document.createElement('div');
 			docDiv.classList.add('vkEnhancerGraffitiList__item--doc');
 			docDiv.style.backgroundImage = `url("${graffiti.url}")`;
+			var removGButton = document.createElement('div');
+			removGButton.classList.add("vkEnhancerRemoveGraffityButton");
+			removGButton.setAttribute('onclick',`vkApi.api("messages.hideRecentGraffiti", {
+                                    doc_id: ${graffiti.id}
+                                });`);
+			removGButton.addEventListener('click',function(){
+				ultraItemDiv.style.display='none';
+			});
+			removGButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.84 4H2.75a.75.75 0 0 0 0 1.5h.55l.9 9.25c.05.52.1.96.16 1.31.06.37.16.71.35 1.03a2.9 2.9 0 0 0 1.25 1.13c.33.16.68.22 1.06.25.36.03.8.03 1.32.03h3.32c.53 0 .96 0 1.32-.03.38-.03.73-.1 1.06-.25a2.9 2.9 0 0 0 1.25-1.13c.19-.32.29-.66.35-1.03.06-.35.1-.79.16-1.31l.9-9.25h.55a.75.75 0 0 0 0-1.5h-4.09a3.25 3.25 0 0 0-6.32 0Zm1.58 0h3.16a1.75 1.75 0 0 0-3.16 0Zm6.78 1.5H4.8l.9 9.07c.05.56.08.94.13 1.23.05.28.1.42.17.52a1.4 1.4 0 0 0 .6.55c.1.04.25.08.53.1.3.03.68.03 1.24.03h3.26c.56 0 .94 0 1.23-.02.29-.03.43-.07.54-.11a1.4 1.4 0 0 0 .6-.55c.06-.1.11-.24.16-.52.05-.3.1-.67.15-1.23l.89-9.07Zm-2.89 2a.75.75 0 0 1 .69.81l-.5 6a.75.75 0 0 1-1.5-.12l.5-6a.75.75 0 0 1 .81-.69Zm-4.62 0a.75.75 0 0 1 .8.69l.5 6a.75.75 0 0 1-1.49.13l-.5-6a.75.75 0 0 1 .69-.82Z" clip-rule="evenodd"></path></svg>`;
+			ultraItemDiv.appendChild(removGButton);
 			itemDiv.appendChild(docDiv);
-			graffitiList.appendChild(itemDiv);
+			ultraItemDiv.appendChild(itemDiv);
+			graffitiList.appendChild(ultraItemDiv);
 			var idG = graffiti.id;
 			var oidG = graffiti.owner_id;
 			var gUrl = graffiti.url.replace("https://vk.com/", "");
@@ -6241,7 +6390,7 @@ if (
     let simplebarContentDiv = document.querySelector(".simplebar-content");
     let history = getLocalValue("convo_history") ?? [];
     let ids = "";
-    history.forEach((e) => (ids += e.href.split("/").at(-1) + ","));
+    history.forEach((e) => { const id = e.href.split("/").at(-1); if (id != vk.id) { ids += id + ","; } }); 
     ids = ids.slice(0, -1);
     let obj = ids
       ? await vkApi.api("messages.getConversationsById", {
@@ -6277,7 +6426,11 @@ if (
     for (let item of history) {
       let id = item.href.split("/").at(-1);
       let user = obj.items.find((e) => e.peer.id == id);
-      let unread = user.unread_count ? user.unread_count : 0;
+      let unread;
+	  try {
+	  unread = user.unread_count ? user.unread_count : 0;
+	  }
+	  catch(error){unread=0;}
       let muted = user?.push_settings?.no_sound ? true : false;
       simplebarContentDiv = document.querySelector(".simplebar-content");
       if (!simplebarContentDiv) {
@@ -6393,7 +6546,7 @@ deferredCallback(
             document.querySelectorAll("a.ARightRoot1")
           ).find((e) => e.href === ConvoUrl.href);
           let ids = "";
-          history.forEach((e) => (ids += e.href.split("/").at(-1) + ","));
+          history.forEach((e) => { const id = e.href.split("/").at(-1); if (id != vk.id) { ids += id + ","; } }); 
           ids = ids.slice(0, -1);
           let obj = ids
             ? await vkApi.api("messages.getConversationsById", {
@@ -6409,7 +6562,11 @@ deferredCallback(
             ).find((e) => e.href === `https://vk.com/im/convo/${id}`);
           }
           let user = obj.items.find((e) => e.peer.id == id);
-          let unread = user.unread_count ? user.unread_count : 0;
+          let unread;
+		  try {
+		  unread = user.unread_count ? user.unread_count : 0;
+		  }
+		  catch(error){unread=0;}
           let muted = user?.push_settings?.no_sound ? true : false;
           if (!convo_other) {
             if (!simplebarContentDiv) {
@@ -6584,7 +6741,7 @@ deferredCallback(
           );
           let history = getLocalValue("convo_history") ?? [];
           let ids = "";
-          history.forEach((e) => (ids += e.href.split("/").at(-1) + ","));
+          history.forEach((e) => { const id = e.href.split("/").at(-1); if (id != vk.id) { ids += id + ","; } }); 
           ids = ids.slice(0, -1);
           let obj = ids
             ? await vkApi.api("messages.getConversationsById", {
@@ -6622,7 +6779,11 @@ deferredCallback(
           for (let item of history) {
             let id = item.href.split("/").at(-1);
             let user = obj.items.find((e) => e.peer.id == id);
-            let unread = user.unread_count ? user.unread_count : 0;
+            let unread;
+			try {
+			unread = user.unread_count ? user.unread_count : 0;
+			}
+			catch(error) {unread=0;}
             let muted = user?.push_settings?.no_sound ? true : false;
             simplebarContentDiv = document.querySelector(".simplebar-content");
             if (!simplebarContentDiv) {
