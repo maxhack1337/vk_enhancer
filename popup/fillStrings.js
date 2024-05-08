@@ -104,7 +104,18 @@ function fillStrings() {
     document.querySelector("#tab2 > div.vkuiTabbarItem__in > div.vkuiTypography.vkuiTypography--normalize.vkuiTypography--weight-2.vkuiTabbarItem__text.vkuiFootnote").textContent = getLocalizedString(strings.messenger);
     document.querySelector("#tab3 > div.vkuiTabbarItem__in > div.vkuiTypography.vkuiTypography--normalize.vkuiTypography--weight-2.vkuiTabbarItem__text.vkuiFootnote").textContent = getLocalizedString(strings.other);
     document.querySelector("#tab4 > div.vkuiTabbarItem__in > div.vkuiTypography.vkuiTypography--normalize.vkuiTypography--weight-2.vkuiTabbarItem__text.vkuiFootnote").textContent = getLocalizedString(strings.information);
-
+	document.querySelector("#tab0 > div.vkuiTabbarItem__in > div.vkuiTypography.vkuiTypography--normalize.vkuiTypography--weight-2.vkuiTabbarItem__text.vkuiFootnote").textContent = getLocalizedString(strings.oldDTab);
+	
+	
+	document.querySelector('.vkEnhancerHeaderRatio1').textContent = getLocalizedString(strings.oldDTab);
+	document.querySelector('.vkEnhancerHeaderRatio2').textContent = getLocalizedString(strings.appearance);
+	document.querySelector('.vkEnhancerHeaderRatio3').textContent = getLocalizedString(strings.messenger);
+	document.querySelector('.vkEnhancerHeaderRatio4').textContent = getLocalizedString(strings.other);
+	
+	document.querySelector('.vkEnhancerHeaderRatioPseudo1').textContent = getLocalizedString(strings.pseudoTab1);
+	document.querySelector('.vkEnhancerHeaderRatioPseudo2').textContent = getLocalizedString(strings.pseudoTab2);
+	document.querySelector('.vkEnhancerHeaderRatioPseudo3').textContent = getLocalizedString(strings.pseudoTab3);
+	
 	document.querySelector("#parseid").value = getLocalizedString(strings.notGroupOrUserId);;
 }
 

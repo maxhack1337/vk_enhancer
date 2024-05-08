@@ -1,4 +1,32 @@
-	#languageSelect {
+.vkEnhancerHeaderRatioPseudo1,.vkEnhancerHeaderRatioPseudo2,.vkEnhancerHeaderRatioPseudo3 {
+	color: #fff;
+	line-height: 26px;
+    font-weight: 500;
+    -webkit-font-smoothing: subpixel-antialiased;
+    margin-left: 10px;
+    margin-right: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--vkui--color_separator_primary);
+    background: var(--vkui--color_background_secondary);
+    margin-top: 20px!important;
+    margin-bottom: 10px!important;
+    font-size: 16px!important;
+}
+.vkEnhancerHeaderRatio4,.vkEnhancerHeaderRatio3,.vkEnhancerHeaderRatio2,.vkEnhancerHeaderRatio1 {
+	color: #fff;
+	line-height: 26px;
+    font-weight: 500;
+    -webkit-font-smoothing: subpixel-antialiased;
+    margin-left: 10px;
+    margin-right: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--vkui--color_separator_primary);
+    background: var(--vkui--color_background_secondary);
+	margin-top:0px;
+    margin-bottom: 10px!important;
+    font-size: 16px!important;
+}
+#languageSelect {
   padding: 2px;
   font-size: 13px;
   border: 1px solid var(--vkui--color_separator_primary);
