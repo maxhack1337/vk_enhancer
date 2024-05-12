@@ -5,7 +5,7 @@
     "default_title": "Настройки VK Enhancer"
   },
   "name": "VK Enhancer - улучшение ВКонтакте",
-  "version": "3.8",
+  "version": "3.9",
   "icons": {
     "128": "assets/icon128.png",
     "16": "assets/icon16.png",
@@ -68,6 +68,7 @@
     {
       "resources": [
         "js/main.js",
+	"js/jszip.min.js",
         "js/modules/arrive.js",
         "js/modules/hls.js",
         "js/vkm_reforged_in_vkcom.js",
