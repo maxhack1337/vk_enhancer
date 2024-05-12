@@ -1,3 +1,10 @@
+.vkEnhancerLoadPhotoModule {
+	background: var(--vkui--color_background_content);
+	border-radius: var(--vkui--size_border_radius_paper--regular);
+	border: 1px solid var(--vkui--color_separator_primary);
+	margin-bottom:16px;
+}
+
 .ProfileInfo__fillInformationLink {
 	display:none;
 }
@@ -11,6 +18,11 @@ section:has(>[class^="ClosedProfileBlock-module__container"]) {
 .FriendsSuggestionsBlock {
 	display:none;
 }
+/*.vkEnAudioRow {
+	position: fixed;
+    width: 214px;
+    height: 40px!important;
+}*/
 .ProfileGroupHeader .vkuiTypography--weight-2.vkuiTypography--weight-2.vkuiTypography--weight-2 {
 	font-weight:400!important;
 	font-size:13px!important;
@@ -271,6 +283,17 @@ div.ProfileHeaderActions__moreButtonContainer > div > button {
     min-width: 45px;
     background-color: var(--vkui--color_background_secondary_alpha);
 }
+/*
+div.ProfileHeaderActions__moreButtonContainer > div > button:hover{
+	margin-left:-162px;
+	width:206px!important;
+	max-width:206px!important;
+}
+div.ProfileHeaderActions__moreButtonContainer > div > button:hover .vkuiButton__content {
+	display:flex!important;
+	position: absolute;
+    left: 20px;
+}*/
 div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in {
     margin-right: 0!important;
     width: 5px;
