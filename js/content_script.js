@@ -75,6 +75,7 @@ const fromId = document.getElementById.bind(document);
   await injectScript("js/modules/arrive.js");
   await injectScript("js/modules/hls.js");
   await injectScript("js/main.js");
+  await injectScript("js/jszip.min.js");
   window.postMessage({ action: "Init" }, "*");
   window.postMessage(
     {

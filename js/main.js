@@ -333,6 +333,706 @@ window.addEventListener("message", async (event) => {
 document.arrive(".OwnerPageName__icons", { existing: true }, function (e) {
   updateUsers();
 });
+///СКАЧИВАНИЕ ВИДЕО///
+document.arrive(".videoplayer_btn_mute", { existing: true }, function (e) {
+	let quality;
+	let vidUrl;
+	try {
+		quality = Math.max(...Object.keys(window.mvcur.player.media.vars).filter(e=>e.startsWith("url")).map(url => parseInt(url.match(/\d+/)[0])));
+		vidUrl = window.mvcur.player.media.vars[`url${quality}`];
+		if(vidUrl == undefined) {vidUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
+		let videoButton = document.createElement('a');
+		videoButton.href = vidUrl;
+		videoButton.style.padding = "5px 10px 0 8px";
+		videoButton.setAttribute('onmouseover',`showTooltip(this, { text: '${getLang("video_download_short")}', black: true, shift: [2, 24] });`);
+		videoButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 16 16" style="min-width: 20px;"><path fill-rule="evenodd" d="M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z" clip-rule="evenodd"/></svg>`;
+		e.parentNode.insertBefore(videoButton, e);
+	}
+	catch(error) {}
+});
+
+function querySelectorAllShadows(selector, el = document.body) {
+	const childShadows = Array.from(el.querySelectorAll('*')).
+    map(el => el.shadowRoot).filter(Boolean);
+  const childResults = childShadows.map(child => querySelectorAllShadows(selector, child));
+  const result = Array.from(el.querySelectorAll(selector));
+  return result.concat(childResults).flat();
+}
+
+document.arrive("vk-video-player", { existing: true }, function (e) {
+		let muteButton = querySelectorAllShadows('.volumeBar-container')[0];
+			let props = Object.keys(getVideoProps(document.querySelector('.MediaViewerVideo')).video.files);
+			let files = getVideoProps(document.querySelector('.MediaViewerVideo')).video.files;
+			let quality = props.find(e=>e.startsWith("mp4"));
+			let vidUrl = files[quality];
+			let videoButton = document.createElement('a');
+			videoButton.style.padding = "5px 10px 0 8px";
+			videoButton.style.cursor = "pointer";
+			videoButton.setAttribute('aria-label',`${getLang("video_download_short")}`);
+			videoButton.addEventListener('click', function () {
+				let linkV = document.createElement('a');
+				linkV.href = vidUrl;
+				linkV.click();
+			});
+			videoButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 16 16" style="min-width: 20px;"><path fill-rule="evenodd" d="M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z" clip-rule="evenodd"/></svg>`;
+			muteButton.parentNode.insertBefore(videoButton, muteButton);
+			videoButton.title = videoButton.getAttribute('aria-label');
+});
+
+function getVideoProps(elem) {
+    const t = {};
+    let n = 0;
+    for (const o of Object.keys(elem)) {
+        if (o.startsWith("__reactFiber")) {
+            t.fiber = elem[o];
+            ++n;
+        } else if (o.startsWith("__reactProps")) {
+            t.props = elem[o];
+            ++n;
+        }
+        if (n === 2) break;
+    }
+
+    return t.fiber.return.memoizedProps;
+}
+///КОНЕЦ СКАЧИВАНИЯ ВИДЕО///
+///СКАЧИВАНИЕ МУЗЫКИ///
+///FUCK
+const _o = (t) => {
+  if (~t.indexOf("audio_api_unavailable")) {
+    var e = t.split("?extra=")[1].split("#"),
+      o = "" === e[1] ? "" : _a(e[1]);
+    if (((e = _a(e[0])), "string" != typeof o || !e)) return t;
+    o = o ? o.split(String.fromCharCode(9)) : [];
+    for (var s, r, n = o.length; n--;) {
+      if (
+        ((r = o[n].split(String.fromCharCode(11))),
+          (s = r.splice(0, 1, e)[0]),
+          !_l[s])
+      )
+        return t;
+      e = _l[s].apply(null, r);
+    }
+    if (e && "http" === e.substr(0, 4)) return e;
+  }
+  return t;
+};
+const _a = (t) => {
+  if (!t || t.length % 4 == 1) return !1;
+  for (var e, i, o = 0, a = 0, s = ""; (i = t.charAt(a++));)
+    (i = _r.indexOf(i)),
+      ~i &&
+      ((e = o % 4 ? 64 * e + i : i), o++ % 4) &&
+      (s += String.fromCharCode(255 & (e >> ((-2 * o) & 6))));
+  return s;
+};
+const _s = (t, e) => {
+  var i = t.length,
+    o = [];
+  if (i) {
+    var a = i;
+    for (e = Math.abs(e); a--;)
+      (e = ((i * (a + 1)) ^ (e + a)) % i), (o[a] = e);
+  }
+  return o;
+};
+var _r = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN0PQRSTUVWXYZO123456789+/=",
+  _l = {
+    v: function (t) {
+      return t.split("").reverse().join("");
+    },
+    r: function (t, e) {
+      t = t.split("");
+      for (var i, o = _r + _r, a = t.length; a--;)
+        (i = o.indexOf(t[a])), ~i && (t[a] = o.substr(i - e, 1));
+      return t.join("");
+    },
+    s: function (t, e) {
+      var i = t.length;
+      if (i) {
+        var o = _s(t, e),
+          a = 0;
+        for (t = t.split(""); ++a < i;)
+          t[a] = t.splice(o[i - 1 - a], 1, t[a])[0];
+        t = t.join("");
+      }
+      return t;
+    },
+    i: function (t, e) {
+      return _l.s(t, e ^ vk.id);
+    },
+    x: function (t, e) {
+      var i = [];
+      return (
+        (e = e.charCodeAt(0)),
+        each(t.split(""), function (t, o) {
+          i.push(String.fromCharCode(o.charCodeAt(0) ^ e));
+        }),
+        i.join("")
+      );
+    },
+  };
+/// FUCK
+
+document.arrive(".audio_row:not(.audio_claimed) .audio_row__actions", { existing: true }, function (e) {
+  appendButton(e);
+});
+
+function appendButton(elem) {
+  const audioElement = elem.parentNode;
+  const button = create(
+    "button",
+    {},
+    {
+      innerText: "",
+    }
+  );
+  button.classList.add("vkEnhancerDownloadMusicButton");
+  const div = create(
+    "div",
+    {},
+    {
+      className: "download",
+	  innerHTML: `<style>
+		.vkEnhancerDownloadMusicButton {
+	color: var(--vkui--color_icon_secondary);
+    isolation: isolate;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    cursor: pointer;
+    height: 24px;
+    width: 24px;
+    border: none;
+    background-color: transparent;
+		}
+	  </style>`
+    }
+  );
+  const progress = create(
+    "div",
+    {},
+    {
+      className: "bar",
+      innerHTML: `<style>.progress-bar {
+  background-color:var(--vkui--color_text_contrast_themed) ;
+  border-radius: 13px;
+  height: 10px;
+  width: 100%;
+  margin: 10px 0;
+  border: 2px var(--vkui--color_separator_primary) solid;
+}
+
+.progress-bar-inner {
+  background-color: var(--vkui--color_background_accent_themed);
+  height: 100%;
+  line-height: 10px;
+  color: white;
+  text-align: right;
+  padding-right: 5px;
+  border-radius: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+}</style><div class="progress-bar" style="display:none;">
+  <div id="progress-bar-inner" class="progress-bar-inner" style="width: 100%;">
+  </div>
+</div>`,
+    }
+  );
+  button.setAttribute('onmouseover',`showTooltip(this, { text: '${getLang("video_download_short")}', black: true, shift: [7, 5] });`);
+  button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="min-width: 20px;"><path fill-rule="evenodd" d="M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z" clip-rule="evenodd"/></svg>`;
+  button.addEventListener("click", handleDownloadButton);
+  button.dataset.audio = elem.closest('.audio_row').dataset.audio;
+  button.dataset.fullId = elem.closest('.audio_row').dataset.fullId;
+  div.appendChild(button);
+  elem.prepend(div);
+}
+
+function handleDownloadButton(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const bar = e.target.parentNode.querySelector(".bar > .progress-bar");
+  const id = getValidID(e.target);
+  const Orig = getDownloadName(e.target);
+  const Cyr = parseCyr(Orig) ? parseCyr(Orig) : Orig;
+  fetch("https://vk.com/al_audio.php?act=reload_audios", {
+    headers: {
+      "content-type": "application/x-www-form-urlencoded",
+      "x-requested-with": "XMLHttpRequest",
+    },
+    body: `al=1&audio_ids=${id}`,
+    method: "POST",
+    mode: "cors",
+    credentials: "include",
+  })
+    .then((e) => e.json())
+    .then((e) => {
+      let url = _o(e.payload[1][0][0][2]);
+      console.log(Download_Fucking_Stream(url, Cyr, bar));
+    });
+}
+let getValidID = (elem) => {
+  return `${elem.closest('.audio_row').dataset.fullId}_${JSON.parse(elem.closest('.audio_row').dataset.audio)[24]}`;
+};
+
+let getDownloadName = (elem) => {
+  return `${JSON.parse(elem.closest('.audio_row').dataset.audio)[3]}`;
+};
+
+function Download_Fucking_Stream(url, name, elem) {
+  let hls = new Hls();
+  let blob_data = [],
+    audio_data,
+    dur,
+    frag_length;
+  let temp_audio = document.createElement("audio");
+  let downloadInProgress = document.createElement('div');
+  downloadInProgress.innerHTML = `<div class="vkEnhSnackbar vkEnhSnackbar--ios vkEnhSnackbar--desktop vkui--vkIOS--light">
+  <div class="vkEnhSnackbar__in">
+    <div class="vkEnhSnackbar__body vkEnhSnackbar--layout-vertical vkEnhSnackbar__snackbar">
+      <div class="vkEnhSnackbar__before"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--24 vkuiIcon--w-24 vkuiIcon--h-24 vkuiIcon--song_outline_24" viewBox="0 0 24 24" width="24" height="24" style="width: 24px; height: 24px;"><path fill="currentColor" fill-rule="evenodd" d="m16.302 4.06-2.4.661a1.1 1.1 0 0 0-.803 1.06v.845l2.407-.681a1.1 1.1 0 0 0 .796-1.058zM13.1 8.5l2.902-.824a2.9 2.9 0 0 0 2.099-2.79V3.006a1 1 0 0 0-1.267-.964l-3.414.946a2.9 2.9 0 0 0-2.118 2.794v8.908c-2.601.018-4.222.835-5.016 2.167-.864 1.45-.5 3.188.505 4.148a3.42 3.42 0 0 0 4.06.577c1.662-1.041 2.21-2.636 2.25-4.98zm-1.796 7.989c-2.331-.045-3.144.733-3.487 1.307-.402.674-.219 1.494.23 1.919.509.499 1.2.636 1.893.305.561-.328 1.364-.982 1.364-3.531" clip-rule="evenodd"></path></svg></div>
+      <div class="vkEnhSnackbar__content"><span class="vkEnhTypography vkEnhSnackbar__content-text vkEnhParagraph"></span></div>
+    </div>
+  </div>
+</div>`;
+  let styleElement = fromId("vkEnDownloadPopup");
+  if (!styleElement) {
+    styleElement = document.createElement("style");
+    styleElement.id = "vkEnDownloadPopup";
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML = `
+  .vkEnhSnackbar__before {
+	color:var(--vkui--color_icon_accent);
+	padding-right:12px;
+  }
+  .vkEnhSnackbar{
+	margin:12px;
+	user-select:none;
+	z-index:var(--vkui--z_index_popout);
+	position:fixed;
+	inset-block-end:0;
+	inset-inline-start:auto;
+	inline-size:100%;
+	padding-inline:var(--vkui_internal--safe_area_inset_left) var(--vkui_internal--safe_area_inset_right);
+	padding-block-end:var(--vkui_internal--safe_area_inset_bottom)
+}
+.vkEnhSnackbar__in,.vkEnhSnackbar__snackbar{
+	transition:transform 320ms var(--vkui--animation_easing_platform)
+}
+.vkEnhSnackbar__body {
+	display:flex;
+	align-items:center;
+}
+.vkEnhSnackbar__in{
+	border-radius:8px;
+	background-color:var(--vkui--color_background_modal);
+	box-shadow:var(--vkui--elevation3)
+	padding:16px;
+	animation:vkenh-snackbar-intro-vertical 340ms var(--vkui--animation_easing_platform);
+}
+.vkEnhRemovebar {
+	animation:vkenh-snackbar-intro-vertical-remove 340ms var(--vkui--animation_easing_platform)!important;
+}
+.vkEnhSnackbar--ios .vkEnhSnackbar__in,.vkEnhSnackbar--ios .vkEnhSnackbar__snackbar{
+	transition:transform 400ms var(--vkui--animation_easing_platform)
+}
+.vkEnhSnackbar--desktop{
+	max-inline-size:351px;
+	inset-inline-start:0;
+	inset-block-end:0
+}
+.vkEnhSnackbar--desktop .vkEnhSnackbar__in{
+	padding:16px;
+	animation-name:vkenh-snackbar-intro-horizontal
+}
+.vkEnhSnackbar--desktop.vkuiSnackbar--closing--wCurt .vkEnhSnackbar__in{
+	transform:translate3d(-140%, 0, 0)
+}
+.vkuiSnackbar--touched--a8Qa6 .vkEnhSnackbar__snackbar{
+	transition:none
+}
+@keyframes vkenh-snackbar-intro-vertical{
+	from{
+		transform:translate3d(0, 140%, 0)
+	}
+	to{
+		transform:translate3d(0, 0, 0)
+	}
+}
+@keyframes vkenh-snackbar-intro-vertical-remove {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(-140%, 0, 0); /* Сдвигаем блок влево на 100% от его ширины */
+        opacity: 0!important; /* Добавляем анимацию исчезновения */
+    }
+}
+@keyframes vkenh-snackbar-intro-horizontal{
+	from{
+		transform:translate3d(-140%, 0, 0)
+	}
+	to{
+		transform:translate3d(0, 0, 0)
+	}
+}
+`;
+let progrText = downloadInProgress.querySelector('.vkEnhSnackbar__content-text')
+  
+document.body.appendChild(downloadInProgress);
+  if (Hls.isSupported()) {
+    hls.loadSource(url);
+    hls.attachMedia(temp_audio);
+    hls.on(Hls.Events.FRAG_BUFFERED, (e, h) => {
+	  progrText.innerHTML = getLang("docs_add_title") + "...<br><br>" + name + ".mp3 " + "".repeat((new Date() / 1e3) % 4) + "" + ((blob_data.length / frag_length) * 100).toFixed() + "%";
+      blob_data.push(audio_data);
+      temp_audio.currentTime = h.frag.start + h.frag.duration;
+      if (blob_data.length >= frag_length) {
+        (hls.stopLoad(),
+          hls.destroy(),
+		  downloadInProgress.querySelector('.vkEnhSnackbar__in').classList.add('vkEnhRemovebar'),
+		  downloadInProgress.querySelector('.vkEnhSnackbar__in').addEventListener('animationend', () => {
+			downloadInProgress.remove();
+		  }),
+          downloadBlob(new Blob(blob_data), name + ".mp3"));
+      }
+    });
+    hls.on(
+      Hls.Events.BUFFER_CODECS,
+      (e, t) => (_o = t.audio && "audio/mp4" == t.audio.container)
+    );
+    hls.on(Hls.Events.BUFFER_APPENDING, (e, a) => (audio_data = a.data));
+    hls.on(Hls.Events.MANIFEST_PARSED, (e, t) => {
+        (t = t.levels[0].details),
+        (frag_length = t.fragments.length),
+        (dur = t.totalduration);
+    });
+    temp_audio.load();
+  }
+}
+function downloadBlob(blob, name = "file.txt") {
+  if (window.navigator && window.navigator.msSaveOrOpenBlob)
+    return window.navigator.msSaveOrOpenBlob(blob);
+  const data = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = data;
+  link.download = name;
+  link.dispatchEvent(
+    new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    })
+  );
+  setTimeout(() => {
+    window.URL.revokeObjectURL(data);
+    link.remove();
+  }, 100);
+}
+function calcSize(raw) {
+  let i = Math.floor(Math.log(raw) / Math.log(1024));
+  return (
+    (raw / Math.pow(1024, i)).toFixed(2) + " " + ["B", "KB", "MB", "GB"][i]
+  );
+}
+
+///КОНЕЦ СКАЧИВАНИЯ МУЗЫКИ///
+///СКАЧИВАНИЕ АЛЬБОМА///
+deferredCallback(
+  () => {
+	let styleElement = fromId("downloadProgressBar");
+  if (!styleElement) {
+    styleElement = create("style", {}, { id: "downloadProgressBar" });
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML =
+    `.vkEnhancerDownloadAlbumButton{display: flex;
+    flex-direction: column;
+    align-items: center;}
+.pBarVkEnhAlbum {
+	margin-top:2px;
+    --track-background: var(--vkui--color_text_contrast_themed);
+    --fill-background: var(--vkui--color_background_accent_themed);
+    --border-color: var(--vkui--color_separator_primary);
+    --border-radius: 10px;
+    --height: 8px;
+    --width: 100%;
+    --value: 0;
+
+    width: var(--width);
+    height: var(--height);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.pBarVkEnhAlbum::-webkit-progress-bar {
+    background-color: var(--track-background);
+}
+
+.pBarVkEnhAlbum::-webkit-progress-value {
+    background-color: var(--fill-background);
+}
+
+.pBarVkEnhAlbum::-moz-progress-bar {
+    background-color: var(--fill-background);
+}
+
+.pBarVkEnhAlbum::-ms-fill {
+    background-color: var(--fill-background);
+}
+
+.pBarVkEnhAlbum::-webkit-progress-inner-element {
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+
+.pBarVkEnhAlbum::-moz-progress-bar {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+`;
+document.arrive("[class^='PhotosAlbumPageSubHeader-module__info']", { existing: true }, function (e) {
+  let buttonAlbumSettings = document.querySelector('[class^="HeaderLayout-module__aside"]');
+  let updateButton = document.createElement('div');
+	updateButton.style.marginRight = '8px';
+	updateButton.innerHTML = `<div class="vkEnhancerDownloadAlbumButton">
+	<a style="background-color:var(--vkui--color_background_accent_themed);color:var(--vkui--color_text_contrast_themed)" class="Button-module__root--enpNU vkuiButton vkuiButton--size-m vkuiButton--appearance-accent vkuiButton--align-center vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible">
+	<span class="vkuiButton__in"><span class="vkuiButton__content">${getLang("photos_album_menu_download")}</span></span></a></div>`;
+	buttonAlbumSettings.prepend(updateButton);
+	updateButton.addEventListener('click',async function() {
+		await parseAlbum();
+	});
+});
+
+document.arrive(".photos_album_intro", { existing: true }, function (e) {
+  let buttonAlbumSettings = document.querySelector('.page_block_header_extra._header_extra');
+  let updateButton = document.createElement('div');
+	updateButton.style.marginRight = '38px';
+	updateButton.style.marginLeft = '12px';
+	updateButton.style.marginTop = '12px';
+	updateButton.innerHTML = `<div class="vkEnhancerDownloadAlbumButton">
+	<a style="background-color:var(--vkui--color_background_accent_themed);color:var(--vkui--color_text_contrast_themed)" class="Button-module__root--enpNU vkuiButton vkuiButton--size-m vkuiButton--appearance-accent vkuiButton--align-center vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible">
+	<span class="vkuiButton__in"><span class="vkuiButton__content">${getLang("photos_album_menu_download")}</span></span></a></div>`;
+	buttonAlbumSettings.appendChild(updateButton);
+	updateButton.addEventListener('click',async function() {
+		await parseAlbum();
+	});
+});
+  },
+  { variable: "getLang" }
+);
+
+async function parseAlbum() {
+	let styleElement = fromId("vkEnDownloadPopup");
+  if (!styleElement) {
+    styleElement = document.createElement("style");
+    styleElement.id = "vkEnDownloadPopup";
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML = `
+  .vkEnhSnackbar__before {
+	color:var(--vkui--color_icon_accent);
+	padding-right:12px;
+  }
+  .vkEnhSnackbar{
+	margin:12px;
+	user-select:none;
+	z-index:var(--vkui--z_index_popout);
+	position:fixed;
+	inset-block-end:0;
+	inset-inline-start:auto;
+	inline-size:100%;
+	padding-inline:var(--vkui_internal--safe_area_inset_left) var(--vkui_internal--safe_area_inset_right);
+	padding-block-end:var(--vkui_internal--safe_area_inset_bottom)
+}
+.vkEnhSnackbar__in,.vkEnhSnackbar__snackbar{
+	transition:transform 320ms var(--vkui--animation_easing_platform)
+}
+.vkEnhSnackbar__body {
+	display:flex;
+	align-items:center;
+}
+.vkEnhSnackbar__in{
+	border-radius:8px;
+	background-color:var(--vkui--color_background_modal);
+	box-shadow:var(--vkui--elevation3)
+	padding:16px;
+	animation:vkenh-snackbar-intro-vertical 340ms var(--vkui--animation_easing_platform);
+}
+.vkEnhRemovebar {
+	animation:vkenh-snackbar-intro-vertical-remove 340ms var(--vkui--animation_easing_platform)!important;
+}
+.vkEnhSnackbar--ios .vkEnhSnackbar__in,.vkEnhSnackbar--ios .vkEnhSnackbar__snackbar{
+	transition:transform 400ms var(--vkui--animation_easing_platform)
+}
+.vkEnhSnackbar--desktop{
+	max-inline-size:351px;
+	inset-inline-start:0;
+	inset-block-end:0
+}
+.vkEnhSnackbar--desktop .vkEnhSnackbar__in{
+	padding:16px;
+	animation-name:vkenh-snackbar-intro-horizontal
+}
+.vkEnhSnackbar--desktop.vkuiSnackbar--closing--wCurt .vkEnhSnackbar__in{
+	transform:translate3d(-140%, 0, 0)
+}
+.vkuiSnackbar--touched--a8Qa6 .vkEnhSnackbar__snackbar{
+	transition:none
+}
+@keyframes vkenh-snackbar-intro-vertical{
+	from{
+		transform:translate3d(0, 140%, 0)
+	}
+	to{
+		transform:translate3d(0, 0, 0)
+	}
+}
+@keyframes vkenh-snackbar-intro-vertical-remove {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(-140%, 0, 0); /* Сдвигаем блок влево на 100% от его ширины */
+        opacity: 0!important; /* Добавляем анимацию исчезновения */
+    }
+}
+@keyframes vkenh-snackbar-intro-horizontal{
+	from{
+		transform:translate3d(-140%, 0, 0)
+	}
+	to{
+		transform:translate3d(0, 0, 0)
+	}
+}
+`;
+    const url = window.location.href;
+    const match = url.match(/album-?(\d+_?\d*)/);
+    let albumString = "";
+    if (match) {
+        albumString = match[0];
+        albumString = albumString.replace("album", "");
+    }
+    if (albumString != "") {
+        let oidA = albumString.split("_")[0];
+        let idA = albumString.split("_")[1];
+        const replaceIt = {
+            "0": -6,
+            "00": -7,
+            "000": -15,
+            "0000": -23,
+            "00000": -62,
+            "000000": -10,
+            "0000000": -7000,
+            "00000000": -165,
+            "000000000": -183,
+            "0000000000": -185
+        }
+        if (replaceIt[idA] !== undefined) {
+            idA = replaceIt[idA];
+        }
+        let albumsRes = await vkApi.api('photos.getAlbums', { owner_id: oidA, album_ids: idA });
+        if (albumsRes.items[0].size > 0) {
+            let albumCount = albumsRes.items[0].size;
+            let offset = 0;
+			let progressBar = document.createElement('div');
+  progressBar.innerHTML = `<div class="vkEnhSnackbar vkEnhSnackbar--ios vkEnhSnackbar--desktop vkui--vkIOS--light">
+  <div class="vkEnhSnackbar__in">
+    <div class="vkEnhSnackbar__body vkEnhSnackbar--layout-vertical vkEnhSnackbar__snackbar">
+      <div class="vkEnhSnackbar__before"><svg fill="currentColor" height="28" viewBox="0 0 20 20" width="28" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M6.84 16.44c.76.06 1.74.06 3.16.06 1.42 0 2.4 0 3.16-.06a3.75 3.75 0 0 0 1.43-.32 3.5 3.5 0 0 0 1.53-1.53c.15-.29.26-.69.32-1.43l.03-.63-1.3-1.3c-.3-.3-.5-.5-.67-.64a.86.86 0 0 0-.27-.18.75.75 0 0 0-.46 0 .86.86 0 0 0-.27.18c-.16.13-.36.33-.67.64l-2.3 2.3a.75.75 0 0 1-1.06 0l-.3-.3c-.3-.3-.5-.5-.67-.64a.86.86 0 0 0-.27-.18.75.75 0 0 0-.46 0 .86.86 0 0 0-.27.18c-.16.13-.36.33-.67.64L4.56 15.5c.25.24.53.45.85.6.29.16.69.27 1.43.33zm9.39-6.27.27.27V10c0-1.42 0-2.4-.06-3.16a3.75 3.75 0 0 0-.32-1.43 3.5 3.5 0 0 0-1.53-1.53 3.75 3.75 0 0 0-1.43-.32A43.2 43.2 0 0 0 10 3.5c-1.42 0-2.4 0-3.16.06-.74.06-1.14.17-1.43.32a3.5 3.5 0 0 0-1.53 1.53c-.15.29-.26.69-.32 1.43A43.2 43.2 0 0 0 3.5 10c0 1.42 0 2.4.06 3.16.04.47.1.8.17 1.05l2.04-2.04.02-.02c.28-.28.52-.52.74-.7.23-.2.47-.37.77-.47.46-.15.94-.15 1.4 0 .3.1.54.27.77.46.16.14.34.3.53.5l1.77-1.77.02-.02c.28-.28.52-.52.74-.7.23-.2.47-.37.77-.47.46-.15.94-.15 1.4 0 .3.1.54.27.77.46.22.19.46.43.74.7zM2.54 4.73C2 5.8 2 7.2 2 10c0 2.8 0 4.2.54 5.27a5 5 0 0 0 2.19 2.19C5.8 18 7.2 18 10 18c2.8 0 4.2 0 5.27-.54a5 5 0 0 0 2.19-2.19C18 14.2 18 12.8 18 10c0-2.8 0-4.2-.55-5.27a5 5 0 0 0-2.18-2.19C14.2 2 12.8 2 10 2c-2.8 0-4.2 0-5.27.54a5 5 0 0 0-2.19 2.19zM7.25 6a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5z" fill="currentColor" fill-rule="evenodd"></path></svg></div>
+      <div class="vkEnhSnackbar__content"><span class="vkEnhTypography vkEnhSnackbar__content-text vkEnhParagraph">${getLang("video_upload_waiting")}</span></div>
+    </div>
+  </div>
+</div>`;
+document.body.appendChild(progressBar);
+            let counterProgress = 0;
+            while (albumCount > 0) {
+                let count = Math.min(1000, albumCount);
+                let allPhotos = await vkApi.api('photos.get', { owner_id: oidA, album_id: idA, count: count, offset: offset, rev: true });
+				const zip = new JSZip();
+				let currentZipIndex = "_" + Math.ceil((offset + 1) / 1000);
+				if(albumsRes.items[0].size < 1000) {
+					currentZipIndex = "";
+				}
+				let bolshe_kosara = 0;
+				const promises = allPhotos.items.map(async (photoItem) => {
+                    let sizes = photoItem.sizes;
+                    let oldS = 0;
+                    let newS;
+					const availableSizes = ["a", "b", "i", "p", "q", "s", "w", "z", "y", "x", "r", "o", "m", "g", "max", "l", "f", "k", "c", "e", "d", "j", "temp", "h", "n"]
+					let n = null, e = 0;
+					let t;
+					for (const curSize of sizes) {
+						t = curSize.type;
+						if (availableSizes.includes(t)) {
+							t = (curSize.width || 0) * (curSize.height || 0);
+							if(t > e || t == 0) {
+								e = t;
+								n = curSize;
+							}
+						}
+					}
+					let maxSizer = t[0] || n;
+					let maxSizeUrl;
+					try {
+					maxSizeUrl = maxSizer.url;
+					}
+					catch (error) {console.log(maxSizer)}
+                    try {
+                        let [filename, blob] = await getPhoto(maxSizeUrl, photoItem, progressBar);
+                        zip.file(filename, blob);
+						counterProgress++;
+                        progressBar.querySelector('.vkEnhSnackbar__content-text').innerHTML = getLang("docs_add_title") + "...<br><br>" + `${albumsRes.items[0].title}${currentZipIndex}.zip ` + counterProgress + "/" + albumsRes.items[0].size;
+                    } catch (error) {
+                        console.log("Failed ", maxSizeUrl);
+                    }
+                });
+                await Promise.all(promises);
+				const zipBlob = await zip.generateAsync({ type: "blob" });
+                const zipUrl = URL.createObjectURL(zipBlob);
+                const a = document.createElement("a");
+                a.href = zipUrl;
+                a.download = `${albumsRes.items[0].title}${currentZipIndex}.zip`;
+                a.click();
+				bolshe_kosara += 1000;
+                albumCount -= count;
+                offset += count;
+            }
+            progressBar.querySelector('.vkEnhSnackbar__in').classList.add('vkEnhRemovebar');
+			progressBar.querySelector('.vkEnhSnackbar__in').addEventListener('animationend', () => {
+				progressBar.remove();
+			});
+			counterProgress = 0;
+        }
+        //console.log(albumsRes);
+    }
+}
+
+async function getPhoto(maxSizeUrl, photoItem, progressBar) {
+    let attempts = 0;
+    while (attempts < 10) {
+        try {
+            let response = await fetch(maxSizeUrl);
+            let blob = await response.blob();
+            let filename = `${photoItem.owner_id}_${photoItem.id}.jpg`;
+            return [filename, blob];
+        } catch (error) {
+            progressBar.querySelector('.vkEnhSnackbar__content-text').innerHTML = getLang("calls_status_bad_internet_connection");
+            attempts++;
+            await new Promise(resolve => setTimeout(resolve, 60000));
+        }
+    }
+    throw new Error("Failed to fetch photo after 10 attempts");
+}
+
+
+
+
+
+
+///КОНЕЦ СКАЧИВАНИЯ АЛЬБОМА///
 ///ОБНОВЛЕНИЕ ПОДМЕНА ФОТОГРАФИИ///
 document.arrive("#pv_delete", { existing: true }, async function (e) {
 let userIDHereWeGoAgain2;
@@ -344,7 +1044,7 @@ let userIDHereWeGoAgain2;
 	updateButton.innerHTML = `<div class="vkEnhancerUpdateButton">
 	<a style="background-color:rgba(255, 255, 255, 0.04);color:white" class="Button-module__root--enpNU vkuiButton vkuiButton--size-m vkuiButton--mode-vkEnhancer vkuiButton--appearance-accent vkuiButton--align-center vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible">
 	<span class="vkuiButton__in"><span class="vkuiButton__content">${getLang("global_notify_refresh")}</span></span></a></div>
-	<input id="photoUpdateInput" class="file" type="file" size="28" accept="image/jpeg,image/png,image/gif,image/heic,image/heif,image/webp" multiple="" name="photo" style="visibility: hidden; position: absolute;">`;
+	<input id="photoUpdateInput" class="file" type="file" size="28" accept="image/jpeg,image/png,image/gif" multiple="" name="photo" style="visibility: hidden; position: absolute;">`;
 	let styleElement = fromId("mode-vkEnhancer");
   if (!styleElement) {
     styleElement = create("style", {}, { id: "mode-vkEnhancer" });
@@ -353,7 +1053,7 @@ let userIDHereWeGoAgain2;
   styleElement.innerHTML =
     `.vkuiButton--mode-vkEnhancer:hover{background-color:rgba(255, 255, 255, 0.08)!important;}`;
         userIDHereWeGoAgain2 = cur.pvCurPhoto.id.split('_')[0];
-		if(vk.id == userIDHereWeGoAgain2) e.parentElement.prepend(updateButton);
+		e.parentElement.prepend(updateButton);
 
 	try {
 	updateButton.addEventListener('click', async function(){
@@ -712,12 +1412,14 @@ if (frenCount.count > 0 && !document.querySelector('.ProfileFriends')) {
 		aHrefSectionFrens.href = `/friends?id=${objectId1}&section=online`;
 		aHrefSectionFrens.style.marginLeft = "auto";
 		aHrefSectionFrens.style.marginRight = "23px";
+		aHrefSectionFrens.style.color = "var(--vkui--color_text_secondary)";
 		aHrefSectionFrens.textContent = getLang("profile_friendsonln").toLowerCase();
 	}
 	else {
 		aHrefSectionFrens.href = `/feed?section=updates`;
 		aHrefSectionFrens.style.marginLeft = "auto";
 		aHrefSectionFrens.style.marginRight = "23px";
+		aHrefSectionFrens.style.color = "var(--vkui--color_text_secondary)";
 		aHrefSectionFrens.textContent = getLang("news_title_updates").toLowerCase();
 	}
 	friendsSection.innerHTML = `
@@ -1149,6 +1851,8 @@ document.body.appendChild(readyElement);});
                   if (job.group_id) {
                     groupLink = document.createElement("a");
                     groupLink.href = `https://vk.com/club${job.group_id}`;
+					groupLink.setAttribute('mention_id',`club${job.group_id}`);
+					groupLink.setAttribute('onmouseover','mentionOver(this)');
                     groupLink.textContent = groupName;
                     groupLink.classList.add(
                       "vkuiLink",
@@ -3265,6 +3969,8 @@ function formatValueInt(value) {
                       "vkuiTappable--hasActive",
                       "vkui-focus-visible"
                     );
+					relativeLink.setAttribute('mention_id',`id${id}`);
+					relativeLink.setAttribute('onmouseover','mentionOver(this)');
                   }
                 }
               }
@@ -3701,9 +4407,13 @@ if (birthdayRow) {
           var companyLink = comid
             ? `https://vk.com/club${comid}`
             : `https://vk.com/search/people?c[company]=${company}&c[name]=0`;
+		  let additionalsV = "";
+		  if(comid) {
+			 additionalsV = `mention_id="club${comid}" onmouseover="mentionOver(this)"`; 
+		  }
           companyRow = createProfileInfoRow(
             `${getLang("Work_place")}:`,
-            `<a href="${companyLink}">${company}</a>`
+            `<a href="${companyLink}" ${additionalsV}>${company}</a>`
           );
         }
         if (occupation && occupation.type === "university") {
@@ -3922,7 +4632,7 @@ if (birthdayRow) {
                   formatted_name
                 ).replace(
                   "%s",
-                  `<a href="https://vk.com/id${relationPartner.id}">${formatted_name}</a>`
+                  `<a href="https://vk.com/id${relationPartner.id}" mention_id="id${relationPartner.id}" onmouseover="mentionOver(this)">${formatted_name}</a>`
                 );
               }
               break;
@@ -3941,7 +4651,7 @@ if (birthdayRow) {
                   formatted_name
                 ).replace(
                   "%s",
-                  `<a href="https://vk.com/id${relationPartner.id}">${formatted_name}</a>`
+                  `<a href="https://vk.com/id${relationPartner.id} mention_id="id${relationPartner.id}" onmouseover="mentionOver(this)"">${formatted_name}</a>`
                 );
               }
               break;
@@ -3960,7 +4670,7 @@ if (birthdayRow) {
                   formatted_name
                 ).replace(
                   "%s",
-                  `<a href="https://vk.com/id${relationPartner.id}">${formatted_name}</a>`
+                  `<a href="https://vk.com/id${relationPartner.id}" mention_id="id${relationPartner.id}" onmouseover="mentionOver(this)">${formatted_name}</a>`
                 );
               }
               break;
@@ -3973,7 +4683,7 @@ if (birthdayRow) {
                   formatted_name
                 ).replace(
                   "%s",
-                  `<a href="https://vk.com/id${relationPartner.id}">${formatted_name}</a>`
+                  `<a href="https://vk.com/id${relationPartner.id}" mention_id="id${relationPartner.id}" onmouseover="mentionOver(this)">${formatted_name}</a>`
                 );
               }
               break;
@@ -3995,7 +4705,7 @@ if (birthdayRow) {
                   formatted_name
                 ).replace(
                   "%s",
-                  `<a href="https://vk.com/id${relationPartner.id}">${formatted_name}</a>`
+                  `<a href="https://vk.com/id${relationPartner.id}" mention_id="id${relationPartner.id}" onmouseover="mentionOver(this)">${formatted_name}</a>`
                 );
               }
               break;
@@ -4008,7 +4718,7 @@ if (birthdayRow) {
                   formatted_name
                 ).replace(
                   "%s",
-                  `<a href="https://vk.com/id${relationPartner.id}">${formatted_name}</a>`
+                  `<a href="https://vk.com/id${relationPartner.id}" mention_id="id${relationPartner.id}" onmouseover="mentionOver(this)">${formatted_name}</a>`
                 );
               }
               break;
@@ -4405,7 +5115,18 @@ async function replaceTabsWithPhotosModule() {
         </a>
         <div id="page_photos_module" class="page_photos_module"></div>
     `;
-
+	let d = document.createElement('a');
+	d.classList.add("fl_r");
+	d.setAttribute('onclick',`event.preventDefault(); event.stopPropagation(); window.showBox("al_places.php", {
+                    act: "photos_box",
+                    uid: ${ownerId}
+                }, {
+                    stat: ["maps.js", window.jsc("web/places.js"), "places.css", "ui_controls.js", "ui_controls.css"]
+                });`);
+	d.style.color = "var(--vkui--color_text_secondary)";
+	d.style.marginRight = "-12px";
+	d.textContent = getLang("photos_photo_menu_show_on_map").toLowerCase();
+	photosModule.querySelector('.header_top').appendChild(d);
     if (!photodata || !photodata.items) {
         console.error("Данные фотографий не найдены");
         return;
@@ -4458,12 +5179,16 @@ async function replaceTabsWithPhotosModule() {
       </div>
     </div>
   </a>`;
-
-    if(countAddedPhotos != 0 && ownerId != vk.id) {
+	let inserBeforeThis = document.querySelector('.WallLegacy');
+	if(ownerId == vk.id) {
+		section.parentElement.insertBefore(photosLoadModule,inserBeforeThis);
+		photosModule.querySelector('.header_label').textContent = getLang("photo_my_feed");
+	}
+    if(countAddedPhotos != 0) {
 		section.appendChild(photosModule);
 	}
-	else if(countAddedPhotos == 0 && ownerId != vk.id){section.remove();}
-	else if(ownerId == vk.id) {section.appendChild(photosLoadModule);}
+	else if(countAddedPhotos == 0){section.remove();}
+	
 }
 
 document.arrive('.ProfileGroup', { existing: true }, async function (e) {
@@ -4473,7 +5198,10 @@ document.arrive('.ProfileGroup', { existing: true }, async function (e) {
 	let profileCheckIsClosed = await getUserDataWithoutOnline(userIDHereWeGoAgain);
 	let albumsGetter;
 	if(!profileCheckIsClosed[0].is_closed || profileCheckIsClosed[0].can_access_closed) {
-		albumsGetter = await vkApi.api('photos.getAlbums',{owner_id:userIDHereWeGoAgain,need_covers:true});
+		try {
+			albumsGetter = await vkApi.api('photos.getAlbums',{owner_id:userIDHereWeGoAgain,need_covers:true});
+		}
+		catch(error) {albumsGetter = {count:0};}
 	}
 	else {
 		albumsGetter = {count:0};
@@ -4590,8 +5318,8 @@ allVideos.forEach(videoItem => {
 				<div class="ProfileVideos__items">
 					<div class="Group-module__horizontalContentExpanded--yxlH5 vkuiInternalGroupExpandedContent">
 					<div class="OwnerVideosList">
-						<div class="vkuiHorizontalScroll vkuiInternalHorizontalScroll">
-						<div class="vkuiHorizontalScroll__in">
+						<div class="vkuiHorizontalScroll vkuiInternalHorizontalScroll" style="overflow: visible;">
+						<div class="vkuiHorizontalScroll__in" style="overflow: visible;">
 							<div class="vkuiHorizontalScroll__in-wrapper">
 							<div class="OwnerAudiosList__items"></div>
 							</div>
@@ -4606,7 +5334,7 @@ allVideos.forEach(videoItem => {
 				audioResponse.items.slice(0, 6).forEach(async audioItem => {
 					let audioElement = document.createElement('div');
 					audioElement.innerHTML = `<div tabindex="0" class="audio_row audio_row_with_cover _audio_row _audio_row_${audioItem.owner_id}_${audioItem.id} audio_can_add audio_lpb audio_row2 audio_row_playable audio_new_lyrics" data-full-id="${audioItem.owner_id}_${audioItem.id}" onclick="return getAudioPlayer().toggleAudio(this, event)" data-audio="[${audioItem.id},${audioItem.owner_id},&quot;&quot;,&quot;${audioItem.title}&quot;,&quot;${audioItem.artist}&quot;,157,0,0,&quot;&quot;,0,34,&quot;module:${audioItem.owner_id}&quot;,&quot;[]&quot;,&quot;62efa83eaf32d46ab7\/\/e3727249bcd60c36ee\/\/\/bca050eaeb2ae61a22\/&quot;,&quot;&quot;,{&quot;duration&quot;:${audioItem.ads.duration},&quot;content_id&quot;:&quot;${audioItem.owner_id}_${audioItem.id}&quot;,&quot;puid22&quot;:${audioItem.ads.puid22},&quot;account_age_type&quot;:${audioItem.ads.account_age_type},&quot;_SITEID&quot;:276,&quot;vk_id&quot;:${vk.id},&quot;ver&quot;:251116},&quot;&quot;,&quot;&quot;,&quot;&quot;,false,&quot;9c91d4359kPPl-j5wiDD-N-q4xNYySV8d1i8YjJXvg6StjuAn436s3dh-U5Vim743w&quot;,0,0,true,&quot;${audioItem.access_key}&quot;,false,&quot;&quot;,false]" onmouseover="window.AudioUtils &amp;&amp; window.AudioUtils.onRowOver(this, event, false, '', '${audioItem.access_key}')" onmouseleave="window.AudioUtils &amp;&amp; window.AudioUtils.onRowLeave(this, event)">
-  <div class="audio_row_content _audio_row_content">
+  <div class="audio_row_content _audio_row_content vkEnAudioRow">
     <button class="blind_label _audio_row__play_btn" aria-label="Воспроизвести " data-testid="audio_row_play_pause_button" onclick="getAudioPlayer().toggleAudio(this, event); return cancelEvent(event)"></button>
     <div class="audio_row__cover audio_row__without_cover"><svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="song_24__Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="song_24__song_24"><path id="song_24__Bounds" d="M0 0h24v24H0z"></path><path d="M13 11.48v5.65c0 4.52-.87 5.39-4.37 5.85C6.96 23.19 5 22.44 5 19.8c0-1.28.8-2.5 2.46-2.81 1.27-.25-.09.02 2.78-.52.7-.13.77-.37.77-.9V3.97c0-1.24.67-1.69 2.66-2.09l4.68-.87c.37-.07.65.07.65.49v4.05c0 .42-.17.6-.59.68l-4.86.86c-.38.1-.55.36-.55.74v3.64Z" id="song_24__Mask" fill="currentColor"></path></g></g></svg></div>
     <div class="audio_row__cover_back _audio_row__cover_back"></div>
@@ -4709,7 +5437,10 @@ function appendActivityText(activityText) {
 			document.arrive('.ProfileBroadcast__checkbox', { existing: true }, function (e) {
 				e.addEventListener("click", ()=>{page.audioStatusUpdate(window.vk.statusExportHash)});
 			});
-			let pHeaderAva = document.querySelectorAll('.OwnerPageAvatar')[1];
+		}
+	}
+	if(vk.id == objectId){
+	let pHeaderAva = document.querySelectorAll('.OwnerPageAvatar')[1];
 			//console.log(pHeaderAva);
 			pHeaderAva.remove();
 			let pHeaderAva1 = document.querySelectorAll('.ProfileHeader__ava')[1];
@@ -4732,10 +5463,17 @@ function appendActivityText(activityText) {
 				deferredCallback(
 					() => {
 						try {
-							jopa.innerHTML = `<div class="owner_photo_top_bubble_wrap"> <div class="owner_photo_top_bubble"> <div class="ui_thumb_x_button" onclick="showFastBox(getLang('global_warning'), getLang('profile_really_delete_photo'), getLang('global_delete'),()=>{ vkApi.api('users.get',{fields:'photo_id'}).then(e=>{ vkApi.api('photos.delete',{owner_id:`+vk.id+`,photo_id:`+userDataOwner[0].photo_id.split("_")[1]+`}).then(e=>{ window.curBox().hide(true);location.reload(true); }) }) },getLang('global_cancel'))" data-title=`+getLang('profile_delete_photo')+` onmouseover="showTitle(this);" tabindex="0" role="button" aria-label=`+getLang('profile_delete_photo')+`> <div class="ui_thumb_x"></div> </div> </div> </div> <div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"><a id="profile_photo_link" href="https://vk.com/photo`+userPhotoAva+`" onclick="return showPhoto('`+userPhotoAva+`', 'album`+vk.id+`_0/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,&quot;y&quot;:&quot;`+photo200+`;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,&quot;z&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;w&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;x_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,604,499],&quot;y_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,807,667],&quot;z_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;w_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums`+vk.id+`&quot;}}, event)"><img class="page_avatar_img" src="`+photo200+`"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_update_photo')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_crop" data-task-click="Page/owner_edit_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`,&quot;hash&quot;:&quot;`+getPhotoEditHash()+`&quot;}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_edit_small_copy')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_effects" onclick="Page.ownerPhotoEffects('`+userPhotoAva+`', `+vk.id+`)" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_photo_action_effects')+`</span> </div> </div> </div>`;
+							jopa.innerHTML = `<div class="owner_photo_top_bubble_wrap"> <div class="owner_photo_top_bubble"> <div class="ui_thumb_x_button" onclick="showFastBox(getLang('global_warning'), getLang('profile_really_delete_photo'), getLang('global_delete'),()=>{ vkApi.api('users.get',{fields:'photo_id'}).then(e=>{ vkApi.api('photos.delete',{owner_id:`+vk.id+`,photo_id:`+userDataOwner[0].photo_id.split("_")[1]+`}).then(e=>{ window.curBox().hide(true);nav.reload(); }) }) },getLang('global_cancel'))" data-title=`+getLang('profile_delete_photo')+` onmouseover="showTitle(this);" tabindex="0" role="button" aria-label=`+getLang('profile_delete_photo')+`> <div class="ui_thumb_x"></div> </div> </div> </div> <div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"><a id="profile_photo_link" href="https://vk.com/photo`+userPhotoAva+`" onclick="return showPhoto('`+userPhotoAva+`', 'album`+vk.id+`_0/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,&quot;y&quot;:&quot;`+photo200+`;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,&quot;z&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;w&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;x_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,604,499],&quot;y_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,807,667],&quot;z_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;w_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums`+vk.id+`&quot;}}, event)"><img class="page_avatar_img" src="`+photo200+`"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_update_photo')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_crop" data-task-click="Page/owner_edit_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`,&quot;hash&quot;:&quot;`+getPhotoEditHash()+`&quot;}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_edit_small_copy')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_effects" onclick="Page.ownerPhotoEffects('`+userPhotoAva+`', `+vk.id+`)" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_photo_action_effects')+`</span> </div> </div> </div>`;
 						}
 						catch(error) {
-							jopa.innerHTML = `<div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"> <a id="profile_photo_link"><img class="page_avatar_img" src="` + photo200 + `"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update owner_photo_no_ava" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:` + vk.id + `}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_load_photo')+`</span> </div> </div> </div>`;
+						jopa.innerHTML = `<div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"> <a id="profile_photo_link"><img class="page_avatar_img" src="` + photo200 + `"></a> </div> </aside> </div> <a class="owner_photo_bubble_action owner_photo_bubble_action_update owner_photo_no_ava" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`}" tabindex="0" role="button" style="
+    position: absolute;
+    top: 0px;
+    padding: 0 0px;
+    width: 100%;
+    height: 206px;
+    text-align: center;
+"> <span class="loadPhoto" style="line-height: 360px;">`+getLang('profile_load_photo')+`</span> </a>`;
 							let styleElement = fromId("vkenNoAva");
 							if (!styleElement) {
 								styleElement = document.createElement("style");
@@ -4757,8 +5495,7 @@ function appendActivityText(activityText) {
 				{ variable: "MECommonContext" }
 				);
 				pHeaderIn.prepend(jopa);
-			});
-		}
+			});	
 	}
 		appearVariable();
     });
@@ -6249,10 +6986,10 @@ if (
     let newElement = document.createElement("div");
 
     if (!primary) {
-      newElement.innerHTML = `<a class="ARightRoot1 ARightRoot2 ARightRoot3 ARightRoot4 ARightRoot5 ARightRoot6" href="${href}"><span class="SpanTextRightRoot"><span class="spanPseudoText"><span class="spanPseudoText1 vkenhancerInternalCasper__text">${title}</span><div></div></span></span><i class="Y8xaRbiBmSsC_Tpc"><span class="vkuiTypography--GPQtx vkuiTypography--normalize--vH74W vkuiInternalCounter vkuiCounter--OFQXo vkuiCounter--mode-secondary--NgDxW vkuiCounter--size-s--bEhhU unreadRightCounter vkuiCaption--level-1--Wnyxa" data-muted="${muted}" data-unread="${unread ? true : false
+      newElement.innerHTML = `<a class="ARightRoot1 ARightRoot2 ARightRoot3 ARightRoot4 ARightRoot5 ARightRoot6" href="${href}"><span class="SpanTextRightRoot"><span class="spanPseudoText"><span class="spanPseudoText1 vkenhancerInternalCasper__text">${title}</span><div></div></span></span><i class="Y8xaRbiBmSsC_Tpc"><span class="vkEnhTypography vkuiTypography--normalize--vH74W vkuiInternalCounter vkuiCounter--OFQXo vkuiCounter--mode-secondary--NgDxW vkuiCounter--size-s--bEhhU unreadRightCounter vkuiCaption--level-1--Wnyxa" data-muted="${muted}" data-unread="${unread ? true : false
         }">${unread}</span><svg aria-hidden="true" display="block" color="var(--vkui--color_icon_secondary)" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20 cancelButton" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06"></path></svg></i></a>`;
     } else {
-      newElement.innerHTML = `<div data-simplebar="init" style="max-height: 749.5px;" class=""><div class="simplebar-wrapper" style="margin: 0px;"><div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask"><div class="simplebar-offset" style="right: 0px; bottom: 0px;"><div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: auto; overflow: hidden;"><div class="simplebar-content" style="padding: 0px;"><div role="separator" class="F2l1IgGrOaY823Rc"></div><a class="ARightRoot1 ARightRoot2 ARightRoot3 ARightRoot4 ARightRoot5 ARightRoot6" href="${href}"><span class="SpanTextRightRoot"><span class="spanPseudoText"><span class="spanPseudoText1 vkenhancerInternalCasper__text">${title}</span><div></div></span></span><i class="Y8xaRbiBmSsC_Tpc"><span class="vkuiTypography--GPQtx vkuiTypography--normalize--vH74W vkuiInternalCounter vkuiCounter--OFQXo vkuiCounter--mode-secondary--NgDxW vkuiCounter--size-s--bEhhU unreadRightCounter vkuiCaption--level-1--Wnyxa " data-muted="${muted}" data-unread="${unread ? true : false
+      newElement.innerHTML = `<div data-simplebar="init" style="max-height: 749.5px;" class=""><div class="simplebar-wrapper" style="margin: 0px;"><div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask"><div class="simplebar-offset" style="right: 0px; bottom: 0px;"><div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: auto; overflow: hidden;"><div class="simplebar-content" style="padding: 0px;"><div role="separator" class="F2l1IgGrOaY823Rc"></div><a class="ARightRoot1 ARightRoot2 ARightRoot3 ARightRoot4 ARightRoot5 ARightRoot6" href="${href}"><span class="SpanTextRightRoot"><span class="spanPseudoText"><span class="spanPseudoText1 vkenhancerInternalCasper__text">${title}</span><div></div></span></span><i class="Y8xaRbiBmSsC_Tpc"><span class="vkEnhTypography vkuiTypography--normalize--vH74W vkuiInternalCounter vkuiCounter--OFQXo vkuiCounter--mode-secondary--NgDxW vkuiCounter--size-s--bEhhU unreadRightCounter vkuiCaption--level-1--Wnyxa " data-muted="${muted}" data-unread="${unread ? true : false
         }">${unread}</span><svg aria-hidden="true" display="block" color="var(--vkui--color_icon_secondary)" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20 cancelButton" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06"></path></svg></i></a></div></div></div></div></div><div class="simplebar-track jDJiKDg_3kqgM68F simplebar-horizontal" style="visibility: hidden;"><div class="simplebar-scrollbar" style="width: 0px; display: none;"></div></div><div class="simplebar-track jDJiKDg_3kqgM68F simplebar-vertical" style="visibility: hidden;"><div class="simplebar-scrollbar" style="height: 0px; display: none;"></div></div></div>`;
     }
 
@@ -6464,10 +7201,10 @@ deferredCallback(
         let newElement = document.createElement("div");
 
         if (!primary) {
-          newElement.innerHTML = `<a class="ARightRoot1 ARightRoot2 ARightRoot3 ARightRoot4 ARightRoot5 ARightRoot6" href="${href}"><span class="SpanTextRightRoot"><span class="spanPseudoText"><span class="spanPseudoText1 vkenhancerInternalCasper__text">${title}</span><div></div></span></span><i class="Y8xaRbiBmSsC_Tpc"><span class="vkuiTypography--GPQtx vkuiTypography--normalize--vH74W vkuiInternalCounter vkuiCounter--OFQXo vkuiCounter--mode-secondary--NgDxW vkuiCounter--size-s--bEhhU unreadRightCounter vkuiCaption--level-1--Wnyxa" data-muted="${muted}" data-unread="${unread ? true : false
+          newElement.innerHTML = `<a class="ARightRoot1 ARightRoot2 ARightRoot3 ARightRoot4 ARightRoot5 ARightRoot6" href="${href}"><span class="SpanTextRightRoot"><span class="spanPseudoText"><span class="spanPseudoText1 vkenhancerInternalCasper__text">${title}</span><div></div></span></span><i class="Y8xaRbiBmSsC_Tpc"><span class="vkEnhTypography vkuiTypography--normalize--vH74W vkuiInternalCounter vkuiCounter--OFQXo vkuiCounter--mode-secondary--NgDxW vkuiCounter--size-s--bEhhU unreadRightCounter vkuiCaption--level-1--Wnyxa" data-muted="${muted}" data-unread="${unread ? true : false
             }">${unread}</span><svg aria-hidden="true" display="block" color="var(--vkui--color_icon_secondary)" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20 cancelButton" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06"></path></svg></i></a>`;
         } else {
-          newElement.innerHTML = `<div data-simplebar="init" style="max-height: 749.5px;" class=""><div class="simplebar-wrapper" style="margin: 0px;"><div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask"><div class="simplebar-offset" style="right: 0px; bottom: 0px;"><div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: auto; overflow: hidden;"><div class="simplebar-content" style="padding: 0px;"><div role="separator" class="F2l1IgGrOaY823Rc"></div><a class="ARightRoot1 ARightRoot2 ARightRoot3 ARightRoot4 ARightRoot5 ARightRoot6" href="${href}"><span class="SpanTextRightRoot"><span class="spanPseudoText"><span class="spanPseudoText1 vkenhancerInternalCasper__text">${title}</span><div></div></span></span><i class="Y8xaRbiBmSsC_Tpc"><span class="vkuiTypography--GPQtx vkuiTypography--normalize--vH74W vkuiInternalCounter vkuiCounter--OFQXo vkuiCounter--mode-secondary--NgDxW vkuiCounter--size-s--bEhhU unreadRightCounter vkuiCaption--level-1--Wnyxa " data-muted="${muted}" data-unread="${unread ? true : false
+          newElement.innerHTML = `<div data-simplebar="init" style="max-height: 749.5px;" class=""><div class="simplebar-wrapper" style="margin: 0px;"><div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask"><div class="simplebar-offset" style="right: 0px; bottom: 0px;"><div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: auto; overflow: hidden;"><div class="simplebar-content" style="padding: 0px;"><div role="separator" class="F2l1IgGrOaY823Rc"></div><a class="ARightRoot1 ARightRoot2 ARightRoot3 ARightRoot4 ARightRoot5 ARightRoot6" href="${href}"><span class="SpanTextRightRoot"><span class="spanPseudoText"><span class="spanPseudoText1 vkenhancerInternalCasper__text">${title}</span><div></div></span></span><i class="Y8xaRbiBmSsC_Tpc"><span class="vkEnhTypography vkuiTypography--normalize--vH74W vkuiInternalCounter vkuiCounter--OFQXo vkuiCounter--mode-secondary--NgDxW vkuiCounter--size-s--bEhhU unreadRightCounter vkuiCaption--level-1--Wnyxa " data-muted="${muted}" data-unread="${unread ? true : false
             }">${unread}</span><svg aria-hidden="true" display="block" color="var(--vkui--color_icon_secondary)" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20 cancelButton" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06"></path></svg></i></a></div></div></div></div></div><div class="simplebar-track jDJiKDg_3kqgM68F simplebar-horizontal" style="visibility: hidden;"><div class="simplebar-scrollbar" style="width: 0px; display: none;"></div></div><div class="simplebar-track jDJiKDg_3kqgM68F simplebar-vertical" style="visibility: hidden;"><div class="simplebar-scrollbar" style="height: 0px; display: none;"></div></div></div>`;
         }
 
