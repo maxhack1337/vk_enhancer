@@ -72,7 +72,7 @@ function fillStrings() {
 
     document.querySelector('#customlogo > span > span.vkenhancerButtonText__in').textContent = getLocalizedString(strings.set);
     document.querySelector('#custombg > span > span.vkenhancerButtonText__in').textContent = getLocalizedString(strings.set);
-    document.querySelector('#customfont > span > span.vkenhancerButtonText__in').textContent = getLocalizedString(strings.set);
+    document.querySelector('#customfontInput > span > span.vkenhancerButtonText__in').innerHTML = `<svg style="padding-right:4px;" aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--document_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#document_outline_20" style="fill: currentcolor;"></use></svg>`+getLocalizedString(strings.set);
 
     document.querySelector('#resetlogo > svg > title').textContent = getLocalizedString(strings.resetFast);
     document.querySelector('#resetbg > svg > title').textContent = getLocalizedString(strings.resetFast);

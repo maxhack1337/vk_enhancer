@@ -1,4 +1,4 @@
-console.log('Версия 3.9 Release');
+console.log('Версия 3.10 Release');
 var accentC = document.getElementById('oldaccent');
 var msgreact = document.getElementById('messagereactions');
 var recentgroups = document.getElementById('recentgroups');
@@ -58,14 +58,14 @@ var tab3 = document.getElementById('tab3');
 var tab4 = document.getElementById('tab4');
 var ID;
 
-openinnewtab.addEventListener('click', function() {
+openinnewtab.addEventListener('click', function () {
     chrome.tabs.create({ url: 'popup/popup.html' });
-  });
+});
 
-chrome.storage.local.get(['defaultTab'], function(result) {
+chrome.storage.local.get(['defaultTab'], function (result) {
     const storedValue = result.defaultTab;
     switch (storedValue) {
-	    case "0":
+        case "0":
             {
                 defaultTab0();
                 break;
@@ -97,7 +97,7 @@ chrome.storage.local.get(['defaultTab'], function(result) {
 });
 
 function defaultTab0() {
-	if (document.getElementById("tabs1")) {
+    if (document.getElementById("tabs1")) {
         document.getElementById("tabs1").remove();
     }
     if (document.getElementById("tabs2")) {
@@ -122,7 +122,7 @@ function defaultTab0() {
 }
 
 function defaultTab1() {
-	if (document.getElementById("tabs0")) {
+    if (document.getElementById("tabs0")) {
         document.getElementById("tabs0").remove();
     }
     if (document.getElementById("tabs2")) {
@@ -147,7 +147,7 @@ function defaultTab1() {
 }
 
 function defaultTab2() {
-	if (document.getElementById("tabs0")) {
+    if (document.getElementById("tabs0")) {
         document.getElementById("tabs0").remove();
     }
     if (document.getElementById("tabs1")) {
@@ -172,7 +172,7 @@ function defaultTab2() {
 }
 
 function defaultTab3() {
-	if (document.getElementById("tabs0")) {
+    if (document.getElementById("tabs0")) {
         document.getElementById("tabs0").remove();
     }
     if (document.getElementById("tabs1")) {
@@ -197,7 +197,7 @@ function defaultTab3() {
 }
 
 function defaultTab4() {
-	if (document.getElementById("tabs0")) {
+    if (document.getElementById("tabs0")) {
         document.getElementById("tabs0").remove();
     }
     if (document.getElementById("tabs1")) {
@@ -236,19 +236,31 @@ tab4.addEventListener('click', (event) => {
     defaultTab4();
 });
 
-document.getElementById('customlogoInput').addEventListener('click', function() {
-	let inputLogo = document.querySelector('.vkEnhancerCustomLogoInput');
+document.getElementById('customlogoInput').addEventListener('click', function () {
+    let inputLogo = document.querySelector('.vkEnhancerCustomLogoInput');
     inputLogo.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 });
 
-document.querySelector('.vkEnhancerCustomLogoInput').addEventListener('change', function() {
+document.querySelector('.vkEnhancerCustomLogoInput').addEventListener('change', function () {
     const file = this.files[0];
 
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('customlogotb').value = e.target.result;
-            document.getElementById('customlogo').click();
+        reader.onload = function (e) {
+            document.getElementById('customlogotb').value = e.target.result.substring(0, 100);
+            chrome.storage.local.set({
+                customLogo: e.target.result,
+            });
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, function (tabs) {
+                const activeTabId = tabs[0].id;
+                chrome.tabs.sendMessage(activeTabId, {
+                    type: "customLogo",
+                    cLogo: e.target.result
+                });
+            });
         };
         reader.readAsDataURL(file);
     }
@@ -257,43 +269,86 @@ document.querySelector('.vkEnhancerCustomLogoInput').addEventListener('change', 
 
 
 
-document.getElementById('custombgInput').addEventListener('click', function() {
-	let inputBG = document.querySelector('.vkEnhancerCustomBGInput');
+document.getElementById('custombgInput').addEventListener('click', function () {
+    let inputBG = document.querySelector('.vkEnhancerCustomBGInput');
     inputBG.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 });
 
-document.querySelector('.vkEnhancerCustomBGInput').addEventListener('change', function() {
+document.querySelector('.vkEnhancerCustomBGInput').addEventListener('change', function () {
     const file = this.files[0];
 
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('custombgtb').value = e.target.result;
-            document.getElementById('custombg').click();
+        reader.onload = function (e) {
+            document.getElementById('custombgtb').value = e.target.result.substring(0, 100);
+            chrome.storage.local.set({
+                customBg: e.target.result
+            });
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, function (tabs) {
+                const activeTabId = tabs[0].id;
+                chrome.tabs.sendMessage(activeTabId, {
+                    type: "customBg",
+                    cBg: e.target.result
+                });
+            });
         };
         reader.readAsDataURL(file);
     }
+});
+customLogo.addEventListener('click', (event) => {
+    event.preventDefault();
+    chrome.storage.local.set({
+        customLogo: customLogoText.value,
+    });
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function (tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, {
+            type: "customLogo",
+            cLogo: customLogoText.value
+        });
+    });
+});
+customBg.addEventListener('click', (event) => {
+    event.preventDefault();
+    chrome.storage.local.set({
+        customBg: customBgText.value,
+    });
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function (tabs) {
+        const activeTabId = tabs[0].id;
+        chrome.tabs.sendMessage(activeTabId, {
+            type: "customBg",
+            cBg: customBgText.value
+        });
+    });
 });
 
 
 
 
-
-document.getElementById('customfontInput').addEventListener('click', function() {
+document.getElementById('customfontInput').addEventListener('click', function () {
     let inputFont = document.querySelector('.vkEnhancerCustomFontInput');
     inputFont.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 });
 
-document.querySelector('.vkEnhancerCustomFontInput').addEventListener('change', function() {
+document.querySelector('.vkEnhancerCustomFontInput').addEventListener('change', function () {
     const file = this.files[0];
 
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-			const fontData = arrayBufferToBase64(e.target.result);;
+        reader.onload = function (e) {
+            const fontData = arrayBufferToBase64(e.target.result);;
             const fontUrl = 'data:application/font-woff2;base64,' + fontData;
-			document.getElementById('customfonttb').value = fontUrl;
-			document.getElementById('customfont').click();
+            document.getElementById('customfonttb').value = fontUrl;
+            document.getElementById('customfont').click();
         };
         reader.readAsArrayBuffer(file);
     }
@@ -310,52 +365,51 @@ function arrayBufferToBase64(buffer) {
 }
 
 saveSettings.addEventListener('click', (event) => {
-	var jsonData = null;
+    var jsonData = null;
     var JSONSettings = {};
-	chrome.storage.local.get(["tabletMenuState","oldHoverState","middleNameState","newProfilesState","removeAwayState","sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
-		console.log(items);
-		jsonData = JSON.stringify(items);
-		console.log(jsonData);
-		var blob = new Blob([jsonData], { type: 'text/json' });
-		var a = document.createElement('a');
+    chrome.storage.local.get(["tabletMenuState", "oldHoverState", "middleNameState", "newProfilesState", "removeAwayState", "sliderValue", "pollResultsState", "nepisalkaState", "nechitalkaState", "integrationMediaState", "newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function (items) {
+        console.log(items);
+        jsonData = JSON.stringify(items);
+        console.log(jsonData);
+        var blob = new Blob([jsonData], { type: 'text/json' });
+        var a = document.createElement('a');
 
-		a.download = 'VKEnhancerSettings.json';
-		a.href = window.URL.createObjectURL(blob);
-		a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
-		a.click();
-	});
-});
-
-clearSettings.addEventListener('click', async function() {
-        var result = {"addstickerState":false,"altSBState":false,"cameraPhotoState":false,"checkboxState":false,"checkboxState1":false,"checkboxStateAva":false,"colorPicker":"#3291ff","colorPickerText":"#ffffff","customAccent":"#ffffff","customBg":"undefined","customFont":"undefined","customHotbar":[],"customLogo":"undefined","emojiStatusState":false,"hideButtonState":false,"hiderState":false,"integrationMediaState":false,"issThemeChanged":false,"muteCallsState":false,"nechitalkaState":false,"nepisalkaState":false,"newDesignState":false,"pollResultsState":false,"postReactionsState":false,"recentGroupsState":false,"removeAwayState":false,"newProfilesState":false,"middleNameState":false,"oldHoverState":false,"tabletMenuState":false,"secretFuncState":false,"sliderValue":"100"}; 
-		for (item of Object.keys(result)) {
-			let item123 = {};
-			item123[item] = result[item];
-			await chrome.storage.local.set(item123);
-		}
-		loadSavedCheckBoxes();
-});
-
-loadSettingsInput.addEventListener('change', function() {
-      if (loadSettingsInput.files.length > 0) 
-      {
-        var reader = new FileReader();
-        reader.addEventListener('load', async function() {
-          var result = JSON.parse(reader.result); 
-		for (item of Object.keys(result)) {
-			let item123 = {};
-			item123[item] = result[item];
-			await chrome.storage.local.set(item123);
-		}
-		loadSavedCheckBoxes();
-		loadSettingsInput.value = null;
-        });
-        
-        reader.readAsText(loadSettingsInput.files[0]);
-      }
+        a.download = 'VKEnhancerSettings.json';
+        a.href = window.URL.createObjectURL(blob);
+        a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+        a.click();
     });
-	
-	
+});
+
+clearSettings.addEventListener('click', async function () {
+    var result = { "addstickerState": false, "altSBState": false, "cameraPhotoState": false, "checkboxState": false, "checkboxState1": false, "checkboxStateAva": false, "colorPicker": "#3291ff", "colorPickerText": "#ffffff", "customAccent": "#ffffff", "customBg": "undefined", "customFont": "undefined", "customHotbar": [], "customLogo": "undefined", "emojiStatusState": false, "hideButtonState": false, "hiderState": false, "integrationMediaState": false, "issThemeChanged": false, "muteCallsState": false, "nechitalkaState": false, "nepisalkaState": false, "newDesignState": false, "pollResultsState": false, "postReactionsState": false, "recentGroupsState": false, "removeAwayState": false, "newProfilesState": false, "middleNameState": false, "oldHoverState": false, "tabletMenuState": false, "secretFuncState": false, "sliderValue": "100" };
+    for (item of Object.keys(result)) {
+        let item123 = {};
+        item123[item] = result[item];
+        await chrome.storage.local.set(item123);
+    }
+    loadSavedCheckBoxes();
+});
+
+loadSettingsInput.addEventListener('change', function () {
+    if (loadSettingsInput.files.length > 0) {
+        var reader = new FileReader();
+        reader.addEventListener('load', async function () {
+            var result = JSON.parse(reader.result);
+            for (item of Object.keys(result)) {
+                let item123 = {};
+                item123[item] = result[item];
+                await chrome.storage.local.set(item123);
+            }
+            loadSavedCheckBoxes();
+            loadSettingsInput.value = null;
+        });
+
+        reader.readAsText(loadSettingsInput.files[0]);
+    }
+});
+
+
 tabletmenu.addEventListener('change', (event) => {
     const checked = event.target.checked;
     chrome.storage.local.set({
@@ -364,7 +418,7 @@ tabletmenu.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleTabletMenu",
@@ -381,7 +435,7 @@ oldhover.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleOldHover",
@@ -398,7 +452,7 @@ middlename.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleMiddleName",
@@ -415,7 +469,7 @@ newprofiles.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleNewProfiles",
@@ -432,7 +486,7 @@ removeaway.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleRemoveAway",
@@ -449,7 +503,7 @@ pollresults.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "togglePollResults",
@@ -466,7 +520,7 @@ nepisalka.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleNepisalka",
@@ -483,7 +537,7 @@ nechitalka.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleNechitalka",
@@ -500,7 +554,7 @@ integrationmedia.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleIntegrationMedia",
@@ -518,7 +572,7 @@ addhotbar.addEventListener('click', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "customHotbar",
@@ -526,8 +580,8 @@ addhotbar.addEventListener('click', (event) => {
         });
     });
 });
-document.addEventListener('DOMContentLoaded', function() {
-    chrome.storage.local.get(['stylusInstalled'], function(result) {
+document.addEventListener('DOMContentLoaded', function () {
+    chrome.storage.local.get(['stylusInstalled'], function (result) {
         const stylusInstalled = result.stylusInstalled;
         const labelElement = document.querySelector('.vkenhancerOldLabel');
         const warningElement = document.querySelector('.vkenhancerOldWarning');
@@ -544,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function() {
         labelElement.style.opacity = '0.5';
     });
 });
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const slider = document.getElementById('slider');
     const sliderValue = document.getElementById('slider-value');
 
@@ -560,14 +614,14 @@ document.addEventListener('DOMContentLoaded', function() {
             sliderValue: value
         });
     }
-    slider.addEventListener('input', function() {
+    slider.addEventListener('input', function () {
         const value = slider.value;
         updateSliderColor(value);
         saveSliderValue(value);
         chrome.tabs.query({
             active: true,
             currentWindow: true
-        }, function(tabs) {
+        }, function (tabs) {
             const activeTab = tabs[0];
             chrome.tabs.sendMessage(activeTab.id, {
                 type: 'sliderValue',
@@ -575,14 +629,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-    slider.addEventListener('change', function() {
+    slider.addEventListener('change', function () {
         const value = slider.value;
         updateSliderColor(value);
         saveSliderValue(value);
         chrome.tabs.query({
             active: true,
             currentWindow: true
-        }, function(tabs) {
+        }, function (tabs) {
             const activeTab = tabs[0];
             chrome.tabs.sendMessage(activeTab.id, {
                 type: 'sliderValue',
@@ -590,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-    chrome.storage.local.get(['sliderValue'], function(result) {
+    chrome.storage.local.get(['sliderValue'], function (result) {
         const storedValue = result.sliderValue;
         if (storedValue === undefined) {
             const defaultValue = 100;
@@ -604,19 +658,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-    /*const styleElementVersion = document.createElement("style");
-    styleElementVersion.id = "version";
-    styleElementVersion.innerHTML = "#version::after{content:'Версия 3.3 Release'} #version1::after{content:'Не обновляется расширение? Нажмите CTRL+M в любом месте браузера и расширение перезагрузится, при этом, обновившись до новейшей версии'}";
-    document.head.appendChild(styleElementVersion);*/
-    
+/*const styleElementVersion = document.createElement("style");
+styleElementVersion.id = "version";
+styleElementVersion.innerHTML = "#version::after{content:'Версия 3.3 Release'} #version1::after{content:'Не обновляется расширение? Нажмите CTRL+M в любом месте браузера и расширение перезагрузится, при этом, обновившись до новейшей версии'}";
+document.head.appendChild(styleElementVersion);*/
 
-document.addEventListener('DOMContentLoaded', function() {
+
+document.addEventListener('DOMContentLoaded', function () {
     var dialog = document.getElementById('dialog');
     var openDialogButton = document.getElementById('openDialog');
     var vkebhancerInternalPanel = document.querySelector('.vkebhancerInternalPanel_in');
     var yesButton = document.getElementById('yes');
     var noButton = document.getElementById('no');
-    openDialogButton.addEventListener('click', function() {
+    openDialogButton.addEventListener('click', function () {
         const styleElement = document.createElement("style");
         styleElement.id = "dialogOpen";
         styleElement.innerHTML = ".vkebhancerHome .vkebhancerInternalPanel_in{    pointer-events:none; filter: blur(10px); transition: filter 0.5s ease-in-out;}";
@@ -624,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
         dialog.style.opacity = '1';
         dialog.style.visibility = 'visible';
     });
-    yesButton.addEventListener('click', function() {
+    yesButton.addEventListener('click', function () {
         const customStyle = document.getElementById("dialogOpen");
         dialog.style.opacity = '0';
         const animationPromise = new Promise(resolve => {
@@ -647,11 +701,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }, {
             "cache": true,
             "appcache": true
-        }, function() {
+        }, function () {
             chrome.tabs.query({
                 url: "https://vk.com/*"
-            }, function(tabs) {
-                tabs.forEach(function(tab) {
+            }, function (tabs) {
+                tabs.forEach(function (tab) {
                     chrome.tabs.reload(tab.id, {
                         bypassCache: true
                     });
@@ -659,7 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-    noButton.addEventListener('click', function() {
+    noButton.addEventListener('click', function () {
         const customStyle = document.getElementById("dialogOpen");
         dialog.style.opacity = '0';
         const animationPromise = new Promise(resolve => {
@@ -679,7 +733,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-document.querySelector('.vkenhancerLogo').addEventListener('click', function() {
+document.querySelector('.vkenhancerLogo').addEventListener('click', function () {
     chrome.tabs.create({
         url: 'https://vk.com/vkenhancer'
     });
@@ -714,7 +768,7 @@ nameAva.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "nameAva",
@@ -730,7 +784,7 @@ cameraphoto.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleCameraPhoto",
@@ -746,7 +800,7 @@ hidebutton.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleHideButton",
@@ -762,7 +816,7 @@ newdesign.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleNewDesign",
@@ -774,7 +828,7 @@ checkId.addEventListener('click', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "checkId"
@@ -789,7 +843,7 @@ resetLogo.addEventListener('click', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "customLogo",
@@ -805,7 +859,7 @@ resetFont.addEventListener('click', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "customFont",
@@ -821,43 +875,11 @@ resetBg.addEventListener('click', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "customBg",
             cLogo: customBgText.value
-        });
-    });
-});
-customLogo.addEventListener('click', (event) => {
-    event.preventDefault();
-    chrome.storage.local.set({
-        customLogo: customLogoText.value,
-    });
-    chrome.tabs.query({
-        active: true,
-        currentWindow: true
-    }, function(tabs) {
-        const activeTabId = tabs[0].id;
-        chrome.tabs.sendMessage(activeTabId, {
-            type: "customLogo",
-            cLogo: customLogoText.value
-        });
-    });
-});
-customBg.addEventListener('click', (event) => {
-    event.preventDefault();
-    chrome.storage.local.set({
-        customBg: customBgText.value,
-    });
-    chrome.tabs.query({
-        active: true,
-        currentWindow: true
-    }, function(tabs) {
-        const activeTabId = tabs[0].id;
-        chrome.tabs.sendMessage(activeTabId, {
-            type: "customBg",
-            cBg: customBgText.value
         });
     });
 });
@@ -869,7 +891,7 @@ customFont.addEventListener('click', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "customFont",
@@ -885,7 +907,7 @@ resetCaccent.addEventListener('click', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "customAccent",
@@ -901,7 +923,7 @@ resetCsel.addEventListener('click', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "colorPicker",
@@ -917,7 +939,7 @@ resetCtext.addEventListener('click', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "colorPickerText",
@@ -951,7 +973,7 @@ function saveToCache() {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "customAccent",
@@ -970,7 +992,7 @@ function saveToCache() {
 customAccent.addEventListener('change', saveToCache);
 colorPicker.addEventListener('change', saveToCache);
 colorPickerText.addEventListener('change', saveToCache);
-document.querySelector('#emojigo').addEventListener('click', function() {
+document.querySelector('#emojigo').addEventListener('click', function () {
     chrome.tabs.create({
         url: 'https://nimble-wisp-54a226.netlify.app/emoji.html'
     });
@@ -997,14 +1019,14 @@ function getCurrentLanguage() {
 }
 const strings = {
     notGroupOrUserId: ['Данный элемент не является пользователем или группой', 'This element is not a user profile or group', 'Цей елемент не є користувачем або групою'],
-    copiedToCB: ['Скопировано в буфер!', 'Successfully copied to clipboard!', 'Скопійовано у буфер!'],	
-	}
+    copiedToCB: ['Скопировано в буфер!', 'Successfully copied to clipboard!', 'Скопійовано у буфер!'],
+}
 function getLocalizedString(obj) {
     const currentLanguage = getCurrentLanguage();
     return obj[currentLanguage];
 }
 
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.greeting) {
         console.log("Greetings " + message.greeting);
         if (message.greeting == "undefined") {
@@ -1021,7 +1043,7 @@ accentC.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleOldAccent",
@@ -1037,7 +1059,7 @@ msgreact.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleMsgReactions",
@@ -1053,7 +1075,7 @@ recentgroups.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleRecentGroups",
@@ -1069,7 +1091,7 @@ altscrollbar.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleAltSB",
@@ -1085,7 +1107,7 @@ emojistatus.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleEmojiStatus",
@@ -1101,7 +1123,7 @@ muteCalls.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleMuteStatus",
@@ -1117,7 +1139,7 @@ secretFuncC.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleSecretFunctions",
@@ -1133,7 +1155,7 @@ postReactionsC.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "togglePostReactions",
@@ -1149,7 +1171,7 @@ hiderC.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "toggleHider",
@@ -1165,7 +1187,7 @@ addSticker.addEventListener('change', (event) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(tabs) {
+    }, function (tabs) {
         const activeTabId = tabs[0].id;
         chrome.tabs.sendMessage(activeTabId, {
             type: "addSticker",
@@ -1174,12 +1196,12 @@ addSticker.addEventListener('change', (event) => {
     });
 });
 document.addEventListener('DOMContentLoaded', () => {
-loadSavedCheckBoxes();
+    loadSavedCheckBoxes();
 });
 
 function loadSavedCheckBoxes() {
     // Получение состояния из Local Storage
-    chrome.storage.local.get(["tabletMenuState","oldHoverState","middleNameState","newProfilesState","removeAwayState","sliderValue","pollResultsState","nepisalkaState","nechitalkaState","integrationMediaState","newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function(items) {
+    chrome.storage.local.get(["tabletMenuState", "oldHoverState", "middleNameState", "newProfilesState", "removeAwayState", "sliderValue", "pollResultsState", "nepisalkaState", "nechitalkaState", "integrationMediaState", "newDesignState", "hideButtonState", "cameraPhotoState", "addstickerState", "issThemeChanged", "checkboxStateAva", "checkboxState", "checkboxState1", "secretFuncState", "postReactionsState", "hiderState", "customAccent", "colorPicker", "colorPickerText", "customLogo", "customBg", "customFont", "emojiStatusState", "recentGroupsState", "altSBState", "muteCallsState", "customHotbar"], function (items) {
         accentC.checked = items.checkboxState;
         msgreact.checked = items.checkboxState1;
         recentgroups.checked = items.recentGroupsState;
@@ -1189,17 +1211,17 @@ function loadSavedCheckBoxes() {
         secretFuncC.checked = items.secretFuncState;
         postReactionsC.checked = items.postReactionsState;
         hiderC.checked = items.hiderState;
-		integrationmedia.checked = items.integrationMediaState;
-		nechitalka.checked = items.nechitalkaState;
-		nepisalka.checked = items.nepisalkaState;
-		pollresults.checked = items.pollResultsState;
-		removeaway.checked = items.removeAwayState;
-		newprofiles.checked = items.newProfilesState;
-		middlename.checked = items.middleNameState;
-		oldhover.checked = items.oldHoverState;
-		tabletmenu.checked = items.tabletMenuState;
+        integrationmedia.checked = items.integrationMediaState;
+        nechitalka.checked = items.nechitalkaState;
+        nepisalka.checked = items.nepisalkaState;
+        pollresults.checked = items.pollResultsState;
+        removeaway.checked = items.removeAwayState;
+        newprofiles.checked = items.newProfilesState;
+        middlename.checked = items.middleNameState;
+        oldhover.checked = items.oldHoverState;
+        tabletmenu.checked = items.tabletMenuState;
         slider.value = items.sliderValue;
-		const sliderValue = document.getElementById('slider-value');
+        const sliderValue = document.getElementById('slider-value');
         sliderValue.textContent = slider.value + "%";
         const percentage = slider.value;
         const colorBefore = `linear-gradient(to right, #397dcc ${percentage}%, #ffffff ${percentage}%)`;
@@ -1228,15 +1250,16 @@ function loadSavedCheckBoxes() {
         } else {
             colorPickerText.value = items.colorPickerText;
         }
-		if(items.customLogo && items.customLogo != "undefined") {
-			customLogoText.value = items.customLogo;
-		}
-		if(items.customBgText && items.customBgText != "undefined") {
-			customBgText.value = items.customBg;
-		}
-		if(items.customFont && items.customFont != "undefined") {
-			customFontText.value = items.customFont;
-		}
+        console.log(items)
+        if (items.customLogo && items.customLogo != "undefined") {
+            customLogoText.value = items.customLogo.substring(0, 100);
+        }
+        if (items.customBg && items.customBg != "undefined") {
+            customBgText.value = items.customBg.substring(0, 100);
+        }
+        if (items.customFont && items.customFont != "undefined") {
+            customFontText.value = items.customFont.substring(0, 100);
+        }
         addSticker.checked = items.addstickerState;
         cameraphoto.checked = items.cameraPhotoState;
         hidebutton.checked = items.hideButtonState;
@@ -1262,45 +1285,45 @@ function loadSavedCheckBoxes() {
         chrome.tabs.query({
             active: true,
             currentWindow: true
-        }, function(tabs) {
+        }, function (tabs) {
             const activeTabId = tabs[0].id;
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleNewDesign",
                 isChecked: items.newDesignState
             });
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleTabletMenu",
                 isChecked: items.tabletMenuState
             });
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleOldHover",
                 isChecked: items.oldHoverState
             });
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleMiddleName",
                 isChecked: items.middleNameState
             });
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleNewProfiles",
                 isChecked: items.newProfilesState
             });
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleRemoveAway",
                 isChecked: items.removeAwayState
             });
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "togglePollResults",
                 isChecked: items.pollResultsState
             });
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleIntegrationMedia",
                 isChecked: items.integrationMediaState
             });
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleNepisalka",
                 isChecked: items.nepisalkaState
             });
-			chrome.tabs.sendMessage(activeTabId, {
+            chrome.tabs.sendMessage(activeTabId, {
                 type: "toggleNechitalka",
                 isChecked: items.nechitalkaState
             });
@@ -1384,5 +1407,5 @@ function loadSavedCheckBoxes() {
                 type: "nameAva"
             });
         });
-    });	
+    });
 }
