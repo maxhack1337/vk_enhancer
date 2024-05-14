@@ -47,7 +47,7 @@ const newDesignFunctions = [
   "vkm_theme_styles_settings",
   "vkm_delete_chat",
   "vkm_admin_can_delete_message",
-  "vkm_photo_save_to_album", 
+  "vkm_photo_save_to_album",
   "vkm_media_viewer_report",
 ];
 const adsSelector = [
@@ -84,24 +84,24 @@ let ajax_replaced = null;
 window.urls = null;
 
 deferredCallback(
-    async (_vk) => {
-		await getUserDataLocalStoragePhoto(vk.id);
-    },
-    { variable: "vkApi" }
-  );
+  async (_vk) => {
+    await getUserDataLocalStoragePhoto(vk.id);
+  },
+  { variable: "vkApi" }
+);
 
 async function getUserDataLocalStoragePhoto(objectId) {
-        try {
-          var response = await vkApi.api("users.get", {
-            user_ids: objectId,
-            fields:
-              "photo_id,photo_200",
-          });
-          localStorage.setItem("ownerPhoto200",response[0].photo_200);
-        } catch (error) {
-          console.error(error);
-          return [];
-        }
+  try {
+    var response = await vkApi.api("users.get", {
+      user_ids: objectId,
+      fields:
+        "photo_id,photo_200",
+    });
+    localStorage.setItem("ownerPhoto200", response[0].photo_200);
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 function getLocalValue(item) {
@@ -138,16 +138,16 @@ let xuy = ["get_unread_notifications", "get_accounts"];
 
 deferredCallback(
   () => {
-	let currentVKID = localStorage.getItem("currentVKID");
-	let currID = currentVKID ? parseInt(currentVKID) : 0;
-      if (vk.id != currID) { 
-		  localStorage.setItem("convo_history", "[]");
-		  	window.postMessage(
-				{ action: "tokenRemove"},
-				"*"
-			); 
-		  localStorage.setItem("currentVKID", vk.id);
-	  }
+    let currentVKID = localStorage.getItem("currentVKID");
+    let currID = currentVKID ? parseInt(currentVKID) : 0;
+    if (vk.id != currID) {
+      localStorage.setItem("convo_history", "[]");
+      window.postMessage(
+        { action: "tokenRemove" },
+        "*"
+      );
+      localStorage.setItem("currentVKID", vk.id);
+    }
   },
   { variable: "vkApi" }
 );
@@ -171,6 +171,29 @@ deferredCallback(
         variable: "MECommonContext"
 });*/
 
+deferredCallback(
+  () => {
+    MECommonContext.then((e) => {
+      let j = e.browserEnv.api.fetch;
+      e.browserEnv.api.fetch = function (e, n, ...o) {
+        if (
+          e === "execute" &&
+          n.code &&
+          n.code.includes("messages.markAsRead") &&
+          JSON.parse(localStorage.getItem("nechitalkaValue"))
+        ) {
+          return new Promise(() => { });
+        }
+        if (e === "messages.setActivity" && JSON.parse(localStorage.getItem("nepisalkaValue"))) {
+          return new Promise(() => { });
+        }
+        return j.apply(this, Array.prototype.slice.call(arguments));
+      };
+    });
+  },
+  { variable: "MECommonContext" }
+);
+
 window.addEventListener("message", async (event) => {
   switch (event.data.action) {
     case "integrationMedia": {
@@ -178,34 +201,12 @@ window.addEventListener("message", async (event) => {
       break;
     }
     case "nechitalka": {
-      nechitalkaValue = event.data.value;
+      localStorage.setItem("nechitalkaValue", event.data.value);
       //console.log("Нечиталка " + nechitalkaValue);
-      deferredCallback(
-        () => {
-          MECommonContext.then((e) => {
-            let j = e.browserEnv.api.fetch;
-            e.browserEnv.api.fetch = function (e, n, ...o) {
-              if (
-                e === "execute" &&
-                n.code &&
-                n.code.includes("messages.markAsRead") &&
-                nechitalkaValue
-              ) {
-                return new Promise(() => { });
-              }
-              if (e === "messages.setActivity" && nepisalkaValue) {
-                return new Promise(() => { });
-              }
-              return j.apply(this, Array.prototype.slice.call(arguments));
-            };
-          });
-        },
-        { variable: "MECommonContext" }
-      );
       break;
     }
     case "nepisalka": {
-      nepisalkaValue = event.data.value;
+      localStorage.setItem("nepisalkaValue", event.data.value);
       //console.log("Неписалка " + nepisalkaValue);
       break;
     }
@@ -242,7 +243,7 @@ window.addEventListener("message", async (event) => {
       break;
     }
     case "vkNewDesignOff": {
-	  localStorage.setItem("isNewDesign", false);
+      localStorage.setItem("isNewDesign", false);
       //console.info("[VK ENH] Messenger injection disabled.");
       break;
     }
@@ -315,7 +316,7 @@ window.addEventListener("message", async (event) => {
       localStorage.setItem("isOldHover", event.data.value);
       break;
     }
-	case "vkEnhancerAccessToken": {
+    case "vkEnhancerAccessToken": {
       localStorage.setItem("vk_enhancer_access_token", event.data.value);
       break;
     }
@@ -333,26 +334,234 @@ window.addEventListener("message", async (event) => {
 document.arrive(".OwnerPageName__icons", { existing: true }, function (e) {
   updateUsers();
 });
+///УДАЛЕННОЕ СООБЩЕНИЕ///
+document.arrive(".ConvoHistory__messageBlock", { existing: true }, async function (e) {
+  try {
+    let currentProps = getMessageProps(e);
+    let ph = await vkApi.api('messages.getByConversationMessageId', { peer_id: currentProps[1], conversation_message_ids: currentProps[0] });
+    if (ph.count == 0) {
+      e.classList.add("vkEnhancerDeletedMessageMain");
+      const appendHere = e.querySelector(".ConvoMessageBottomInfo,.ConvoMessage__info");
+      if (appendHere) {
+        const spanDeleted = document.createElement("span");
+        spanDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [12, 5] });`)
+        spanDeleted.classList.add("vkEnhancerDeletedMessage");
+        spanDeleted.style.width = "16px";
+        spanDeleted.style.height = "16px";
+        spanDeleted.style.margin = "4px";
+        spanDeleted.innerHTML = `<svg width="16" height="16" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M18.7782 18.7782C23.0739 14.4824 23.0739 7.51761 18.7782 3.22184C14.4824 -1.07393 7.51759 -1.07393 3.22183 3.22184C-1.07394 7.51761 -1.07394 14.4824 3.22183 18.7782C7.51759 23.074 14.4824 23.074 18.7782 18.7782ZM12.4142 11L15.2426 13.8284C15.6332 14.219 15.6332 14.8521 15.2426 15.2427C14.8521 15.6332 14.219 15.6332 13.8284 15.2427L11 12.4142L8.17157 15.2427C7.78105 15.6332 7.14788 15.6332 6.75736 15.2427C6.36683 14.8521 6.36684 14.219 6.75736 13.8284L9.58579 11L6.75736 8.17159C6.36684 7.78106 6.36684 7.1479 6.75736 6.75737C7.14788 6.36685 7.78105 6.36685 8.17157 6.75737L11 9.5858L13.8284 6.75737C14.219 6.36685 14.8521 6.36685 15.2426 6.75737C15.6332 7.1479 15.6332 7.78106 15.2426 8.17159L12.4142 11Z" fill="#E64646"/>
+</svg>`;
+        appendHere.append(spanDeleted)
+      }
+      const appendHere1 = e.querySelector(".ConvoMessageInfoWithoutBubbles");
+      if (appendHere1) {
+        const divDeleted = document.createElement("div");
+        divDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [12, 5] });`)
+        divDeleted.classList.add("vkEnhancerDeletedMessageWithoutBubbles");
+        divDeleted.style.width = "16px";
+        divDeleted.style.height = "16px";
+        divDeleted.style.margin = "4px";
+        divDeleted.innerHTML = `<svg width="16" height="16" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M18.7782 18.7782C23.0739 14.4824 23.0739 7.51761 18.7782 3.22184C14.4824 -1.07393 7.51759 -1.07393 3.22183 3.22184C-1.07394 7.51761 -1.07394 14.4824 3.22183 18.7782C7.51759 23.074 14.4824 23.074 18.7782 18.7782ZM12.4142 11L15.2426 13.8284C15.6332 14.219 15.6332 14.8521 15.2426 15.2427C14.8521 15.6332 14.219 15.6332 13.8284 15.2427L11 12.4142L8.17157 15.2427C7.78105 15.6332 7.14788 15.6332 6.75736 15.2427C6.36683 14.8521 6.36684 14.219 6.75736 13.8284L9.58579 11L6.75736 8.17159C6.36684 7.78106 6.36684 7.1479 6.75736 6.75737C7.14788 6.36685 7.78105 6.36685 8.17157 6.75737L11 9.5858L13.8284 6.75737C14.219 6.36685 14.8521 6.36685 15.2426 6.75737C15.6332 7.1479 15.6332 7.78106 15.2426 8.17159L12.4142 11Z" fill="#E64646"/>
+</svg>`;
+        appendHere1.prepend(divDeleted)
+      }
+    }
+  } catch (error) { }
+});
+deferredCallback(
+  () => {
+    MECommonContext.then(e => {
+      const n = e.engine.fetchMaster;
+      const store = e.store;
+      e.engine.fetchMaster = async function (...e) {
+        const l = await n.apply(this, e)
+        let mess = [];
+        for (const e of l.updates) {
+          const [n] = e;
+          switch (n) {
+            case 10002: {
+              const [, t, n, o] = e;
+              if (n) {
+                document.querySelectorAll(".ConvoHistory__messageBlock").forEach(se => {
+                  if (getMessagePropsMin(se) == e[1]) {
+                    se.classList.add("vkEnhancerDeletedMessageMain");
+                    const appendHere = se.querySelector(".ConvoMessageBottomInfo,.ConvoMessage__info");
+                    if (appendHere) {
+                      const spanDeleted = document.createElement("span");
+                      spanDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [12, 5] });`)
+                      spanDeleted.classList.add("vkEnhancerDeletedMessage");
+                      spanDeleted.style.width = "16px";
+                      spanDeleted.style.height = "16px";
+                      spanDeleted.style.margin = "4px";
+                      spanDeleted.innerHTML = `<svg width="16" height="16" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M18.7782 18.7782C23.0739 14.4824 23.0739 7.51761 18.7782 3.22184C14.4824 -1.07393 7.51759 -1.07393 3.22183 3.22184C-1.07394 7.51761 -1.07394 14.4824 3.22183 18.7782C7.51759 23.074 14.4824 23.074 18.7782 18.7782ZM12.4142 11L15.2426 13.8284C15.6332 14.219 15.6332 14.8521 15.2426 15.2427C14.8521 15.6332 14.219 15.6332 13.8284 15.2427L11 12.4142L8.17157 15.2427C7.78105 15.6332 7.14788 15.6332 6.75736 15.2427C6.36683 14.8521 6.36684 14.219 6.75736 13.8284L9.58579 11L6.75736 8.17159C6.36684 7.78106 6.36684 7.1479 6.75736 6.75737C7.14788 6.36685 7.78105 6.36685 8.17157 6.75737L11 9.5858L13.8284 6.75737C14.219 6.36685 14.8521 6.36685 15.2426 6.75737C15.6332 7.1479 15.6332 7.78106 15.2426 8.17159L12.4142 11Z" fill="#E64646"/>
+</svg>`;
+                      appendHere.append(spanDeleted)
+                    }
+                    const appendHere1 = se.querySelector(".ConvoMessageInfoWithoutBubbles");
+                    if (appendHere1) {
+                      const divDeleted = document.createElement("div");
+                      divDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [12, 5] });`)
+                      divDeleted.classList.add("vkEnhancerDeletedMessageWithoutBubbles");
+                      divDeleted.style.width = "16px";
+                      divDeleted.style.height = "16px";
+                      divDeleted.style.margin = "4px";
+                      divDeleted.innerHTML = `<svg width="16" height="16" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M18.7782 18.7782C23.0739 14.4824 23.0739 7.51761 18.7782 3.22184C14.4824 -1.07393 7.51759 -1.07393 3.22183 3.22184C-1.07394 7.51761 -1.07394 14.4824 3.22183 18.7782C7.51759 23.074 14.4824 23.074 18.7782 18.7782ZM12.4142 11L15.2426 13.8284C15.6332 14.219 15.6332 14.8521 15.2426 15.2427C14.8521 15.6332 14.219 15.6332 13.8284 15.2427L11 12.4142L8.17157 15.2427C7.78105 15.6332 7.14788 15.6332 6.75736 15.2427C6.36683 14.8521 6.36684 14.219 6.75736 13.8284L9.58579 11L6.75736 8.17159C6.36684 7.78106 6.36684 7.1479 6.75736 6.75737C7.14788 6.36685 7.78105 6.36685 8.17157 6.75737L11 9.5858L13.8284 6.75737C14.219 6.36685 14.8521 6.36685 15.2426 6.75737C15.6332 7.1479 15.6332 7.78106 15.2426 8.17159L12.4142 11Z" fill="#E64646"/>
+</svg>`;
+                      appendHere1.prepend(divDeleted)
+                    }
+                  }
+                });
+              } else {
+                mess.push(e);
+              }
+              break
+            }
+            case 10019: {
+              console.log(e);
+              mess.push(e);
+              break
+            }
+            case 10005: {
+              mess.push(e);
+              console.log(e)
+              break
+            }
+            default: {
+              mess.push(e)
+              break;
+            }
+          }
+          //console.log(store.getState(),e)
+        }
+        return l.updates = mess, l
+      }
+    })
+  },
+  { variable: "MECommonContext" });
+
+function getMessagePropsMin(elem) {
+  try {
+    const t = {};
+    let n = 0;
+    for (const o of Object.keys(elem)) {
+      if (o.startsWith("__reactFiber")) {
+        t.fiber = elem[o];
+        ++n;
+      } else if (o.startsWith("__reactProps")) {
+        t.props = elem[o];
+        ++n;
+      }
+      if (n === 2) break;
+    }
+
+    return t.fiber.return.memoizedProps.message.cmid;
+  } catch (error) {
+    return [0, 0];
+  }
+}
+///КОНЕЦ УДАЛЕННОГО СООБШЕНИЯ///
+///РЕДАКТИРОВАНИЕ СООБЩЕНИЯ///
+document.arrive(".ConvoHistory__messageBlock", { existing: true }, function (e) {
+  const key = 'convoMessage' + getMessageProps(e)[1] + "_" + getMessageProps(e)[0];
+  if (!localStorage.getItem(key)) {
+    localStorage.setItem(key, e.innerHTML);
+  }
+  e.addEventListener('mouseover',function() {
+		let buttonShowOrig = document.createElement('a');
+		buttonShowOrig.style.color = "var(--vkui--color_icon_secondary)";
+		buttonShowOrig.style.padding = "4px";
+		buttonShowOrig.style.width = "28px";
+		buttonShowOrig.style.height = "28px";
+		buttonShowOrig.style.position = "relative";
+		buttonShowOrig.classList.add('vkEnButtonShowOrig');
+		buttonShowOrig.innerHTML = `<svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--stars_20" viewBox="0 0 20 20" width="14" height="14" style="width: 20px; height: 20px;"><path fill="currentColor" fill-rule="evenodd" d="M12.004 8.13c-.368.835-.857 1.717-1.507 2.367s-1.532 1.14-2.367 1.507c.835.367 1.717.857 2.367 1.507s1.14 1.532 1.507 2.367c.367-.835.857-1.717 1.507-2.367s1.532-1.14 2.367-1.507c-.835-.368-1.717-.857-2.367-1.507s-1.14-1.532-1.507-2.367m-.785-2.178c-.421 1.317-1.014 2.716-1.782 3.485-.769.768-2.168 1.36-3.485 1.782a21 21 0 0 1-1.162.338c-.38.1-.38.793 0 .894a27 27 0 0 1 .912.26q.124.037.25.078c1.317.421 2.716 1.014 3.485 1.782s1.36 2.168 1.782 3.485a21 21 0 0 1 .27.907l.068.255c.1.38.793.38.894 0a28 28 0 0 1 .26-.912q.037-.124.078-.25c.421-1.317 1.014-2.717 1.782-3.485s2.168-1.36 3.485-1.782a21 21 0 0 1 .907-.27l.255-.068c.38-.1.38-.793 0-.894a28 28 0 0 1-.912-.26l-.25-.078c-1.317-.421-2.717-1.014-3.485-1.782-.768-.769-1.36-2.168-1.782-3.485a21 21 0 0 1-.338-1.162c-.1-.38-.793-.38-.894 0a27 27 0 0 1-.26.912zM4.365.763a.385.385 0 0 0-.73 0l-.414 1.24a1.93 1.93 0 0 1-1.218 1.218l-1.24.414a.385.385 0 0 0 0 .73l1.24.414a1.93 1.93 0 0 1 1.218 1.218l.414 1.24a.385.385 0 0 0 .73 0l.414-1.24a1.93 1.93 0 0 1 1.218-1.218l1.24-.414a.385.385 0 0 0 0-.73l-1.24-.414a1.93 1.93 0 0 1-1.218-1.218z"></path></svg>`;
+		buttonShowOrig.setAttribute('onmouseover', 'this.style.backgroundColor = `var(--vkui--color_background_secondary)`');
+		buttonShowOrig.setAttribute('onmouseout', 'this.style.backgroundColor = `transparent`');
+		let msg = e;
+		if (getAllMessageProps(msg)?.updatedAt) {
+			if(!e.querySelector('.vkEnButtonShowOrig')) e.querySelector('.MessageActionsButtonWrapper').prepend(buttonShowOrig);
+			let originalProps = getMessageProps(msg);
+			buttonShowOrig.addEventListener('click', function () {
+				msg.innerHTML = localStorage.getItem("convoMessage" + originalProps[1] + "_" + originalProps[0]);
+				buttonShowOrig.textContent = getLang("photos_pe_apply_changes").toLowerCase() + "! ​";
+				buttonShowOrig.style.pointerEvents = "none";
+			});
+		}
+  });
+});
+
+window.addEventListener('beforeunload', () => {
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith("convoMessage") || key.startsWith("deletedMSG")) {
+      localStorage.removeItem(key);
+    }
+  });
+});
+
+
+function getMessageProps(elem) {
+  try {
+    const t = {};
+    let n = 0;
+    for (const o of Object.keys(elem)) {
+      if (o.startsWith("__reactFiber")) {
+        t.fiber = elem[o];
+        ++n;
+      } else if (o.startsWith("__reactProps")) {
+        t.props = elem[o];
+        ++n;
+      }
+      if (n === 2) break;
+    }
+
+    return [t.fiber.return.memoizedProps.message.cmid, t.fiber.return.memoizedProps.message.peerId];
+  }
+  catch (error) { return [0, 0] }
+}
+function getAllMessageProps(elem) {
+  try {
+    const t = {};
+    let n = 0;
+    for (const o of Object.keys(elem)) {
+      if (o.startsWith("__reactFiber")) {
+        t.fiber = elem[o];
+        ++n;
+      } else if (o.startsWith("__reactProps")) {
+        t.props = elem[o];
+        ++n;
+      }
+      if (n === 2) break;
+    }
+
+    return t.fiber.return.memoizedProps.message;
+  }
+  catch (error) { return [0, 0] }
+}
+///КОНЕЦ РЕДАКТИРОВАНИЯ СООБЩЕНИЯ///
 ///СКАЧИВАНИЕ ВИДЕО///
 document.arrive(".videoplayer_btn_mute", { existing: true }, function (e) {
-	let quality;
-	let vidUrl;
-	try {
-		quality = Math.max(...Object.keys(window.mvcur.player.media.vars).filter(e=>e.startsWith("url")).map(url => parseInt(url.match(/\d+/)[0])));
-		vidUrl = window.mvcur.player.media.vars[`url${quality}`];
-		if(vidUrl == undefined) {vidUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
-		let videoButton = document.createElement('a');
-		videoButton.href = vidUrl;
-		videoButton.style.padding = "5px 10px 0 8px";
-		videoButton.setAttribute('onmouseover',`showTooltip(this, { text: '${getLang("video_download_short")}', black: true, shift: [2, 24] });`);
-		videoButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 16 16" style="min-width: 20px;"><path fill-rule="evenodd" d="M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z" clip-rule="evenodd"/></svg>`;
-		e.parentNode.insertBefore(videoButton, e);
-	}
-	catch(error) {}
+  let quality;
+  let vidUrl;
+  try {
+    quality = Math.max(...Object.keys(window.mvcur.player.media.vars).filter(e => e.startsWith("url")).map(url => parseInt(url.match(/\d+/)[0])));
+    vidUrl = window.mvcur.player.media.vars[`url${quality}`];
+    if (vidUrl == undefined) { vidUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+    let videoButton = document.createElement('a');
+    videoButton.href = vidUrl;
+    videoButton.style.padding = "5px 10px 0 8px";
+    videoButton.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("video_download_short")}', black: true, shift: [2, 24] });`);
+    videoButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 16 16" style="min-width: 20px;"><path fill-rule="evenodd" d="M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z" clip-rule="evenodd"/></svg>`;
+    e.parentNode.insertBefore(videoButton, e);
+  }
+  catch (error) { }
 });
 
 function querySelectorAllShadows(selector, el = document.body) {
-	const childShadows = Array.from(el.querySelectorAll('*')).
+  const childShadows = Array.from(el.querySelectorAll('*')).
     map(el => el.shadowRoot).filter(Boolean);
   const childResults = childShadows.map(child => querySelectorAllShadows(selector, child));
   const result = Array.from(el.querySelectorAll(selector));
@@ -360,40 +569,40 @@ function querySelectorAllShadows(selector, el = document.body) {
 }
 
 document.arrive("vk-video-player", { existing: true }, function (e) {
-		let muteButton = querySelectorAllShadows('.volumeBar-container')[0];
-			let props = Object.keys(getVideoProps(document.querySelector('.MediaViewerVideo')).video.files);
-			let files = getVideoProps(document.querySelector('.MediaViewerVideo')).video.files;
-			let quality = props.find(e=>e.startsWith("mp4"));
-			let vidUrl = files[quality];
-			let videoButton = document.createElement('a');
-			videoButton.style.padding = "5px 10px 0 8px";
-			videoButton.style.cursor = "pointer";
-			videoButton.setAttribute('aria-label',`${getLang("video_download_short")}`);
-			videoButton.addEventListener('click', function () {
-				let linkV = document.createElement('a');
-				linkV.href = vidUrl;
-				linkV.click();
-			});
-			videoButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 16 16" style="min-width: 20px;"><path fill-rule="evenodd" d="M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z" clip-rule="evenodd"/></svg>`;
-			muteButton.parentNode.insertBefore(videoButton, muteButton);
-			videoButton.title = videoButton.getAttribute('aria-label');
+  let muteButton = querySelectorAllShadows('.volumeBar-container')[0];
+  let props = Object.keys(getVideoProps(document.querySelector('.MediaViewerVideo')).video.files);
+  let files = getVideoProps(document.querySelector('.MediaViewerVideo')).video.files;
+  let quality = props.find(e => e.startsWith("mp4"));
+  let vidUrl = files[quality];
+  let videoButton = document.createElement('a');
+  videoButton.style.padding = "5px 10px 0 8px";
+  videoButton.style.cursor = "pointer";
+  videoButton.setAttribute('aria-label', `${getLang("video_download_short")}`);
+  videoButton.addEventListener('click', function () {
+    let linkV = document.createElement('a');
+    linkV.href = vidUrl;
+    linkV.click();
+  });
+  videoButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 16 16" style="min-width: 20px;"><path fill-rule="evenodd" d="M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z" clip-rule="evenodd"/></svg>`;
+  muteButton.parentNode.insertBefore(videoButton, muteButton);
+  videoButton.title = videoButton.getAttribute('aria-label');
 });
 
 function getVideoProps(elem) {
-    const t = {};
-    let n = 0;
-    for (const o of Object.keys(elem)) {
-        if (o.startsWith("__reactFiber")) {
-            t.fiber = elem[o];
-            ++n;
-        } else if (o.startsWith("__reactProps")) {
-            t.props = elem[o];
-            ++n;
-        }
-        if (n === 2) break;
+  const t = {};
+  let n = 0;
+  for (const o of Object.keys(elem)) {
+    if (o.startsWith("__reactFiber")) {
+      t.fiber = elem[o];
+      ++n;
+    } else if (o.startsWith("__reactProps")) {
+      t.props = elem[o];
+      ++n;
     }
+    if (n === 2) break;
+  }
 
-    return t.fiber.return.memoizedProps;
+  return t.fiber.return.memoizedProps;
 }
 ///КОНЕЦ СКАЧИВАНИЯ ВИДЕО///
 ///СКАЧИВАНИЕ МУЗЫКИ///
@@ -493,7 +702,7 @@ function appendButton(elem) {
     {},
     {
       className: "download",
-	  innerHTML: `<style>
+      innerHTML: `<style>
 		.vkEnhancerDownloadMusicButton {
 	color: var(--vkui--color_icon_secondary);
     isolation: isolate;
@@ -540,7 +749,7 @@ function appendButton(elem) {
 </div>`,
     }
   );
-  button.setAttribute('onmouseover',`showTooltip(this, { text: '${getLang("video_download_short")}', black: true, shift: [7, 5] });`);
+  button.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("video_download_short")}', black: true, shift: [7, 5] });`);
   button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="min-width: 20px;"><path fill-rule="evenodd" d="M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z" clip-rule="evenodd"/></svg>`;
   button.addEventListener("click", handleDownloadButton);
   button.dataset.audio = elem.closest('.audio_row').dataset.audio;
@@ -679,23 +888,23 @@ function Download_Fucking_Stream(url, name, elem) {
 	}
 }
 `;
-let progrText = downloadInProgress.querySelector('.vkEnhSnackbar__content-text')
-  
-document.body.appendChild(downloadInProgress);
+  let progrText = downloadInProgress.querySelector('.vkEnhSnackbar__content-text')
+
+  document.body.appendChild(downloadInProgress);
   if (Hls.isSupported()) {
     hls.loadSource(url);
     hls.attachMedia(temp_audio);
     hls.on(Hls.Events.FRAG_BUFFERED, (e, h) => {
-	  progrText.innerHTML = getLang("docs_add_title") + "...<br><br>" + name + ".mp3 " + "".repeat((new Date() / 1e3) % 4) + "" + ((blob_data.length / frag_length) * 100).toFixed() + "%";
+      progrText.innerHTML = getLang("docs_add_title") + "...<br><br>" + name + ".mp3 " + "".repeat((new Date() / 1e3) % 4) + "" + ((blob_data.length / frag_length) * 100).toFixed() + "%";
       blob_data.push(audio_data);
       temp_audio.currentTime = h.frag.start + h.frag.duration;
       if (blob_data.length >= frag_length) {
         (hls.stopLoad(),
           hls.destroy(),
-		  downloadInProgress.querySelector('.vkEnhSnackbar__in').classList.add('vkEnhRemovebar'),
-		  downloadInProgress.querySelector('.vkEnhSnackbar__in').addEventListener('animationend', () => {
-			downloadInProgress.remove();
-		  }),
+          downloadInProgress.querySelector('.vkEnhSnackbar__in').classList.add('vkEnhRemovebar'),
+          downloadInProgress.querySelector('.vkEnhSnackbar__in').addEventListener('animationend', () => {
+            downloadInProgress.remove();
+          }),
           downloadBlob(new Blob(blob_data), name + ".mp3"));
       }
     });
@@ -705,7 +914,7 @@ document.body.appendChild(downloadInProgress);
     );
     hls.on(Hls.Events.BUFFER_APPENDING, (e, a) => (audio_data = a.data));
     hls.on(Hls.Events.MANIFEST_PARSED, (e, t) => {
-        (t = t.levels[0].details),
+      (t = t.levels[0].details),
         (frag_length = t.fragments.length),
         (dur = t.totalduration);
     });
@@ -742,13 +951,13 @@ function calcSize(raw) {
 ///СКАЧИВАНИЕ АЛЬБОМА///
 deferredCallback(
   () => {
-	let styleElement = fromId("downloadProgressBar");
-  if (!styleElement) {
-    styleElement = create("style", {}, { id: "downloadProgressBar" });
-    document.head.appendChild(styleElement);
-  }
-  styleElement.innerHTML =
-    `.vkEnhancerDownloadAlbumButton{display: flex;
+    let styleElement = fromId("downloadProgressBar");
+    if (!styleElement) {
+      styleElement = create("style", {}, { id: "downloadProgressBar" });
+      document.head.appendChild(styleElement);
+    }
+    styleElement.innerHTML =
+      `.vkEnhancerDownloadAlbumButton{display: flex;
     flex-direction: column;
     align-items: center;}
 .pBarVkEnhAlbum {
@@ -793,39 +1002,39 @@ deferredCallback(
     border-radius: var(--border-radius);
 }
 `;
-document.arrive("[class^='PhotosAlbumPageSubHeader-module__info']", { existing: true }, function (e) {
-  let buttonAlbumSettings = document.querySelector('[class^="HeaderLayout-module__aside"]');
-  let updateButton = document.createElement('div');
-	updateButton.style.marginRight = '8px';
-	updateButton.innerHTML = `<div class="vkEnhancerDownloadAlbumButton">
+    document.arrive("[class^='PhotosAlbumPageSubHeader-module__info']", { existing: true }, function (e) {
+      let buttonAlbumSettings = document.querySelector('[class^="HeaderLayout-module__aside"]');
+      let updateButton = document.createElement('div');
+      updateButton.style.marginRight = '8px';
+      updateButton.innerHTML = `<div class="vkEnhancerDownloadAlbumButton">
 	<a style="background-color:var(--vkui--color_background_accent_themed);color:var(--vkui--color_text_contrast_themed)" class="Button-module__root--enpNU vkuiButton vkuiButton--size-m vkuiButton--appearance-accent vkuiButton--align-center vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible">
 	<span class="vkuiButton__in"><span class="vkuiButton__content">${getLang("photos_album_menu_download")}</span></span></a></div>`;
-	buttonAlbumSettings.prepend(updateButton);
-	updateButton.addEventListener('click',async function() {
-		await parseAlbum();
-	});
-});
+      buttonAlbumSettings.prepend(updateButton);
+      updateButton.addEventListener('click', async function () {
+        await parseAlbum();
+      });
+    });
 
-document.arrive(".photos_album_intro", { existing: true }, function (e) {
-  let buttonAlbumSettings = document.querySelector('.page_block_header_extra._header_extra');
-  let updateButton = document.createElement('div');
-	updateButton.style.marginRight = '38px';
-	updateButton.style.marginLeft = '12px';
-	updateButton.style.marginTop = '12px';
-	updateButton.innerHTML = `<div class="vkEnhancerDownloadAlbumButton">
+    document.arrive(".photos_album_intro", { existing: true }, function (e) {
+      let buttonAlbumSettings = document.querySelector('.page_block_header_extra._header_extra');
+      let updateButton = document.createElement('div');
+      updateButton.style.marginRight = '38px';
+      updateButton.style.marginLeft = '12px';
+      updateButton.style.marginTop = '12px';
+      updateButton.innerHTML = `<div class="vkEnhancerDownloadAlbumButton">
 	<a style="background-color:var(--vkui--color_background_accent_themed);color:var(--vkui--color_text_contrast_themed)" class="Button-module__root--enpNU vkuiButton vkuiButton--size-m vkuiButton--appearance-accent vkuiButton--align-center vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible">
 	<span class="vkuiButton__in"><span class="vkuiButton__content">${getLang("photos_album_menu_download")}</span></span></a></div>`;
-	buttonAlbumSettings.appendChild(updateButton);
-	updateButton.addEventListener('click',async function() {
-		await parseAlbum();
-	});
-});
+      buttonAlbumSettings.appendChild(updateButton);
+      updateButton.addEventListener('click', async function () {
+        await parseAlbum();
+      });
+    });
   },
   { variable: "getLang" }
 );
 
 async function parseAlbum() {
-	let styleElement = fromId("vkEnDownloadPopup");
+  let styleElement = fromId("vkEnDownloadPopup");
   if (!styleElement) {
     styleElement = document.createElement("style");
     styleElement.id = "vkEnDownloadPopup";
@@ -908,37 +1117,37 @@ async function parseAlbum() {
 	}
 }
 `;
-    const url = window.location.href;
-    const match = url.match(/album-?(\d+_?\d*)/);
-    let albumString = "";
-    if (match) {
-        albumString = match[0];
-        albumString = albumString.replace("album", "");
+  const url = window.location.href;
+  const match = url.match(/album-?(\d+_?\d*)/);
+  let albumString = "";
+  if (match) {
+    albumString = match[0];
+    albumString = albumString.replace("album", "");
+  }
+  if (albumString != "") {
+    let oidA = albumString.split("_")[0];
+    let idA = albumString.split("_")[1];
+    const replaceIt = {
+      "0": -6,
+      "00": -7,
+      "000": -15,
+      "0000": -23,
+      "00000": -62,
+      "000000": -10,
+      "0000000": -7000,
+      "00000000": -165,
+      "000000000": -183,
+      "0000000000": -185
     }
-    if (albumString != "") {
-        let oidA = albumString.split("_")[0];
-        let idA = albumString.split("_")[1];
-        const replaceIt = {
-            "0": -6,
-            "00": -7,
-            "000": -15,
-            "0000": -23,
-            "00000": -62,
-            "000000": -10,
-            "0000000": -7000,
-            "00000000": -165,
-            "000000000": -183,
-            "0000000000": -185
-        }
-        if (replaceIt[idA] !== undefined) {
-            idA = replaceIt[idA];
-        }
-        let albumsRes = await vkApi.api('photos.getAlbums', { owner_id: oidA, album_ids: idA });
-        if (albumsRes.items[0].size > 0) {
-            let albumCount = albumsRes.items[0].size;
-            let offset = 0;
-			let progressBar = document.createElement('div');
-  progressBar.innerHTML = `<div class="vkEnhSnackbar vkEnhSnackbar--ios vkEnhSnackbar--desktop vkui--vkIOS--light">
+    if (replaceIt[idA] !== undefined) {
+      idA = replaceIt[idA];
+    }
+    let albumsRes = await vkApi.api('photos.getAlbums', { owner_id: oidA, album_ids: idA });
+    if (albumsRes.items[0].size > 0) {
+      let albumCount = albumsRes.items[0].size;
+      let offset = 0;
+      let progressBar = document.createElement('div');
+      progressBar.innerHTML = `<div class="vkEnhSnackbar vkEnhSnackbar--ios vkEnhSnackbar--desktop vkui--vkIOS--light">
   <div class="vkEnhSnackbar__in">
     <div class="vkEnhSnackbar__body vkEnhSnackbar--layout-vertical vkEnhSnackbar__snackbar">
       <div class="vkEnhSnackbar__before"><svg fill="currentColor" height="28" viewBox="0 0 20 20" width="28" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M6.84 16.44c.76.06 1.74.06 3.16.06 1.42 0 2.4 0 3.16-.06a3.75 3.75 0 0 0 1.43-.32 3.5 3.5 0 0 0 1.53-1.53c.15-.29.26-.69.32-1.43l.03-.63-1.3-1.3c-.3-.3-.5-.5-.67-.64a.86.86 0 0 0-.27-.18.75.75 0 0 0-.46 0 .86.86 0 0 0-.27.18c-.16.13-.36.33-.67.64l-2.3 2.3a.75.75 0 0 1-1.06 0l-.3-.3c-.3-.3-.5-.5-.67-.64a.86.86 0 0 0-.27-.18.75.75 0 0 0-.46 0 .86.86 0 0 0-.27.18c-.16.13-.36.33-.67.64L4.56 15.5c.25.24.53.45.85.6.29.16.69.27 1.43.33zm9.39-6.27.27.27V10c0-1.42 0-2.4-.06-3.16a3.75 3.75 0 0 0-.32-1.43 3.5 3.5 0 0 0-1.53-1.53 3.75 3.75 0 0 0-1.43-.32A43.2 43.2 0 0 0 10 3.5c-1.42 0-2.4 0-3.16.06-.74.06-1.14.17-1.43.32a3.5 3.5 0 0 0-1.53 1.53c-.15.29-.26.69-.32 1.43A43.2 43.2 0 0 0 3.5 10c0 1.42 0 2.4.06 3.16.04.47.1.8.17 1.05l2.04-2.04.02-.02c.28-.28.52-.52.74-.7.23-.2.47-.37.77-.47.46-.15.94-.15 1.4 0 .3.1.54.27.77.46.16.14.34.3.53.5l1.77-1.77.02-.02c.28-.28.52-.52.74-.7.23-.2.47-.37.77-.47.46-.15.94-.15 1.4 0 .3.1.54.27.77.46.22.19.46.43.74.7zM2.54 4.73C2 5.8 2 7.2 2 10c0 2.8 0 4.2.54 5.27a5 5 0 0 0 2.19 2.19C5.8 18 7.2 18 10 18c2.8 0 4.2 0 5.27-.54a5 5 0 0 0 2.19-2.19C18 14.2 18 12.8 18 10c0-2.8 0-4.2-.55-5.27a5 5 0 0 0-2.18-2.19C14.2 2 12.8 2 10 2c-2.8 0-4.2 0-5.27.54a5 5 0 0 0-2.19 2.19zM7.25 6a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5z" fill="currentColor" fill-rule="evenodd"></path></svg></div>
@@ -946,85 +1155,85 @@ async function parseAlbum() {
     </div>
   </div>
 </div>`;
-document.body.appendChild(progressBar);
-            let counterProgress = 0;
-            while (albumCount > 0) {
-                let count = Math.min(1000, albumCount);
-                let allPhotos = await vkApi.api('photos.get', { owner_id: oidA, album_id: idA, count: count, offset: offset, rev: true });
-				const zip = new JSZip();
-				let currentZipIndex = "_" + Math.ceil((offset + 1) / 1000);
-				if(albumsRes.items[0].size < 1000) {
-					currentZipIndex = "";
-				}
-				let bolshe_kosara = 0;
-				const promises = allPhotos.items.map(async (photoItem) => {
-                    let sizes = photoItem.sizes;
-                    let oldS = 0;
-                    let newS;
-					const availableSizes = ["a", "b", "i", "p", "q", "s", "w", "z", "y", "x", "r", "o", "m", "g", "max", "l", "f", "k", "c", "e", "d", "j", "temp", "h", "n"]
-					let n = null, e = 0;
-					let t;
-					for (const curSize of sizes) {
-						t = curSize.type;
-						if (availableSizes.includes(t)) {
-							t = (curSize.width || 0) * (curSize.height || 0);
-							if(t > e || t == 0) {
-								e = t;
-								n = curSize;
-							}
-						}
-					}
-					let maxSizer = t[0] || n;
-					let maxSizeUrl;
-					try {
-					maxSizeUrl = maxSizer.url;
-					}
-					catch (error) {console.log(maxSizer)}
-                    try {
-                        let [filename, blob] = await getPhoto(maxSizeUrl, photoItem, progressBar);
-                        zip.file(filename, blob);
-						counterProgress++;
-                        progressBar.querySelector('.vkEnhSnackbar__content-text').innerHTML = getLang("docs_add_title") + "...<br><br>" + `${albumsRes.items[0].title}${currentZipIndex}.zip ` + counterProgress + "/" + albumsRes.items[0].size;
-                    } catch (error) {
-                        console.log("Failed ", maxSizeUrl);
-                    }
-                });
-                await Promise.all(promises);
-				const zipBlob = await zip.generateAsync({ type: "blob" });
-                const zipUrl = URL.createObjectURL(zipBlob);
-                const a = document.createElement("a");
-                a.href = zipUrl;
-                a.download = `${albumsRes.items[0].title}${currentZipIndex}.zip`;
-                a.click();
-				bolshe_kosara += 1000;
-                albumCount -= count;
-                offset += count;
-            }
-            progressBar.querySelector('.vkEnhSnackbar__in').classList.add('vkEnhRemovebar');
-			progressBar.querySelector('.vkEnhSnackbar__in').addEventListener('animationend', () => {
-				progressBar.remove();
-			});
-			counterProgress = 0;
+      document.body.appendChild(progressBar);
+      let counterProgress = 0;
+      while (albumCount > 0) {
+        let count = Math.min(1000, albumCount);
+        let allPhotos = await vkApi.api('photos.get', { owner_id: oidA, album_id: idA, count: count, offset: offset, rev: true });
+        const zip = new JSZip();
+        let currentZipIndex = "_" + Math.ceil((offset + 1) / 1000);
+        if (albumsRes.items[0].size < 1000) {
+          currentZipIndex = "";
         }
-        //console.log(albumsRes);
+        let bolshe_kosara = 0;
+        const promises = allPhotos.items.map(async (photoItem) => {
+          let sizes = photoItem.sizes;
+          let oldS = 0;
+          let newS;
+          const availableSizes = ["a", "b", "i", "p", "q", "s", "w", "z", "y", "x", "r", "o", "m", "g", "max", "l", "f", "k", "c", "e", "d", "j", "temp", "h", "n"]
+          let n = null, e = 0;
+          let t;
+          for (const curSize of sizes) {
+            t = curSize.type;
+            if (availableSizes.includes(t)) {
+              t = (curSize.width || 0) * (curSize.height || 0);
+              if (t > e || t == 0) {
+                e = t;
+                n = curSize;
+              }
+            }
+          }
+          let maxSizer = t[0] || n;
+          let maxSizeUrl;
+          try {
+            maxSizeUrl = maxSizer.url;
+          }
+          catch (error) { console.log(maxSizer) }
+          try {
+            let [filename, blob] = await getPhoto(maxSizeUrl, photoItem, progressBar);
+            zip.file(filename, blob);
+            counterProgress++;
+            progressBar.querySelector('.vkEnhSnackbar__content-text').innerHTML = getLang("docs_add_title") + "...<br><br>" + `${albumsRes.items[0].title}${currentZipIndex}.zip ` + counterProgress + "/" + albumsRes.items[0].size;
+          } catch (error) {
+            console.log("Failed ", maxSizeUrl);
+          }
+        });
+        await Promise.all(promises);
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const zipUrl = URL.createObjectURL(zipBlob);
+        const a = document.createElement("a");
+        a.href = zipUrl;
+        a.download = `${albumsRes.items[0].title}${currentZipIndex}.zip`;
+        a.click();
+        bolshe_kosara += 1000;
+        albumCount -= count;
+        offset += count;
+      }
+      progressBar.querySelector('.vkEnhSnackbar__in').classList.add('vkEnhRemovebar');
+      progressBar.querySelector('.vkEnhSnackbar__in').addEventListener('animationend', () => {
+        progressBar.remove();
+      });
+      counterProgress = 0;
     }
+    //console.log(albumsRes);
+  }
 }
 
 async function getPhoto(maxSizeUrl, photoItem, progressBar) {
-    let attempts = 0;
-    while (attempts < 10) {
-        try {
-            let response = await fetch(maxSizeUrl);
-            let blob = await response.blob();
-            let filename = `${photoItem.owner_id}_${photoItem.id}.jpg`;
-            return [filename, blob];
-        } catch (error) {
-            progressBar.querySelector('.vkEnhSnackbar__content-text').innerHTML = getLang("calls_status_bad_internet_connection");
-            attempts++;
-            await new Promise(resolve => setTimeout(resolve, 60000));
-        }
+  let attempts = 0;
+  while (attempts < 10) {
+    try {
+      let response = await fetch(maxSizeUrl);
+      let blob = await response.blob();
+      let filename = `${photoItem.owner_id}_${photoItem.id}.jpg`;
+      return [filename, blob];
+    } catch (error) {
+      progressBar.querySelector('.vkEnhSnackbar__content-text').innerHTML = getLang("calls_status_bad_internet_connection");
+      attempts++;
+      await new Promise(resolve => setTimeout(resolve, 60000));
     }
-    throw new Error("Failed to fetch photo after 10 attempts");
+  }
+  throw new Error("Failed to fetch photo after 10 attempts");
 }
 
 
@@ -1035,80 +1244,80 @@ async function getPhoto(maxSizeUrl, photoItem, progressBar) {
 ///КОНЕЦ СКАЧИВАНИЯ АЛЬБОМА///
 ///ОБНОВЛЕНИЕ ПОДМЕНА ФОТОГРАФИИ///
 document.arrive("#pv_delete", { existing: true }, async function (e) {
-let userIDHereWeGoAgain2;
+  let userIDHereWeGoAgain2;
 
-	let updateButton = document.createElement('div');
-	updateButton.style.float = 'left';
-	updateButton.style.marginRight = '8px';
-	updateButton.style.marginTop = '-8px';
-	updateButton.innerHTML = `<div class="vkEnhancerUpdateButton">
+  let updateButton = document.createElement('div');
+  updateButton.style.float = 'left';
+  updateButton.style.marginRight = '8px';
+  updateButton.style.marginTop = '-8px';
+  updateButton.innerHTML = `<div class="vkEnhancerUpdateButton">
 	<a style="background-color:rgba(255, 255, 255, 0.04);color:white" class="Button-module__root--enpNU vkuiButton vkuiButton--size-m vkuiButton--mode-vkEnhancer vkuiButton--appearance-accent vkuiButton--align-center vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible">
 	<span class="vkuiButton__in"><span class="vkuiButton__content">${getLang("global_notify_refresh")}</span></span></a></div>
 	<input id="photoUpdateInput" class="file" type="file" size="28" accept="image/jpeg,image/png,image/gif" multiple="" name="photo" style="visibility: hidden; position: absolute;">`;
-	let styleElement = fromId("mode-vkEnhancer");
+  let styleElement = fromId("mode-vkEnhancer");
   if (!styleElement) {
     styleElement = create("style", {}, { id: "mode-vkEnhancer" });
     document.head.appendChild(styleElement);
   }
   styleElement.innerHTML =
     `.vkuiButton--mode-vkEnhancer:hover{background-color:rgba(255, 255, 255, 0.08)!important;}`;
-        userIDHereWeGoAgain2 = cur.pvCurPhoto.id.split('_')[0];
-		e.parentElement.prepend(updateButton);
+  userIDHereWeGoAgain2 = cur.pvCurPhoto.id.split('_')[0];
+  e.parentElement.prepend(updateButton);
 
-	try {
-	updateButton.addEventListener('click', async function(){
-		e.parentElement.querySelector('#photoUpdateInput').click();
-	});
-	e.parentElement.querySelector('#photoUpdateInput').addEventListener("change", function () {
-			if (e.parentElement.querySelector('#photoUpdateInput').files.length > 0) {
-				handleUpdatePhoto();
-			}
-		});
-	}
-	catch(error){}
+  try {
+    updateButton.addEventListener('click', async function () {
+      e.parentElement.querySelector('#photoUpdateInput').click();
+    });
+    e.parentElement.querySelector('#photoUpdateInput').addEventListener("change", function () {
+      if (e.parentElement.querySelector('#photoUpdateInput').files.length > 0) {
+        handleUpdatePhoto();
+      }
+    });
+  }
+  catch (error) { }
 
 });
-    async function handleUpdatePhoto() {
-      const filesInputUpdate = document.getElementById("photoUpdateInput");
-      const file = filesInputUpdate.files[0];
-      await sendUpdatePhoto(file);
-    }
-    async function sendUpdatePhoto(fileNameOutput) {
-      /** Получаем URL для загрузки */
-      const uploadUrl1 = await vkApi.api("photos.getPhotoEditorUploadServer", {
-      });
-      const uploadUrl = uploadUrl1["upload_url"];
+async function handleUpdatePhoto() {
+  const filesInputUpdate = document.getElementById("photoUpdateInput");
+  const file = filesInputUpdate.files[0];
+  await sendUpdatePhoto(file);
+}
+async function sendUpdatePhoto(fileNameOutput) {
+  /** Получаем URL для загрузки */
+  const uploadUrl1 = await vkApi.api("photos.getPhotoEditorUploadServer", {
+  });
+  const uploadUrl = uploadUrl1["upload_url"];
 
-      /** Загружаем файл */
-      let file = await uploadUpdatePhoto(uploadUrl, fileNameOutput);
-      /** Сохраняем */
-      const data = JSON.parse(file);
-	  let photoId = cur.pvCurPhoto.id;
-      let doc = await vkApi.api("photos.savePhotoEditor", { response_json: file, photo: photoId});
-	  nav.reload();
-    }
+  /** Загружаем файл */
+  let file = await uploadUpdatePhoto(uploadUrl, fileNameOutput);
+  /** Сохраняем */
+  const data = JSON.parse(file);
+  let photoId = cur.pvCurPhoto.id;
+  let doc = await vkApi.api("photos.savePhotoEditor", { response_json: file, photo: photoId });
+  nav.reload();
+}
 
-    async function uploadUpdatePhoto(uploadUrl, fileNameOutput) {
-      const formData = new FormData();
-      formData.append("file", fileNameOutput);
-      const xhr = new XMLHttpRequest();
-      return new Promise((resolve, reject) => {
-        xhr.onload = function () {
-          if (xhr.status === 200) {
-            resolve(xhr.responseText);
-          } else {
-            reject(new Error("Upload failed. Status: " + xhr.status));
-          }
-        };
+async function uploadUpdatePhoto(uploadUrl, fileNameOutput) {
+  const formData = new FormData();
+  formData.append("file", fileNameOutput);
+  const xhr = new XMLHttpRequest();
+  return new Promise((resolve, reject) => {
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        resolve(xhr.responseText);
+      } else {
+        reject(new Error("Upload failed. Status: " + xhr.status));
+      }
+    };
 
-        xhr.onerror = function () {
-          reject(new Error("Upload failed. Network error"));
-        };
+    xhr.onerror = function () {
+      reject(new Error("Upload failed. Network error"));
+    };
 
-        xhr.open("POST", uploadUrl);
-        xhr.send(formData);
-      });
-    }
+    xhr.open("POST", uploadUrl);
+    xhr.send(formData);
+  });
+}
 ///КОНЕЦ ОБНОВЛЕНИЯ ПОДМЕНЫ ФОТОГРАФИИ///
 ///НАЧАЛО ДОБАВЛЕНИЯ ОТЧЕСТВА///
 if (getLocalValue("isMiddleName")) {
@@ -1134,23 +1343,23 @@ if (getLocalValue("isMiddleName")) {
         let lastName = ownerName.substring(lastNameIndex + 1);
         ownerNameElement.firstChild.textContent = `${firstName} ${nickname} ${lastName}`;
       } else {
-		let antiIcons = document.querySelector('.OwnerPageName__noWrapText');
-		if(antiIcons) {
-			let antiIconsText = antiIcons.textContent.trim();
-			let lastNameIndex = antiIconsText.lastIndexOf(" ");
-			let firstName = antiIconsText.substring(0, lastNameIndex);
-			let lastName = antiIconsText.substring(lastNameIndex + 1);
-			if(antiIcons.textContent.trim().includes(" ")) {
-				antiIcons.textContent = '';
-				ownerNameElement.firstChild.textContent = `${firstName} ${nickname} ${lastName}`;
-			}
-			else { 
-				ownerNameElement.firstChild.textContent += ` ${nickname} ​`;	
-			}
-		}
-		else {
-			ownerNameElement.firstChild.textContent += ` ${nickname} ​`;		
-		}
+        let antiIcons = document.querySelector('.OwnerPageName__noWrapText');
+        if (antiIcons) {
+          let antiIconsText = antiIcons.textContent.trim();
+          let lastNameIndex = antiIconsText.lastIndexOf(" ");
+          let firstName = antiIconsText.substring(0, lastNameIndex);
+          let lastName = antiIconsText.substring(lastNameIndex + 1);
+          if (antiIcons.textContent.trim().includes(" ")) {
+            antiIcons.textContent = '';
+            ownerNameElement.firstChild.textContent = `${firstName} ${nickname} ${lastName}`;
+          }
+          else {
+            ownerNameElement.firstChild.textContent += ` ${nickname} ​`;
+          }
+        }
+        else {
+          ownerNameElement.firstChild.textContent += ` ${nickname} ​`;
+        }
       }
     }
   });
@@ -1228,208 +1437,204 @@ deferredCallback(
               `"}`;
             var objectId1 = await getId();
             var userData = await getUserData(objectId1);
-			if(!userData[0].hidden) {
-				var photoUrl = userData[0].photo_200;
-			}
+            if (!userData[0].hidden) {
+              var photoUrl = userData[0].photo_200;
+            }
             var activityText = userData[0].activity;
             appendActivityText(activityText);
-			await appearStarts(userData);
-			if(!userData[0].blacklisted == 1 && !userData[0].deactivated && !userData[0].is_service && !userData[0].hidden){
-				const customStyle = fromId("classicalProfilesDELETED");
-				if (customStyle) {
-					customStyle.remove();
-				}
-				const customStyle1 = fromId("classicalProfilesBlackListed");
-				if (customStyle1) {
-					customStyle1.remove();
-				}
-				const customStyle2 = fromId("classicalProfilesDeactivated");
-				if (customStyle2) {
-					customStyle2.remove();
-				}
-				const customStyle3 = fromId("classicalProfilesService");
-				if (customStyle3) {
-					customStyle3.remove();
-				}
-				const customStyle4 = fromId("classicalProfilesHidden");
-				if (customStyle4) {
-					customStyle4.remove();
-				}
-				addCounters(userData[0], userData[0].counters);
-				appearVariable();
-				if(vk.id != userData[0].id) {
-					buttonrun();
-				}
-				expandMore(userData);
-			}
-			else {
-				try {
-				let pMoreInfo = document.querySelector('.profile_more_info');
-					pMoreInfo.style.display = 'none';
-				}
-				catch(error){}
-				let styleElement = fromId("classicalProfilesDELETED");
-				if (!styleElement) {
-					styleElement = create("style", {}, { id: "classicalProfilesDELETED" });
-					document.head.appendChild(styleElement);
-				}
-				styleElement.innerHTML = ".vkuiInternalGroup:has(>.PlaceholderMessageBlock) {display: none !important;}";
-				let pInfoShort = document.querySelector('.profile_info.profile_info_short');
-				let pModuleText = '';
-				try{
-					pModuleText = document.querySelector('.vkuiInternalGroup:has(>.PlaceholderMessageBlock) [class^="Placeholder-module__text"]').innerHTML;
-				}
-				catch(error) {}
-				let pModuleDiv = document.createElement('div');
-				let pModuleSpan = document.createElement('span');
-				pModuleSpan.innerHTML = pModuleText;
-				pModuleDiv.classList.add("vkEnhancerOffProfile");
-				pModuleDiv.style.display = "flex";
-				pModuleDiv.style.justifyContent = "center";
-				pModuleDiv.style.width = "100%";
-				pModuleSpan.classList.add("vkEnhancerOffProfile__in");
-				pModuleSpan.style.padding = "32px 32px";
-				pModuleSpan.style.fontSize = "14px";
-				pModuleSpan.style.lineHeight = "18px";
-				pModuleSpan.style.fontWeight = "400";
-				pModuleSpan.style.textAlign = "center";
-				pModuleSpan.style.color = "var(--vkui--color_text_secondary)";
-				pModuleDiv.appendChild(pModuleSpan);
-				if(pModuleText!='') {
-					pInfoShort.appendChild(pModuleDiv);
-				}
-				if(userData[0].blacklisted == 1 && !userData[0].deactivated) {
-					let styleElement = fromId("classicalProfilesBlackListed");
-					if (!styleElement) {
-						styleElement = create("style", {}, { id: "classicalProfilesBlackListed" });
-						document.head.appendChild(styleElement);
-					}
-				styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:280px!important;}.ProfileHeaderActions__buttons:not(:has(>.ProfileHeaderButton a[href='/edit'])){top:230px!important;}div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in{width:100%!important}div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in > span{display:block!important}div.ProfileHeaderActions__moreButtonContainer > div > button > span{background:none!important;}.ProfileHeaderActions__moreButtonContainer {margin-left:0px; !important;} div.ProfileHeaderActions__moreButtonContainer > div > button {min-width:206px!important;}";
-				}
-				if(userData[0].deactivated) {
-					let styleElement = fromId("classicalProfilesDeactivated");
-					if (!styleElement) {
-						styleElement = create("style", {}, { id: "classicalProfilesDeactivated" });
-						document.head.appendChild(styleElement);
-					}
-				styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}.ProfileHeaderActions__buttons:not(:has(>.ProfileHeaderButton a[href='/edit'])){display:none!important}";
-				}
-				if(userData[0].is_service) {
-					addCounters(userData[0], userData[0].counters);
-					let styleElement = fromId("classicalProfilesService");
-					if (!styleElement) {
-						styleElement = create("style", {}, { id: "classicalProfilesService" });
-						document.head.appendChild(styleElement);
-					}
-				styleElement.innerHTML = ".page_current_info.current_text{border-bottom:none!important;}.ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}";
-				}
-				if(userData[0].hidden) {
-					let styleElement = fromId("classicalProfilesHidden");
-					if (!styleElement) {
-						styleElement = create("style", {}, { id: "classicalProfilesHidden" });
-						document.head.appendChild(styleElement);
-					}
-				styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}";
-				}
-				appearVariable();
-			}
-			} catch (error) {
+            await appearStarts(userData);
+            if (!userData[0].blacklisted == 1 && !userData[0].deactivated && !userData[0].is_service && !userData[0].hidden) {
+              const customStyle = fromId("classicalProfilesDELETED");
+              if (customStyle) {
+                customStyle.remove();
+              }
+              const customStyle1 = fromId("classicalProfilesBlackListed");
+              if (customStyle1) {
+                customStyle1.remove();
+              }
+              const customStyle2 = fromId("classicalProfilesDeactivated");
+              if (customStyle2) {
+                customStyle2.remove();
+              }
+              const customStyle3 = fromId("classicalProfilesService");
+              if (customStyle3) {
+                customStyle3.remove();
+              }
+              const customStyle4 = fromId("classicalProfilesHidden");
+              if (customStyle4) {
+                customStyle4.remove();
+              }
+              addCounters(userData[0], userData[0].counters);
+              appearVariable();
+              if (vk.id != userData[0].id) {
+                buttonrun();
+              }
+              expandMore(userData);
+            }
+            else {
+              try {
+                let pMoreInfo = document.querySelector('.profile_more_info');
+                pMoreInfo.style.display = 'none';
+              }
+              catch (error) { }
+              let styleElement = fromId("classicalProfilesDELETED");
+              if (!styleElement) {
+                styleElement = create("style", {}, { id: "classicalProfilesDELETED" });
+                document.head.appendChild(styleElement);
+              }
+              styleElement.innerHTML = ".vkuiInternalGroup:has(>.PlaceholderMessageBlock) {display: none !important;}";
+              let pInfoShort = document.querySelector('.profile_info.profile_info_short');
+              let pModuleText = '';
+              try {
+                pModuleText = document.querySelector('.vkuiInternalGroup:has(>.PlaceholderMessageBlock) [class^="Placeholder-module__text"]').innerHTML;
+              }
+              catch (error) { }
+              let pModuleDiv = document.createElement('div');
+              let pModuleSpan = document.createElement('span');
+              pModuleSpan.innerHTML = pModuleText;
+              pModuleDiv.classList.add("vkEnhancerOffProfile");
+              pModuleDiv.style.display = "flex";
+              pModuleDiv.style.justifyContent = "center";
+              pModuleDiv.style.width = "100%";
+              pModuleSpan.classList.add("vkEnhancerOffProfile__in");
+              pModuleSpan.style.padding = "32px 32px";
+              pModuleSpan.style.fontSize = "14px";
+              pModuleSpan.style.lineHeight = "18px";
+              pModuleSpan.style.fontWeight = "400";
+              pModuleSpan.style.textAlign = "center";
+              pModuleSpan.style.color = "var(--vkui--color_text_secondary)";
+              pModuleDiv.appendChild(pModuleSpan);
+              if (pModuleText != '') {
+                pInfoShort.appendChild(pModuleDiv);
+              }
+              if (userData[0].blacklisted == 1 && !userData[0].deactivated) {
+                let styleElement = fromId("classicalProfilesBlackListed");
+                if (!styleElement) {
+                  styleElement = create("style", {}, { id: "classicalProfilesBlackListed" });
+                  document.head.appendChild(styleElement);
+                }
+                styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:280px!important;}.ProfileHeaderActions__buttons:not(:has(>.ProfileHeaderButton a[href='/edit'])){top:230px!important;}div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in{width:100%!important}div.ProfileHeaderActions__moreButtonContainer > div > button > span.vkuiButton__in > span{display:block!important}div.ProfileHeaderActions__moreButtonContainer > div > button > span{background:none!important;}.ProfileHeaderActions__moreButtonContainer {margin-left:0px; !important;} div.ProfileHeaderActions__moreButtonContainer > div > button {min-width:206px!important;}";
+              }
+              if (userData[0].deactivated) {
+                let styleElement = fromId("classicalProfilesDeactivated");
+                if (!styleElement) {
+                  styleElement = create("style", {}, { id: "classicalProfilesDeactivated" });
+                  document.head.appendChild(styleElement);
+                }
+                styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}.ProfileHeaderActions__buttons:not(:has(>.ProfileHeaderButton a[href='/edit'])){display:none!important}";
+              }
+              if (userData[0].is_service) {
+                addCounters(userData[0], userData[0].counters);
+                let styleElement = fromId("classicalProfilesService");
+                if (!styleElement) {
+                  styleElement = create("style", {}, { id: "classicalProfilesService" });
+                  document.head.appendChild(styleElement);
+                }
+                styleElement.innerHTML = ".page_current_info.current_text{border-bottom:none!important;}.ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}";
+              }
+              if (userData[0].hidden) {
+                let styleElement = fromId("classicalProfilesHidden");
+                if (!styleElement) {
+                  styleElement = create("style", {}, { id: "classicalProfilesHidden" });
+                  document.head.appendChild(styleElement);
+                }
+                styleElement.innerHTML = ".ProfileHeader:not(:has(>.ProfileHeader__in a[href='/edit'])){height:234px!important;}";
+              }
+              appearVariable();
+            }
+          } catch (error) {
             console.error(error);
           }
         }
       );
 
-var friendsSection;
-var aHrefSectionFrens;
-var imReady;
-document.arrive(".ProfileGroup", { existing: true }, async function (e) {
-			const profileGroups = document.querySelectorAll('section.ProfileGroup');
-			profileGroups.forEach(profileGroup => {
-			const content = profileGroup.textContent;
-			if (
-				content.includes(getLang("profile_followers")) ||
-				content.includes(getLang("profile_common_friends")) ||
-				content.includes(getLang("profile_friends")) ||
-				content.includes(getLang("profile_closed_profile_banner_closed_btn")) ||
-				content.includes(getLang("profile_narratives"))
-			) {
-				//console.log("Removed: "+profileGroup.innerHTML);
-				profileGroup.remove();
-			}
-		});
+      var friendsSection;
+      var aHrefSectionFrens;
+      var imReady;
+      document.arrive(".ProfileGroup", { existing: true }, async function (e) {
+        const profileGroups = document.querySelectorAll('section.ProfileGroup');
+        profileGroups.forEach(profileGroup => {
+          const content = profileGroup.textContent;
+          if (
+            content.includes(getLang("profile_followers")) ||
+            content.includes(getLang("profile_common_friends")) ||
+            content.includes(getLang("profile_friends")) ||
+            content.includes(getLang("profile_closed_profile_banner_closed_btn")) ||
+            content.includes(getLang("profile_narratives"))
+          ) {
+            //console.log("Removed: "+profileGroup.innerHTML);
+            profileGroup.remove();
+          }
+        });
       });
-document.arrive(".page_counter", { existing: true }, async function (e) {
-	let i = document.querySelectorAll('.vkuiInternalGroupCard:not(.ProfileGroup)');
-i.forEach(elem =>
-    {
-        if(elem.textContent.includes(getLang("profile_unknown_error")))
-        {
-			elem.remove();
+      document.arrive(".page_counter", { existing: true }, async function (e) {
+        let i = document.querySelectorAll('.vkuiInternalGroupCard:not(.ProfileGroup)');
+        i.forEach(elem => {
+          if (elem.textContent.includes(getLang("profile_unknown_error"))) {
+            elem.remove();
+          }
         }
-    }    
-);
-});
-document.arrive(".imReadyForShowingFriends", { existing: true }, async function (e) {
-	if(friendsSection != null && imReady) {
-		document.querySelector('.ScrollStickyWrapper > div').prepend(friendsSection);
-		document.querySelector('.vkEnhancerFrenBox').appendChild(aHrefSectionFrens);
-	}
-	let i = document.querySelectorAll('.vkuiInternalGroupCard:not(.ProfileGroup)');
-i.forEach(elem =>
-    {
-        if(elem.textContent.includes(getLang("profile_unknown_error")))
-        {
-			elem.remove();
+        );
+      });
+      document.arrive(".imReadyForShowingFriends", { existing: true }, async function (e) {
+        if (friendsSection != null && imReady) {
+          document.querySelector('.ScrollStickyWrapper > div').prepend(friendsSection);
+          document.querySelector('.vkEnhancerFrenBox').appendChild(aHrefSectionFrens);
         }
-    }    
-);
-});
+        let i = document.querySelectorAll('.vkuiInternalGroupCard:not(.ProfileGroup)');
+        i.forEach(elem => {
+          if (elem.textContent.includes(getLang("profile_unknown_error"))) {
+            elem.remove();
+          }
+        }
+        );
+      });
 
-document.arrive(".page_current_info", { existing: true}, async function (e) {
-	if(!document.querySelector('#profile_redesigned .ProfileHeader').classList.contains('ProfileHeader--noCover')) {
-		document.querySelector('#profile_redesigned .ProfileHeader').classList.add('ProfileHeader--noCover');
-	}
-});
-	  
-document.arrive("#profile_redesigned", { existing: true }, async function (e) {
-imReady = false;
-let objectId1 = await getId();
-let userdata = await getUserDataWithoutOnline(objectId1);
-let friends;
-let frenCount = {count:0};
-if((!userdata[0].is_closed || userdata[0].can_access_closed) && !userdata[0].blacklisted == 1 && !userdata[0].deactivated) {
-	try {
-		friends = await vkApi.api("friends.get",{user_id:userdata[0].id,fields:'photo_100,online,domain',count:10000});
-		frenCount = await vkApi.api("friends.get",{user_id:userdata[0].id,count:10000});
-	}
-	catch(error) {}
-}
-if (frenCount.count > 0 && !document.querySelector('.ProfileFriends')) {
-    friendsSection = document.createElement('section');
-    friendsSection.classList.add('vkuiInternalGroup', 'vkuiGroup', 'vkuiGroup--mode-card', 'vkuiInternalGroup--mode-card', 'vkuiGroup--padding-m', 'vkuiInternalGroupCard', 'ProfileFriends', 'vkEnhancerProfileFriends');
-	aHrefSectionFrens = document.createElement('a');
-	if(vk.id != objectId1) {
-		aHrefSectionFrens.href = `/friends?id=${objectId1}&section=online`;
-		aHrefSectionFrens.style.marginLeft = "auto";
-		aHrefSectionFrens.style.marginRight = "23px";
-		aHrefSectionFrens.style.color = "var(--vkui--color_text_secondary)";
-		aHrefSectionFrens.textContent = getLang("profile_friendsonln").toLowerCase();
-	}
-	else {
-		aHrefSectionFrens.href = `/feed?section=updates`;
-		aHrefSectionFrens.style.marginLeft = "auto";
-		aHrefSectionFrens.style.marginRight = "23px";
-		aHrefSectionFrens.style.color = "var(--vkui--color_text_secondary)";
-		aHrefSectionFrens.textContent = getLang("news_title_updates").toLowerCase();
-	}
-	friendsSection.innerHTML = `
+      document.arrive(".page_current_info", { existing: true }, async function (e) {
+        if (!document.querySelector('#profile_redesigned .ProfileHeader').classList.contains('ProfileHeader--noCover')) {
+          document.querySelector('#profile_redesigned .ProfileHeader').classList.add('ProfileHeader--noCover');
+        }
+      });
+
+      document.arrive("#profile_redesigned", { existing: true }, async function (e) {
+        imReady = false;
+        let objectId1 = await getId();
+        let userdata = await getUserDataWithoutOnline(objectId1);
+        let friends;
+        let frenCount = { count: 0 };
+        if ((!userdata[0].is_closed || userdata[0].can_access_closed) && !userdata[0].blacklisted == 1 && !userdata[0].deactivated) {
+          try {
+            friends = await vkApi.api("friends.get", { user_id: userdata[0].id, fields: 'photo_100,online,domain', count: 10000 });
+            frenCount = await vkApi.api("friends.get", { user_id: userdata[0].id, count: 10000 });
+          }
+          catch (error) { }
+        }
+        if (frenCount.count > 0 && !document.querySelector('.ProfileFriends')) {
+          friendsSection = document.createElement('section');
+          friendsSection.classList.add('vkuiInternalGroup', 'vkuiGroup', 'vkuiGroup--mode-card', 'vkuiInternalGroup--mode-card', 'vkuiGroup--padding-m', 'vkuiInternalGroupCard', 'ProfileFriends', 'vkEnhancerProfileFriends');
+          aHrefSectionFrens = document.createElement('a');
+          if (vk.id != objectId1) {
+            aHrefSectionFrens.href = `/friends?id=${objectId1}&section=online`;
+            aHrefSectionFrens.style.marginLeft = "auto";
+            aHrefSectionFrens.style.marginRight = "23px";
+            aHrefSectionFrens.style.color = "var(--vkui--color_text_secondary)";
+            aHrefSectionFrens.textContent = getLang("profile_friendsonln").toLowerCase();
+          }
+          else {
+            aHrefSectionFrens.href = `/feed?section=updates`;
+            aHrefSectionFrens.style.marginLeft = "auto";
+            aHrefSectionFrens.style.marginRight = "23px";
+            aHrefSectionFrens.style.color = "var(--vkui--color_text_secondary)";
+            aHrefSectionFrens.textContent = getLang("news_title_updates").toLowerCase();
+          }
+          friendsSection.innerHTML = `
         <a href="/friends?id=${userdata[0].id}&section=all" data-allow-link-onclick-web="1" class="Header-module__tappable--mabke ProfileGroupHeader vkuiTappable vkuiInternalTappable vkuiTappable--hasActive vkui-focus-visible">
             <div style="padding:7px 0 0 17px;" class="vkEnhancerFriendsPadding vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
                 <div class="vkuiHeader__main">
                     <div class="vkEnhancerFrenBox vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__content vkuiHeadline--sizeY-compact vkuiHeadline--level-1">
                         <span class="vkuiHeader__content-in">
                             <div class="Header-module__content--F5x_X">
-                                <div class="TextClamp-module__singleLine--mRCrF">`+getLang("profile_friends")+`</div>
+                                <div class="TextClamp-module__singleLine--mRCrF">`+ getLang("profile_friends") + `</div>
                             </div>
                         </span>
                         <span class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__indicator vkuiFootnote">${frenCount.count}</span>
@@ -1444,15 +1649,15 @@ if (frenCount.count > 0 && !document.querySelector('.ProfileFriends')) {
         </div>
         <div class="vkuiSpacing" style="height: 4px; padding: 2px 0px;"></div>
     `;
-	friendsSection.style.marginBottom = "16px";
-	friendsSection.style.padding = "0px";
-    const friendsContainer = friendsSection.querySelector('.ProfileGroupHorizontalCells');
-	const friendsContainer1 = friendsSection.querySelector('.PrimaryCells');
-	const randomFriends = friends.items.sort(() => 0.5 - Math.random()).slice(0, 6);
-    randomFriends.forEach(friend => {
-        const friendItem = document.createElement('div');
-        friendItem.classList.add('vkuiHorizontalCell', 'vkuiHorizontalCell--size-s', 'ProfileFriends__item', 'HorizontalCell-module__root--XStwI', 'HorizontalCell-module__rootSizeS--JwyO0');
-        friendItem.innerHTML = `
+          friendsSection.style.marginBottom = "16px";
+          friendsSection.style.padding = "0px";
+          const friendsContainer = friendsSection.querySelector('.ProfileGroupHorizontalCells');
+          const friendsContainer1 = friendsSection.querySelector('.PrimaryCells');
+          const randomFriends = friends.items.sort(() => 0.5 - Math.random()).slice(0, 6);
+          randomFriends.forEach(friend => {
+            const friendItem = document.createElement('div');
+            friendItem.classList.add('vkuiHorizontalCell', 'vkuiHorizontalCell--size-s', 'ProfileFriends__item', 'HorizontalCell-module__root--XStwI', 'HorizontalCell-module__rootSizeS--JwyO0');
+            friendItem.innerHTML = `
             <a href="/${friend.domain}" class="vkuiHorizontalCell__body vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible vkEnhancerFriend">
                 <div class="vkuiHorizontalCell__image">
                     <div class="vkuiImageBase vkuiImageBase--loaded vkuiAvatar" style="width: 52px; height: 52px;"><img class="vkuiImageBase__img" src="${friend.photo_100}">${friend.online === 1 ? '' : ''}</div>
@@ -1462,43 +1667,44 @@ if (frenCount.count > 0 && !document.querySelector('.ProfileFriends')) {
                 </div>
             </a>
         `;
-        if (friend.online === 1) {
-            const onlineBadge = document.createElement('div');
-            onlineBadge.classList.add('vkuiImageBaseBadge', 'vkuiImageBaseBadge--background-stroke', 'vkuiAvatarBadge', 'vkuiAvatarBadge--preset-onlineMobile', 'Badge-module__root--dY2bH', 'Badge-module__rootBottomRight--HIk3W');
-            if(friend.online_mobile && friend.online_mobile == 1) {
-			onlineBadge.innerHTML = `
+            if (friend.online === 1) {
+              const onlineBadge = document.createElement('div');
+              onlineBadge.classList.add('vkuiImageBaseBadge', 'vkuiImageBaseBadge--background-stroke', 'vkuiAvatarBadge', 'vkuiAvatarBadge--preset-onlineMobile', 'Badge-module__root--dY2bH', 'Badge-module__rootBottomRight--HIk3W');
+              if (friend.online_mobile && friend.online_mobile == 1) {
+                onlineBadge.innerHTML = `
                 <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-8 vkuiIcon--h-12 vkuiIcon--online_mobile_12" viewBox="0 0 8 12" width="8" height="12" style="width: 8px; height: 12px;">
                     <path fill="currentColor" d="M5.99 0C7.1 0 8 .9 8 2.01v7.98C8 11.1 7.1 12 5.99 12H2.01C.9 12 0 11.1 0 9.99V2.01C0 .9.9 0 2.01 0zm.008 3H2.003a.5.5 0 0 0-.503.502v4.996c0 .277.225.502.503.502h3.995a.5.5 0 0 0 .502-.502V3.503A.5.5 0 0 0 5.997 3"></path>
                 </svg>
-            `; }
-			else {
-			onlineBadge.innerHTML = `
+            `;
+              }
+              else {
+                onlineBadge.innerHTML = `
                 <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-12 vkuiIcon--h-12 vkuiIcon--circle_12" viewBox="0 0 12 12" width="12" height="12" style="width: 12px; height: 12px;">
 					<path fill="currentColor" d="M10 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0"></path>
 				</svg>
             `;
-			onlineBadge.classList.remove('vkuiAvatarBadge--preset-onlineMobile');
-			onlineBadge.classList.add('vkuiAvatarBadge--preset-online');
-			}
-            friendItem.querySelector('.vkuiImageBase').appendChild(onlineBadge);
-        }
+                onlineBadge.classList.remove('vkuiAvatarBadge--preset-onlineMobile');
+                onlineBadge.classList.add('vkuiAvatarBadge--preset-online');
+              }
+              friendItem.querySelector('.vkuiImageBase').appendChild(onlineBadge);
+            }
 
-        friendsContainer1.appendChild(friendItem);
-    });
-if (vk.id === userdata[0].id) {
-    const onlineFriends = friends.items.filter(friend => friend.online === 1);
-    const countOnline = onlineFriends.length;
-    if (countOnline > 0) {
-        const onlineFriendsHeader = document.createElement('a');
-        onlineFriendsHeader.href = `/friends?id=${vk.id}&section=online`;
-        onlineFriendsHeader.classList.add('Header-module__tappable--mabke', 'ProfileGroupHeader', 'vkuiTappable', 'vkuiInternalTappable', 'vkuiTappable--hasActive', 'vkui-focus-visible','vkEnhFriendsOnline');
-        onlineFriendsHeader.innerHTML = `
+            friendsContainer1.appendChild(friendItem);
+          });
+          if (vk.id === userdata[0].id) {
+            const onlineFriends = friends.items.filter(friend => friend.online === 1);
+            const countOnline = onlineFriends.length;
+            if (countOnline > 0) {
+              const onlineFriendsHeader = document.createElement('a');
+              onlineFriendsHeader.href = `/friends?id=${vk.id}&section=online`;
+              onlineFriendsHeader.classList.add('Header-module__tappable--mabke', 'ProfileGroupHeader', 'vkuiTappable', 'vkuiInternalTappable', 'vkuiTappable--hasActive', 'vkui-focus-visible', 'vkEnhFriendsOnline');
+              onlineFriendsHeader.innerHTML = `
             <div style="padding-top:0px; padding-bottom:0px;" class="vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
                 <div class="vkuiHeader__main">
                     <div class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__content vkuiHeadline--sizeY-compact vkuiHeadline--level-1">
                         <span class="vkuiHeader__content-in">
                             <div class="Header-module__content--F5x_X">
-                                <div class="TextClamp-module__singleLine--mRCrF">`+getLang("profile_friendsonln")+`</div>
+                                <div class="TextClamp-module__singleLine--mRCrF">`+ getLang("profile_friendsonln") + `</div>
                             </div>
                         </span>
                         <span class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__indicator vkuiFootnote">${countOnline}</span>
@@ -1506,17 +1712,17 @@ if (vk.id === userdata[0].id) {
                 </div>
             </div>
         `;
-        friendsContainer.appendChild(onlineFriendsHeader);
+              friendsContainer.appendChild(onlineFriendsHeader);
 
-        const onlineFriendsContainer = document.createElement('div');
-        onlineFriendsContainer.classList.add('ProfileGroupHorizontalCells');
-		onlineFriendsContainer.style.paddingLeft = "8px";
-		onlineFriendsContainer.style.paddingRight = "8px";
-		onlineFriendsContainer.style.paddingBottom = "8px";
-        onlineFriends.sort(() => 0.5 - Math.random()).slice(0, 3).forEach(onlineFriend => {
-            const friendItem = document.createElement('div');
-            friendItem.classList.add('vkuiHorizontalCell', 'vkuiHorizontalCell--size-s', 'ProfileFriends__item', 'HorizontalCell-module__root--XStwI', 'HorizontalCell-module__rootSizeS--JwyO0');
-            friendItem.innerHTML = `
+              const onlineFriendsContainer = document.createElement('div');
+              onlineFriendsContainer.classList.add('ProfileGroupHorizontalCells');
+              onlineFriendsContainer.style.paddingLeft = "8px";
+              onlineFriendsContainer.style.paddingRight = "8px";
+              onlineFriendsContainer.style.paddingBottom = "8px";
+              onlineFriends.sort(() => 0.5 - Math.random()).slice(0, 3).forEach(onlineFriend => {
+                const friendItem = document.createElement('div');
+                friendItem.classList.add('vkuiHorizontalCell', 'vkuiHorizontalCell--size-s', 'ProfileFriends__item', 'HorizontalCell-module__root--XStwI', 'HorizontalCell-module__rootSizeS--JwyO0');
+                friendItem.innerHTML = `
                 <a href="/${onlineFriend.domain}" class="vkuiHorizontalCell__body vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible vkEnhancerFriend">
                     <div class="vkuiHorizontalCell__image">
                         <div class="vkuiImageBase vkuiImageBase--loaded vkuiAvatar" style="width: 52px; height: 52px;"><img class="vkuiImageBase__img" src="${onlineFriend.photo_100}"></div>
@@ -1526,52 +1732,53 @@ if (vk.id === userdata[0].id) {
                     </div>
                 </a>
             `;
-        if (onlineFriend.online === 1) {
-            const onlineBadge = document.createElement('div');
-            onlineBadge.classList.add('vkuiImageBaseBadge', 'vkuiImageBaseBadge--background-stroke', 'vkuiAvatarBadge', 'vkuiAvatarBadge--preset-onlineMobile', 'Badge-module__root--dY2bH', 'Badge-module__rootBottomRight--HIk3W');
-            if(onlineFriend.online_mobile && onlineFriend.online_mobile == 1) {
-			onlineBadge.innerHTML = `
+                if (onlineFriend.online === 1) {
+                  const onlineBadge = document.createElement('div');
+                  onlineBadge.classList.add('vkuiImageBaseBadge', 'vkuiImageBaseBadge--background-stroke', 'vkuiAvatarBadge', 'vkuiAvatarBadge--preset-onlineMobile', 'Badge-module__root--dY2bH', 'Badge-module__rootBottomRight--HIk3W');
+                  if (onlineFriend.online_mobile && onlineFriend.online_mobile == 1) {
+                    onlineBadge.innerHTML = `
                 <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-8 vkuiIcon--h-12 vkuiIcon--online_mobile_12" viewBox="0 0 8 12" width="8" height="12" style="width: 8px; height: 12px;">
                     <path fill="currentColor" d="M5.99 0C7.1 0 8 .9 8 2.01v7.98C8 11.1 7.1 12 5.99 12H2.01C.9 12 0 11.1 0 9.99V2.01C0 .9.9 0 2.01 0zm.008 3H2.003a.5.5 0 0 0-.503.502v4.996c0 .277.225.502.503.502h3.995a.5.5 0 0 0 .502-.502V3.503A.5.5 0 0 0 5.997 3"></path>
                 </svg>
-            `; }
-			else {
-			onlineBadge.innerHTML = `
+            `;
+                  }
+                  else {
+                    onlineBadge.innerHTML = `
                 <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-12 vkuiIcon--h-12 vkuiIcon--circle_12" viewBox="0 0 12 12" width="12" height="12" style="width: 12px; height: 12px;">
 					<path fill="currentColor" d="M10 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0"></path>
 				</svg>
             `;
-			onlineBadge.classList.remove('vkuiAvatarBadge--preset-onlineMobile');
-			onlineBadge.classList.add('vkuiAvatarBadge--preset-online');
-			}
-            friendItem.querySelector('.vkuiImageBase').appendChild(onlineBadge);
-        }
-            onlineFriendsContainer.appendChild(friendItem);
-        });
-        friendsContainer.appendChild(onlineFriendsContainer);
-    }
-}
-let myFriendsResponse = {items:['']};
-try {
-	myFriendsResponse = await vkApi.api('friends.get', { user_id: vk.id });
-}
-catch(error){}
-let myFriends = myFriendsResponse.items;
-let commonFriends = friends.items.filter(friend => myFriends.includes(friend.id));
-if (commonFriends.length > 0 && userdata[0].id != vk.id) {
-    const commonFriendsHeader = document.createElement('div');
-    commonFriendsHeader.tabIndex = "0";
-    commonFriendsHeader.role = "button";
-    commonFriendsHeader.dataset.allowLinkOnclickWeb = "1";
-    commonFriendsHeader.classList.add('Header-module__tappable--mabke', 'ProfileGroupHeader', 'vkuiTappable', 'vkuiInternalTappable', 'vkuiTappable--hasActive', 'vkui-focus-visible');
-    commonFriendsHeader.innerHTML = `
+                    onlineBadge.classList.remove('vkuiAvatarBadge--preset-onlineMobile');
+                    onlineBadge.classList.add('vkuiAvatarBadge--preset-online');
+                  }
+                  friendItem.querySelector('.vkuiImageBase').appendChild(onlineBadge);
+                }
+                onlineFriendsContainer.appendChild(friendItem);
+              });
+              friendsContainer.appendChild(onlineFriendsContainer);
+            }
+          }
+          let myFriendsResponse = { items: [''] };
+          try {
+            myFriendsResponse = await vkApi.api('friends.get', { user_id: vk.id });
+          }
+          catch (error) { }
+          let myFriends = myFriendsResponse.items;
+          let commonFriends = friends.items.filter(friend => myFriends.includes(friend.id));
+          if (commonFriends.length > 0 && userdata[0].id != vk.id) {
+            const commonFriendsHeader = document.createElement('div');
+            commonFriendsHeader.tabIndex = "0";
+            commonFriendsHeader.role = "button";
+            commonFriendsHeader.dataset.allowLinkOnclickWeb = "1";
+            commonFriendsHeader.classList.add('Header-module__tappable--mabke', 'ProfileGroupHeader', 'vkuiTappable', 'vkuiInternalTappable', 'vkuiTappable--hasActive', 'vkui-focus-visible');
+            commonFriendsHeader.innerHTML = `
 	<a href="/friends?id=${userdata[0].id}&amp;section=common" data-allow-link-onclick-web="1" class="Header-module__tappable--mabke ProfileGroupHeader vkuiTappable vkuiInternalTappable vkuiTappable--hasActive vkui-focus-visible">
         <div class="vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
             <div class="vkuiHeader__main">
                 <div class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__content vkuiHeadline--sizeY-compact vkuiHeadline--level-1">
                     <span class="vkuiHeader__content-in">
                         <div class="Header-module__content--F5x_X">
-                            <div class="TextClamp-module__singleLine--mRCrF">`+getLang("profile_common_friends")+`</div>
+                            <div class="TextClamp-module__singleLine--mRCrF">`+ getLang("profile_common_friends") + `</div>
                         </div>
                     </span>
                     <span class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-2 vkuiHeader__indicator vkuiFootnote">${commonFriends.length}</span>
@@ -1581,16 +1788,16 @@ if (commonFriends.length > 0 && userdata[0].id != vk.id) {
 	</a>
     `;
 
-	const jopaContainer = document.createElement('div');
-	jopaContainer.classList.add("vkEnhancerMutualFriends");
-    jopaContainer.appendChild(commonFriendsHeader);
-    const commonFriendsContainer = document.createElement('div');
-    commonFriendsContainer.classList.add('ProfileGroupHorizontalCells');
+            const jopaContainer = document.createElement('div');
+            jopaContainer.classList.add("vkEnhancerMutualFriends");
+            jopaContainer.appendChild(commonFriendsHeader);
+            const commonFriendsContainer = document.createElement('div');
+            commonFriendsContainer.classList.add('ProfileGroupHorizontalCells');
 
-    commonFriends.slice(0, 3).forEach(commonFriend => {
-        const friendItem = document.createElement('div');
-        friendItem.classList.add('vkuiHorizontalCell', 'vkuiHorizontalCell--size-s', 'ProfileFriends__item', 'HorizontalCell-module__root--XStwI', 'HorizontalCell-module__rootSizeS--JwyO0');
-        friendItem.innerHTML = `
+            commonFriends.slice(0, 3).forEach(commonFriend => {
+              const friendItem = document.createElement('div');
+              friendItem.classList.add('vkuiHorizontalCell', 'vkuiHorizontalCell--size-s', 'ProfileFriends__item', 'HorizontalCell-module__root--XStwI', 'HorizontalCell-module__rootSizeS--JwyO0');
+              friendItem.innerHTML = `
             <a href="/${commonFriend.domain}" class="vkuiHorizontalCell__body vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible vkEnhancerFriend">
                 <div class="vkuiHorizontalCell__image">
                     <div class="vkuiImageBase vkuiImageBase--loaded vkuiAvatar" style="width: 52px; height: 52px;"><img class="vkuiImageBase__img" src="${commonFriend.photo_100}"><div aria-hidden="true" class="vkuiImageBase__border"></div></div>
@@ -1600,36 +1807,38 @@ if (commonFriends.length > 0 && userdata[0].id != vk.id) {
                 </div>
             </a>
         `;
-		if (commonFriend.online === 1) {
-            const onlineBadge = document.createElement('div');
-            onlineBadge.classList.add('vkuiImageBaseBadge', 'vkuiImageBaseBadge--background-stroke', 'vkuiAvatarBadge', 'vkuiAvatarBadge--preset-onlineMobile', 'Badge-module__root--dY2bH', 'Badge-module__rootBottomRight--HIk3W');
-            if(commonFriend.online_mobile && commonFriend.online_mobile == 1) {
-			onlineBadge.innerHTML = `
+              if (commonFriend.online === 1) {
+                const onlineBadge = document.createElement('div');
+                onlineBadge.classList.add('vkuiImageBaseBadge', 'vkuiImageBaseBadge--background-stroke', 'vkuiAvatarBadge', 'vkuiAvatarBadge--preset-onlineMobile', 'Badge-module__root--dY2bH', 'Badge-module__rootBottomRight--HIk3W');
+                if (commonFriend.online_mobile && commonFriend.online_mobile == 1) {
+                  onlineBadge.innerHTML = `
                 <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-8 vkuiIcon--h-12 vkuiIcon--online_mobile_12" viewBox="0 0 8 12" width="8" height="12" style="width: 8px; height: 12px;">
                     <path fill="currentColor" d="M5.99 0C7.1 0 8 .9 8 2.01v7.98C8 11.1 7.1 12 5.99 12H2.01C.9 12 0 11.1 0 9.99V2.01C0 .9.9 0 2.01 0zm.008 3H2.003a.5.5 0 0 0-.503.502v4.996c0 .277.225.502.503.502h3.995a.5.5 0 0 0 .502-.502V3.503A.5.5 0 0 0 5.997 3"></path>
                 </svg>
-            `; }
-			else {
-			onlineBadge.innerHTML = `
+            `;
+                }
+                else {
+                  onlineBadge.innerHTML = `
                 <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--12 vkuiIcon--w-12 vkuiIcon--h-12 vkuiIcon--circle_12" viewBox="0 0 12 12" width="12" height="12" style="width: 12px; height: 12px;">
 					<path fill="currentColor" d="M10 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0"></path>
 				</svg>
             `;
-			onlineBadge.classList.remove('vkuiAvatarBadge--preset-onlineMobile');
-			onlineBadge.classList.add('vkuiAvatarBadge--preset-online');
-			}
-            friendItem.querySelector('.vkuiImageBase').appendChild(onlineBadge);
+                  onlineBadge.classList.remove('vkuiAvatarBadge--preset-onlineMobile');
+                  onlineBadge.classList.add('vkuiAvatarBadge--preset-online');
+                }
+                friendItem.querySelector('.vkuiImageBase').appendChild(onlineBadge);
+              }
+              commonFriendsContainer.appendChild(friendItem);
+            });
+            jopaContainer.appendChild(commonFriendsContainer);
+            friendsSection.prepend(jopaContainer);
+          }
         }
-        commonFriendsContainer.appendChild(friendItem);
-    });
-    jopaContainer.appendChild(commonFriendsContainer);
-	friendsSection.prepend(jopaContainer);
-}
-}
-imReady = true;
-let readyElement = document.createElement('div');
-readyElement.classList.add("imReadyForShowingFriends");
-document.body.appendChild(readyElement);});
+        imReady = true;
+        let readyElement = document.createElement('div');
+        readyElement.classList.add("imReadyForShowingFriends");
+        document.body.appendChild(readyElement);
+      });
       document.arrive(".label.fl_l", { existing: true }, async function (e) {
         appearVariable();
       });
@@ -1642,13 +1851,13 @@ document.body.appendChild(readyElement);});
           profileInfoHeight + "px"
         );
       }
-	  
+
 
       async function expandMore(userData) {
         var profileMoreInfo = document.querySelector(".profile_more_info");
-		if(!profileMoreInfo) {
-			return;
-		}
+        if (!profileMoreInfo) {
+          return;
+        }
         let ProfileInfo = document.querySelector(".ProfileInfo");
         var profileLessLabel = document.querySelector(".profile_label_less");
         var profileMoreLabel = document.querySelector(".profile_label_more");
@@ -1851,8 +2060,8 @@ document.body.appendChild(readyElement);});
                   if (job.group_id) {
                     groupLink = document.createElement("a");
                     groupLink.href = `https://vk.com/club${job.group_id}`;
-					groupLink.setAttribute('mention_id',`club${job.group_id}`);
-					groupLink.setAttribute('onmouseover','mentionOver(this)');
+                    groupLink.setAttribute('mention_id', `club${job.group_id}`);
+                    groupLink.setAttribute('onmouseover', 'mentionOver(this)');
                     groupLink.textContent = groupName;
                     groupLink.classList.add(
                       "vkuiLink",
@@ -2980,29 +3189,29 @@ document.body.appendChild(readyElement);});
         return sorted;
       }
 
-function formatCounterValue(value) {
-    if (value >= 1000000000) {
-        return (value / 1000000000).toFixed(1) + 'B';
-    } else if (value >= 1000000) {
-        return (value / 1000000).toFixed(1) + 'M';
-    } else if (value >= 10000) {
-        return (value / 1000).toFixed(1) + 'K';
-    } else {
-        return value.toString();
-    }
-}
+      function formatCounterValue(value) {
+        if (value >= 1000000000) {
+          return (value / 1000000000).toFixed(1) + 'B';
+        } else if (value >= 1000000) {
+          return (value / 1000000).toFixed(1) + 'M';
+        } else if (value >= 10000) {
+          return (value / 1000).toFixed(1) + 'K';
+        } else {
+          return value.toString();
+        }
+      }
 
-function formatValueInt(value) {
-    if (value >= 1000000000) {
-        return Math.floor(value / 1000000000)*1000000000;
-    } else if (value >= 1000000) {
-        return Math.floor(value / 1000000)*1000000;
-    } else if (value >= 10000) {
-        return Math.floor(value / 1000)*1000;
-    } else {
-        return value;
-    }
-}
+      function formatValueInt(value) {
+        if (value >= 1000000000) {
+          return Math.floor(value / 1000000000) * 1000000000;
+        } else if (value >= 1000000) {
+          return Math.floor(value / 1000000) * 1000000;
+        } else if (value >= 10000) {
+          return Math.floor(value / 1000) * 1000;
+        } else {
+          return value;
+        }
+      }
 
       function addCounters(userData, countersData) {
         var countsModule = document.createElement("div");
@@ -3017,20 +3226,19 @@ function formatValueInt(value) {
           "audios",
           "posts",
         ];
-		if(countersData) {
-        countersData = sortObject(countersData, order);
-		}
-		else
-		{
-		return;	
-		}
+        if (countersData) {
+          countersData = sortObject(countersData, order);
+        }
+        else {
+          return;
+        }
         for (var counterType in countersData) {
           var value = countersData[counterType];
           if (value !== 0) {
-			var formValue = formatCounterValue(value);
+            var formValue = formatCounterValue(value);
             var counterDiv = document.createElement("a");
             counterDiv.classList.add("counter");
-			value = formatValueInt(value);
+            value = formatValueInt(value);
             var valueDiv = document.createElement("div");
             valueDiv.classList.add("value");
             valueDiv.textContent = formValue;
@@ -3111,10 +3319,10 @@ function formatValueInt(value) {
         pageCounter.classList.add("page_counter");
         pageCounter.appendChild(countsModule);
 
-		if(countsModule.children.length > 0) {
-			var countsContainer = document.querySelector(".ProfileInfo");
-			countsContainer.appendChild(pageCounter);
-		}
+        if (countsModule.children.length > 0) {
+          var countsContainer = document.querySelector(".ProfileInfo");
+          countsContainer.appendChild(pageCounter);
+        }
       }
 
       function getLangBottom(e, t, n) {
@@ -3969,8 +4177,8 @@ function formatValueInt(value) {
                       "vkuiTappable--hasActive",
                       "vkui-focus-visible"
                     );
-					relativeLink.setAttribute('mention_id',`id${id}`);
-					relativeLink.setAttribute('onmouseover','mentionOver(this)');
+                    relativeLink.setAttribute('mention_id', `id${id}`);
+                    relativeLink.setAttribute('onmouseover', 'mentionOver(this)');
                   }
                 }
               }
@@ -4124,170 +4332,170 @@ function formatValueInt(value) {
             break;
         }
       }
-	  
-	  function getRegDateLabel(lang) {
-		switch(lang) {
-	case 0:
-      return "Дата регистрации:";
-      break;
-    case 1:
-      return "Дата реєстрації:";
-      break;
-    case 454:
-      return "Дата реєстрації:";
-      break;
-    case 114:
-      return "Дата рэгістрацыі:";
-      break;
-    case 2:
-      return "Дата рэгістрацыі:";
-      break;
-    case 777:
-      return "Дата заведения досье:";
-      break;
-    case 97:
-      return "Тіркеу күні:";
-      break;
-    case 100:
-      return "Дата рѣгистрацiи:";
-      break;
-    default:
-      return "Registration date:";
-      break;
-		}
-	  }
-	  
-function getZodiacSigns(lang) {
-    switch(lang) {
-        case 0:
+
+      function getRegDateLabel(lang) {
+        switch (lang) {
+          case 0:
+            return "Дата регистрации:";
+            break;
+          case 1:
+            return "Дата реєстрації:";
+            break;
+          case 454:
+            return "Дата реєстрації:";
+            break;
+          case 114:
+            return "Дата рэгістрацыі:";
+            break;
+          case 2:
+            return "Дата рэгістрацыі:";
+            break;
+          case 777:
+            return "Дата заведения досье:";
+            break;
+          case 97:
+            return "Тіркеу күні:";
+            break;
+          case 100:
+            return "Дата рѣгистрацiи:";
+            break;
+          default:
+            return "Registration date:";
+            break;
+        }
+      }
+
+      function getZodiacSigns(lang) {
+        switch (lang) {
+          case 0:
             return ["Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"];
-        case 1:
-        case 454:
+          case 1:
+          case 454:
             return ["Овен", "Телец", "Близнюки", "Рак", "Лев", "Діва", "Терези", "Скорпіон", "Стрілець", "Козеріг", "Водолій", "Риби"];
-        case 2:
-        case 114:
+          case 2:
+          case 114:
             return ["Баран", "Тэлец", "Блізнюкі", "Рак", "Лев", "Дзева", "Вагі", "Шкапец", "Стралец", "Козераг", "Вадалей", "Рыбы"];
-        case 777:
-        case 100:
+          case 777:
+          case 100:
             return ["Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"];
-        case 97:
+          case 97:
             return ["Овен", "Телец", "Близнесін", "Рак", "Лев", "Дева", "Терезе", "Ақшақар", "Оят", "Козерге", "Суғайыр", "Балық"];
-        default:
+          default:
             return ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-    }
-}
+        }
+      }
 
-async function getRegDateValue(id) {
-    const regDateAlready = Number(localStorage.getItem(`regDate_${id}`));
-    if (regDateAlready) return formatRegDate(regDateAlready);
-    
-    const foafGet = await fetch(`https://vk.com/foaf.php?id=${id}`);
-    const response = await foafGet.text();
-    const [, regDateReady] = response.match(/ya:created dc:date="(.+?)"/) || [];
-    if (regDateReady) {
-        const regDateReadyUNIX = new Date(regDateReady).getTime();
-        localStorage.setItem(`regDate_${id}`, regDateReadyUNIX);
-        return formatRegDate(regDateReadyUNIX);
-    }
-}
+      async function getRegDateValue(id) {
+        const regDateAlready = Number(localStorage.getItem(`regDate_${id}`));
+        if (regDateAlready) return formatRegDate(regDateAlready);
 
-function formatRegDate(unixTimestamp) {
-    const date = new Date(unixTimestamp);
-    const formattedDate = [
-        `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`,
-        `(${padZero(date.getHours())}:${padZero(date.getMinutes())})`
-    ];
-    return formattedDate;
-}
+        const foafGet = await fetch(`https://vk.com/foaf.php?id=${id}`);
+        const response = await foafGet.text();
+        const [, regDateReady] = response.match(/ya:created dc:date="(.+?)"/) || [];
+        if (regDateReady) {
+          const regDateReadyUNIX = new Date(regDateReady).getTime();
+          localStorage.setItem(`regDate_${id}`, regDateReadyUNIX);
+          return formatRegDate(regDateReadyUNIX);
+        }
+      }
 
-function padZero(num) {
-    return num < 10 ? `0${num}` : num;
-}
+      function formatRegDate(unixTimestamp) {
+        const date = new Date(unixTimestamp);
+        const formattedDate = [
+          `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`,
+          `(${padZero(date.getHours())}:${padZero(date.getMinutes())})`
+        ];
+        return formattedDate;
+      }
 
-function getZodiacIndex(den, month) {
-    var value = "";
-	den = Number(den);
-	month = Number(month);
-switch (month) {
-    case 1:
-        if (den <= 19)
-            value = getZodiacSigns(vk.lang)[9];
-        else
-            value = getZodiacSigns(vk.lang)[10];
-        break;
-    case 2:
-        if (den <= 18)
-            value = getZodiacSigns(vk.lang)[10];
-        else
-            value = getZodiacSigns(vk.lang)[11];
-        break;
-    case 3:
-        if (den <= 20)
-            value = getZodiacSigns(vk.lang)[11];
-        else
-            value = getZodiacSigns(vk.lang)[0];
-        break;
-    case 4:
-        if (den <= 19)
-            value = getZodiacSigns(vk.lang)[0];
-        else
-            value = getZodiacSigns(vk.lang)[1];
-        break;
-    case 5:
-        if (den <= 20)
-            value = getZodiacSigns(vk.lang)[1];
-        else
-            value = getZodiacSigns(vk.lang)[2];
-        break;
-    case 6:
-        if (den <= 21)
-            value = getZodiacSigns(vk.lang)[2];
-        else
-            value = getZodiacSigns(vk.lang)[3];
-        break;
-    case 7:
-        if (den <= 22)
-            value = getZodiacSigns(vk.lang)[3];
-        else
-            value = getZodiacSigns(vk.lang)[4];
-        break;
-    case 8:
-        if (den <= 22)
-            value = getZodiacSigns(vk.lang)[4];
-        else
-            value = getZodiacSigns(vk.lang)[5];
-        break;
-    case 9:
-        if (den <= 22)
-            value = getZodiacSigns(vk.lang)[5];
-        else
-            value = getZodiacSigns(vk.lang)[6];
-        break;
-    case 10:
-        if (den <= 22)
-            value = getZodiacSigns(vk.lang)[6];
-        else
-            value = getZodiacSigns(vk.lang)[7];
-        break;
-    case 11:
-        if (den <= 22)
-            value = getZodiacSigns(vk.lang)[7];
-        else
-            value = getZodiacSigns(vk.lang)[8];
-        break;
-    case 12:
-        if (den <= 21)
-            value = getZodiacSigns(vk.lang)[8];
-        else
-            value = getZodiacSigns(vk.lang)[9];
-        break;
-    default:
-          value = 'Zodiac parsing failed'
-}
-return value;
-}
+      function padZero(num) {
+        return num < 10 ? `0${num}` : num;
+      }
 
-function getLangYearsOld(e, t, n) {
+      function getZodiacIndex(den, month) {
+        var value = "";
+        den = Number(den);
+        month = Number(month);
+        switch (month) {
+          case 1:
+            if (den <= 19)
+              value = getZodiacSigns(vk.lang)[9];
+            else
+              value = getZodiacSigns(vk.lang)[10];
+            break;
+          case 2:
+            if (den <= 18)
+              value = getZodiacSigns(vk.lang)[10];
+            else
+              value = getZodiacSigns(vk.lang)[11];
+            break;
+          case 3:
+            if (den <= 20)
+              value = getZodiacSigns(vk.lang)[11];
+            else
+              value = getZodiacSigns(vk.lang)[0];
+            break;
+          case 4:
+            if (den <= 19)
+              value = getZodiacSigns(vk.lang)[0];
+            else
+              value = getZodiacSigns(vk.lang)[1];
+            break;
+          case 5:
+            if (den <= 20)
+              value = getZodiacSigns(vk.lang)[1];
+            else
+              value = getZodiacSigns(vk.lang)[2];
+            break;
+          case 6:
+            if (den <= 21)
+              value = getZodiacSigns(vk.lang)[2];
+            else
+              value = getZodiacSigns(vk.lang)[3];
+            break;
+          case 7:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[3];
+            else
+              value = getZodiacSigns(vk.lang)[4];
+            break;
+          case 8:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[4];
+            else
+              value = getZodiacSigns(vk.lang)[5];
+            break;
+          case 9:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[5];
+            else
+              value = getZodiacSigns(vk.lang)[6];
+            break;
+          case 10:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[6];
+            else
+              value = getZodiacSigns(vk.lang)[7];
+            break;
+          case 11:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[7];
+            else
+              value = getZodiacSigns(vk.lang)[8];
+            break;
+          case 12:
+            if (den <= 21)
+              value = getZodiacSigns(vk.lang)[8];
+            else
+              value = getZodiacSigns(vk.lang)[9];
+            break;
+          default:
+            value = 'Zodiac parsing failed'
+        }
+        return value;
+      }
+
+      function getLangYearsOld(e, t, n) {
         const o = window.langConfig;
         if (!t || !o) {
           if (!(0, r.isNumeric)(e)) {
@@ -4327,59 +4535,58 @@ function getLangYearsOld(e, t, n) {
         profileShort.classList.add("profile_info", "profile_info_short");
         profileShort.id = "profile_short";
 
-var birthday = userData[0].bdate;
-if(birthday){
-var formattedBirthday = formatBirthday(birthday);
-var ageAndZodiac = '';
+        var birthday = userData[0].bdate;
+        if (birthday) {
+          var formattedBirthday = formatBirthday(birthday);
+          var ageAndZodiac = '';
 
-var parts = birthday.split('.');
-if (parts.length === 3) {
-	let bDayFull = userData[0].bdate;
-	let ptsOfAfe = bDayFull.split('.');
-	let birthYear1 = parseInt(ptsOfAfe[2], 10);
-    let birthMonth1 = parseInt(ptsOfAfe[1], 10);
-    let birthDay1 = parseInt(ptsOfAfe[0], 10);
-	let todayDate1 = new Date();
-    let currentYear1 = todayDate1.getFullYear();
-    let currentMonth1 = todayDate1.getMonth() + 1;
-    let currentDay1 = todayDate1.getDate();
-	let age = currentYear1 - birthYear1;
-	if (currentMonth1 < birthMonth1 || (currentMonth1 === birthMonth1 && currentDay1 < birthDay1)) {
-      age--;
-    }
-    ageAndZodiac = `${getLangYearsOld(age,getLang("global_years_accusative","raw"))}, ${getZodiacIndex(parts[0], parts[1])}`
-}
-else if (parts.length === 2) {
-	ageAndZodiac = `${getZodiacIndex(parts[0], parts[1])}`
-}
+          var parts = birthday.split('.');
+          if (parts.length === 3) {
+            let bDayFull = userData[0].bdate;
+            let ptsOfAfe = bDayFull.split('.');
+            let birthYear1 = parseInt(ptsOfAfe[2], 10);
+            let birthMonth1 = parseInt(ptsOfAfe[1], 10);
+            let birthDay1 = parseInt(ptsOfAfe[0], 10);
+            let todayDate1 = new Date();
+            let currentYear1 = todayDate1.getFullYear();
+            let currentMonth1 = todayDate1.getMonth() + 1;
+            let currentDay1 = todayDate1.getDate();
+            let age = currentYear1 - birthYear1;
+            if (currentMonth1 < birthMonth1 || (currentMonth1 === birthMonth1 && currentDay1 < birthDay1)) {
+              age--;
+            }
+            ageAndZodiac = `${getLangYearsOld(age, getLang("global_years_accusative", "raw"))}, ${getZodiacIndex(parts[0], parts[1])}`
+          }
+          else if (parts.length === 2) {
+            ageAndZodiac = `${getZodiacIndex(parts[0], parts[1])}`
+          }
 
-var birthdayRow = createProfileInfoRow(
-    getLang("profile_info_birth_date"),
-    `${formattedBirthday} (${ageAndZodiac})`
-);
-if (birthdayRow) {
-    profileShort.appendChild(birthdayRow);
-}
-}
-		
-		try
-		{
-			var regDateText = getRegDateLabel(vk.lang);
-			let regDateValue1 = await getRegDateValue(userData[0].id);
-			var regDateDate = formatRegister(regDateValue1[0]);
-			regDateDate += " "+regDateValue1[1];
-			var registrationRow = createProfileInfoRow(
-				regDateText,
-				regDateDate
-			);
-			if (registrationRow) {
-				profileShort.appendChild(registrationRow);
-			}
-		}
-		catch(error) {
-			console.error("[VKENH Error]: There is no registration date for user "+userData[0].id);
-		}
-		
+          var birthdayRow = createProfileInfoRow(
+            getLang("profile_info_birth_date"),
+            `${formattedBirthday} (${ageAndZodiac})`
+          );
+          if (birthdayRow) {
+            profileShort.appendChild(birthdayRow);
+          }
+        }
+
+        try {
+          var regDateText = getRegDateLabel(vk.lang);
+          let regDateValue1 = await getRegDateValue(userData[0].id);
+          var regDateDate = formatRegister(regDateValue1[0]);
+          regDateDate += " " + regDateValue1[1];
+          var registrationRow = createProfileInfoRow(
+            regDateText,
+            regDateDate
+          );
+          if (registrationRow) {
+            profileShort.appendChild(registrationRow);
+          }
+        }
+        catch (error) {
+          console.error("[VKENH Error]: There is no registration date for user " + userData[0].id);
+        }
+
         var relationText = await getRelationText(userData[0].relation);
         var relationRow = createProfileInfoRow(
           getLang("profile_family"),
@@ -4407,10 +4614,10 @@ if (birthdayRow) {
           var companyLink = comid
             ? `https://vk.com/club${comid}`
             : `https://vk.com/search/people?c[company]=${company}&c[name]=0`;
-		  let additionalsV = "";
-		  if(comid) {
-			 additionalsV = `mention_id="club${comid}" onmouseover="mentionOver(this)"`; 
-		  }
+          let additionalsV = "";
+          if (comid) {
+            additionalsV = `mention_id="club${comid}" onmouseover="mentionOver(this)"`;
+          }
           companyRow = createProfileInfoRow(
             `${getLang("Work_place")}:`,
             `<a href="${companyLink}" ${additionalsV}>${company}</a>`
@@ -4440,15 +4647,15 @@ if (birthdayRow) {
         var siteRow = null;
         if (site) {
           var siteText = site;
-		  if (site.startsWith("[")) {
-			const match = site.match(/\[id(\d+)\|([^|\]]+)\]/);
-			if (match) {
-				const id = match[1];
-				const name = match[2];
-				site = "https://vk.com/id" + id;
-				siteText = name;
-			}
-		  }
+          if (site.startsWith("[")) {
+            const match = site.match(/\[id(\d+)\|([^|\]]+)\]/);
+            if (match) {
+              const id = match[1];
+              const name = match[2];
+              site = "https://vk.com/id" + id;
+              siteText = name;
+            }
+          }
           if (!site.startsWith("http://") && !site.startsWith("https://")) {
             site = "https://" + site;
           }
@@ -4475,42 +4682,42 @@ if (birthdayRow) {
         profileMoreInfoLink.appendChild(profileLabelMore);
         profileMoreInfoLink.appendChild(profileLabelLess);
         profileMoreInfo.appendChild(profileMoreInfoLink);
-		if (
-    (userData[0].home_town && userData[0].home_town !== "") ||
-    (userData[0].personal && userData[0].personal.langs_full) ||
-    (userData[0].relatives && userData[0].relatives.length > 0) ||
-    (userData[0].home_phone && userData[0].home_phone !== "") ||
-    (userData[0].mobile_phone && userData[0].mobile_phone !== "") ||
-    (userData[0].skype && userData[0].skype !== "") ||
-    (userData[0].career && userData[0].career.length > 0) ||
-    (userData[0].universities && userData[0].universities.length > 0) ||
-    (userData[0].schools && userData[0].schools.length > 0) ||
-    (userData[0].military && userData[0].military.length > 0) ||
-    (
-        userData[0].personal &&
-        (
-            (userData[0].personal.alcohol && userData[0].personal.alcohol !== 0) ||
-            (userData[0].personal.life_main && userData[0].personal.life_main !== 0) ||
-            (userData[0].personal.people_main && userData[0].personal.people_main !== 0) ||
-            (userData[0].personal.smoking && userData[0].personal.smoking !== 0) ||
-            (userData[0].personal.inspired_by && userData[0].personal.inspired_by !== "") ||
-            (userData[0].personal.religion && userData[0].personal.religion !== "")
-        ) &&
-        Object.keys(userData[0].personal).length > 0
-    ) ||
-    (userData[0].activities && userData[0].activities !== "") ||
-    (userData[0].interests && userData[0].interests !== "") ||
-    (userData[0].music && userData[0].music !== "") ||
-    (userData[0].movies && userData[0].movies !== "") ||
-    (userData[0].tv && userData[0].tv !== "") ||
-    (userData[0].books && userData[0].books !== "") ||
-    (userData[0].games && userData[0].games !== "") ||
-    (userData[0].quotes && userData[0].quotes !== "") ||
-    (userData[0].about && userData[0].about !== "")
-){
-			profileShort.appendChild(profileMoreInfo);
-		}
-		pageCurrentInfo.appendChild(profileShort);
+        if (
+          (userData[0].home_town && userData[0].home_town !== "") ||
+          (userData[0].personal && userData[0].personal.langs_full) ||
+          (userData[0].relatives && userData[0].relatives.length > 0) ||
+          (userData[0].home_phone && userData[0].home_phone !== "") ||
+          (userData[0].mobile_phone && userData[0].mobile_phone !== "") ||
+          (userData[0].skype && userData[0].skype !== "") ||
+          (userData[0].career && userData[0].career.length > 0) ||
+          (userData[0].universities && userData[0].universities.length > 0) ||
+          (userData[0].schools && userData[0].schools.length > 0) ||
+          (userData[0].military && userData[0].military.length > 0) ||
+          (
+            userData[0].personal &&
+            (
+              (userData[0].personal.alcohol && userData[0].personal.alcohol !== 0) ||
+              (userData[0].personal.life_main && userData[0].personal.life_main !== 0) ||
+              (userData[0].personal.people_main && userData[0].personal.people_main !== 0) ||
+              (userData[0].personal.smoking && userData[0].personal.smoking !== 0) ||
+              (userData[0].personal.inspired_by && userData[0].personal.inspired_by !== "") ||
+              (userData[0].personal.religion && userData[0].personal.religion !== "")
+            ) &&
+            Object.keys(userData[0].personal).length > 0
+          ) ||
+          (userData[0].activities && userData[0].activities !== "") ||
+          (userData[0].interests && userData[0].interests !== "") ||
+          (userData[0].music && userData[0].music !== "") ||
+          (userData[0].movies && userData[0].movies !== "") ||
+          (userData[0].tv && userData[0].tv !== "") ||
+          (userData[0].books && userData[0].books !== "") ||
+          (userData[0].games && userData[0].games !== "") ||
+          (userData[0].quotes && userData[0].quotes !== "") ||
+          (userData[0].about && userData[0].about !== "")
+        ) {
+          profileShort.appendChild(profileMoreInfo);
+        }
+        pageCurrentInfo.appendChild(profileShort);
         function createProfileInfoRow(label, content) {
           if (!content) return null;
           var clearFix = document.createElement("div");
@@ -4545,9 +4752,9 @@ if (birthdayRow) {
           }
           return `<a href="https://vk.com/search?c[section]=people&c[bday]=${day}&c[bmonth]=${parts[1]}">${formattedDate}</a>`;
         }
-		
-		
-		function formatRegister(bdate) {
+
+
+        function formatRegister(bdate) {
           if (!bdate) return null;
           var parts = bdate.split(".");
           var day = parts[0];
@@ -4754,8 +4961,8 @@ if (birthdayRow) {
         let secsAgo = getLang("global_secs_ago", "raw");
         let minsAgo = getLang("global_mins_ago", "raw");
         let hoursAgo = getLang("global_hours_ago", "raw");
-		let hours12345 = getLang("global_word_hours_ago", "raw");
-		let minutes12345 = getLang("mobile_profile_status_word_mins_ago", "raw");
+        let hours12345 = getLang("global_word_hours_ago", "raw");
+        let minutes12345 = getLang("mobile_profile_status_word_mins_ago", "raw");
         let longAgo = getLang("vkui_common_short_date_time", "raw");
 
         if (secondsAgo == 0) {
@@ -4764,20 +4971,19 @@ if (birthdayRow) {
           let secString = getLangTime(secondsAgo, secsAgo);
           return secString;
         } else if (secondsAgo < 3600) {
-		  let minutesAgo = Math.floor(secondsAgo / 60);
-		  let minString;
-		  if(minutesAgo<6)
-		  {
-			minString = minutes12345[minutesAgo];
-		  }
-		  else {
-          minString = getLangTime(minutesAgo, minsAgo);
-		  }
+          let minutesAgo = Math.floor(secondsAgo / 60);
+          let minString;
+          if (minutesAgo < 6) {
+            minString = minutes12345[minutesAgo];
+          }
+          else {
+            minString = getLangTime(minutesAgo, minsAgo);
+          }
           return minString;
         } else if (secondsAgo < 14400) {
-		  let hourssAgo = Math.floor(secondsAgo / 3600);
+          let hourssAgo = Math.floor(secondsAgo / 3600);
           let hourString;
-		  hourString = hours12345[hourssAgo];
+          hourString = hours12345[hourssAgo];
           return hourString;
         } else {
           let lastSeenDate = new Date(onlineInfo.last_seen * 1000);
@@ -4874,96 +5080,97 @@ if (birthdayRow) {
           });
           console.info("[VK ENH] Profile fetched");
           console.log(response[0]);
-		  if(!response[0].hidden) {
-          let wasInSetb = getLang("profile_last_seen", "raw");
-          let newLangArray = wasInSetb.map((item) => item.replace(/%s/, ""));
-          let index = response[0].sex === 1 ? 2 : 1;
-          let zahodil = newLangArray[index];
-          if (zahodil == "") {
-            zahodil = newLangArray[response[0].sex];
-          }
-          let onlineInfo = getTimeString(response[0].online_info);
-          let zahodilString = zahodil + " " + onlineInfo;
-          try {
-            let onlineBadgeByl = document.querySelector(
-              ".ProfileIndicatorBadge__badgeLastSeen"
-            );
-            onlineBadgeByl.textContent = zahodilString;
-
-            if (response[0].online_info.is_mobile) {
-              let mobileDiv = document.createElement("div");
-              mobileDiv.className = "vkEnhancerMobileWas";
-              onlineBadgeByl.appendChild(mobileDiv);
+          if (!response[0].hidden) {
+            let wasInSetb = getLang("profile_last_seen", "raw");
+            let newLangArray = wasInSetb.map((item) => item.replace(/%s/, ""));
+            let index = response[0].sex === 1 ? 2 : 1;
+            let zahodil = newLangArray[index];
+            if (zahodil == "") {
+              zahodil = newLangArray[response[0].sex];
             }
-          } catch (error) { }
-          try {
-            let onlineBadgeComp = document.querySelector(
-              ".ProfileIndicatorBadge__badgeOnline"
-            );
-            onlineBadgeComp.textContent = "Online";
-          } catch (error) { }
-          try {
-            let onlineBadgeMob = document.querySelector(
-              ".ProfileIndicatorBadge__badgeOnlineMobile"
-            );
-            onlineBadgeMob.textContent = "Onlineᅠ​";
-		} catch (error) { }}
-		if(response[0].online_info.status && response[0].online_info.status == "recently") {
-			try {
-				let lastSeenRecently = getLang("global_online_was_recently","raw");
-				let indexRecently = response[0].sex === 1 ? 2 : 1;
-				let recentlyCurrent = lastSeenRecently[indexRecently];
-				let parentBadge = document.querySelector('.ProfileIndicatorBadge');
-				let innerBadge = document.createElement('div');
-				innerBadge.classList.add('ProfileIndicatorBadge__badge');
-				innerBadge.setAttribute('aria-hidden',"true");
-				innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
-				parentBadge.appendChild(innerBadge);
-			}
-			catch(error){}
-		}
-		if(response[0].online_info.status && response[0].online_info.status == "last_week") {
-			try {
-				let lastSeenRecently = getLang("global_online_was_week","raw");
-				let indexRecently = response[0].sex === 1 ? 2 : 1;
-				let recentlyCurrent = lastSeenRecently[indexRecently];
-				let parentBadge = document.querySelector('.ProfileIndicatorBadge');
-				let innerBadge = document.createElement('div');
-				innerBadge.classList.add('ProfileIndicatorBadge__badge');
-				innerBadge.setAttribute('aria-hidden',"true");
-				innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
-				parentBadge.appendChild(innerBadge);
-			}
-			catch(error){}
-		}
-		if(response[0].online_info.status && response[0].online_info.status == "last_month") {
-			try {
-				let lastSeenRecently = getLang("global_online_this_month","raw");
-				let indexRecently = response[0].sex === 1 ? 2 : 1;
-				let recentlyCurrent = lastSeenRecently[indexRecently];
-				let parentBadge = document.querySelector('.ProfileIndicatorBadge');
-				let innerBadge = document.createElement('div');
-				innerBadge.classList.add('ProfileIndicatorBadge__badge');
-				innerBadge.setAttribute('aria-hidden',"true");
-				innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
-				parentBadge.appendChild(innerBadge);
-			}
-			catch(error){}
-		}
-		if(response[0].online_info.status && response[0].online_info.status == "long_ago") {
-			try {
-				let lastSeenRecently = getLang("global_online_long_ago","raw");
-				let indexRecently = response[0].sex === 1 ? 2 : 1;
-				let recentlyCurrent = lastSeenRecently[indexRecently];
-				let parentBadge = document.querySelector('.ProfileIndicatorBadge');
-				let innerBadge = document.createElement('div');
-				innerBadge.classList.add('ProfileIndicatorBadge__badge');
-				innerBadge.setAttribute('aria-hidden',"true");
-				innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
-				parentBadge.appendChild(innerBadge);
-			}
-			catch(error){}
-		}
+            let onlineInfo = getTimeString(response[0].online_info);
+            let zahodilString = zahodil + " " + onlineInfo;
+            try {
+              let onlineBadgeByl = document.querySelector(
+                ".ProfileIndicatorBadge__badgeLastSeen"
+              );
+              onlineBadgeByl.textContent = zahodilString;
+
+              if (response[0].online_info.is_mobile) {
+                let mobileDiv = document.createElement("div");
+                mobileDiv.className = "vkEnhancerMobileWas";
+                onlineBadgeByl.appendChild(mobileDiv);
+              }
+            } catch (error) { }
+            try {
+              let onlineBadgeComp = document.querySelector(
+                ".ProfileIndicatorBadge__badgeOnline"
+              );
+              onlineBadgeComp.textContent = "Online";
+            } catch (error) { }
+            try {
+              let onlineBadgeMob = document.querySelector(
+                ".ProfileIndicatorBadge__badgeOnlineMobile"
+              );
+              onlineBadgeMob.textContent = "Onlineᅠ​";
+            } catch (error) { }
+          }
+          if (response[0].online_info.status && response[0].online_info.status == "recently") {
+            try {
+              let lastSeenRecently = getLang("global_online_was_recently", "raw");
+              let indexRecently = response[0].sex === 1 ? 2 : 1;
+              let recentlyCurrent = lastSeenRecently[indexRecently];
+              let parentBadge = document.querySelector('.ProfileIndicatorBadge');
+              let innerBadge = document.createElement('div');
+              innerBadge.classList.add('ProfileIndicatorBadge__badge');
+              innerBadge.setAttribute('aria-hidden', "true");
+              innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
+              parentBadge.appendChild(innerBadge);
+            }
+            catch (error) { }
+          }
+          if (response[0].online_info.status && response[0].online_info.status == "last_week") {
+            try {
+              let lastSeenRecently = getLang("global_online_was_week", "raw");
+              let indexRecently = response[0].sex === 1 ? 2 : 1;
+              let recentlyCurrent = lastSeenRecently[indexRecently];
+              let parentBadge = document.querySelector('.ProfileIndicatorBadge');
+              let innerBadge = document.createElement('div');
+              innerBadge.classList.add('ProfileIndicatorBadge__badge');
+              innerBadge.setAttribute('aria-hidden', "true");
+              innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
+              parentBadge.appendChild(innerBadge);
+            }
+            catch (error) { }
+          }
+          if (response[0].online_info.status && response[0].online_info.status == "last_month") {
+            try {
+              let lastSeenRecently = getLang("global_online_this_month", "raw");
+              let indexRecently = response[0].sex === 1 ? 2 : 1;
+              let recentlyCurrent = lastSeenRecently[indexRecently];
+              let parentBadge = document.querySelector('.ProfileIndicatorBadge');
+              let innerBadge = document.createElement('div');
+              innerBadge.classList.add('ProfileIndicatorBadge__badge');
+              innerBadge.setAttribute('aria-hidden', "true");
+              innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
+              parentBadge.appendChild(innerBadge);
+            }
+            catch (error) { }
+          }
+          if (response[0].online_info.status && response[0].online_info.status == "long_ago") {
+            try {
+              let lastSeenRecently = getLang("global_online_long_ago", "raw");
+              let indexRecently = response[0].sex === 1 ? 2 : 1;
+              let recentlyCurrent = lastSeenRecently[indexRecently];
+              let parentBadge = document.querySelector('.ProfileIndicatorBadge');
+              let innerBadge = document.createElement('div');
+              innerBadge.classList.add('ProfileIndicatorBadge__badge');
+              innerBadge.setAttribute('aria-hidden', "true");
+              innerBadge.innerHTML = `<span class="ProfileIndicatorBadge__badgeLastSeenWrapper"><span class="ProfileIndicatorBadge__badgeLastSeen">${recentlyCurrent}</span></span>`;
+              parentBadge.appendChild(innerBadge);
+            }
+            catch (error) { }
+          }
           /*let styleElement = fromId("vken_box_online_classic");
           if (!styleElement) {
             styleElement = document.createElement("style");
@@ -5023,89 +5230,89 @@ if (birthdayRow) {
         profileAva.appendChild(img);
       }
 
-function getIdAntiAsync() {
-      const url = window.location.href;
-  var parts = url.split("/");
-  var username = parts[parts.length - 1];
-  if (username.includes("?")) {
-    username = username.split("?")[0];
-  }
-  const url1 = `https://vkenhancer-api.vercel.app/getId?username=${username}`;
-  return fetch(url1)
-    .then(response => response.json())
-    .then(data => data.response.object_id)
-    .catch(error => {
-      console.error(error);
-      return 1;
-    });
-}
+      function getIdAntiAsync() {
+        const url = window.location.href;
+        var parts = url.split("/");
+        var username = parts[parts.length - 1];
+        if (username.includes("?")) {
+          username = username.split("?")[0];
+        }
+        const url1 = `https://vkenhancer-api.vercel.app/getId?username=${username}`;
+        return fetch(url1)
+          .then(response => response.json())
+          .then(data => data.response.object_id)
+          .catch(error => {
+            console.error(error);
+            return 1;
+          });
+      }
 
-async function changeBroadcastState() {
-	let expVa = await ajax.promisifiedPost("al_audio.php?act=status_tt", {});
-	let expVal = expVa[1].is_profile_active;
-	let j = ap.getCurrentAudio();
-	let o;
-	try {
-		o = `${j[1]}_${j[0]}`;
-	}
-	catch(error) {
-		return;
-	}
-	await ajax.promisifiedPost("al_audio.php?act=toggle_status", {
-        exp: +!expVal,
-        oid: window.vk.id,
-        hash: window.vk.statusExportHash,
-        id:o,
-        top: 0,
-        access_key: ""
-    })
-	let statusVK = document.querySelector('.page_current_info');
-	statusVK.remove();
-}
+      async function changeBroadcastState() {
+        let expVa = await ajax.promisifiedPost("al_audio.php?act=status_tt", {});
+        let expVal = expVa[1].is_profile_active;
+        let j = ap.getCurrentAudio();
+        let o;
+        try {
+          o = `${j[1]}_${j[0]}`;
+        }
+        catch (error) {
+          return;
+        }
+        await ajax.promisifiedPost("al_audio.php?act=toggle_status", {
+          exp: +!expVal,
+          oid: window.vk.id,
+          hash: window.vk.statusExportHash,
+          id: o,
+          top: 0,
+          access_key: ""
+        })
+        let statusVK = document.querySelector('.page_current_info');
+        statusVK.remove();
+      }
 
-function getPhotoEditHash() {
-	let script = Array.from(document.querySelectorAll('script')).find(e=>e.innerHTML.includes('window.initReactApplication'));
-	let scriptContent = script.innerHTML;
-	let startIndex = scriptContent.indexOf('"hashes":{');
-	if (startIndex === -1) return undefined;
-	let endIndex = scriptContent.indexOf('}', startIndex) + 1;
-	let hashesString = scriptContent.substring(startIndex, endIndex);
-	let braceIndex = hashesString.indexOf('{');
-	hashesString = hashesString.substring(braceIndex);
-	let hashesObject = JSON.parse(hashesString);
-	let avatarEditHash = hashesObject.avatarEdit;
-	return avatarEditHash;
-}
+      function getPhotoEditHash() {
+        let script = Array.from(document.querySelectorAll('script')).find(e => e.innerHTML.includes('window.initReactApplication'));
+        let scriptContent = script.innerHTML;
+        let startIndex = scriptContent.indexOf('"hashes":{');
+        if (startIndex === -1) return undefined;
+        let endIndex = scriptContent.indexOf('}', startIndex) + 1;
+        let hashesString = scriptContent.substring(startIndex, endIndex);
+        let braceIndex = hashesString.indexOf('{');
+        hashesString = hashesString.substring(braceIndex);
+        let hashesObject = JSON.parse(hashesString);
+        let avatarEditHash = hashesObject.avatarEdit;
+        return avatarEditHash;
+      }
 
-async function replaceTabsWithPhotosModule() {
-    // Найти элемент section с классом vkuiInternalGroup
-    let section = document.querySelector('section.vkuiInternalGroup:has(>.OwnerContentTabs)');
+      async function replaceTabsWithPhotosModule() {
+        // Найти элемент section с классом vkuiInternalGroup
+        let section = document.querySelector('section.vkuiInternalGroup:has(>.OwnerContentTabs)');
 
-    if (!section) {
-        console.error("Элемент section не найден");
-        return;
-    }
+        if (!section) {
+          console.error("Элемент section не найден");
+          return;
+        }
 
-    // Найти элемент с классом OwnerContentTabs внутри section
-    let tabs = section.querySelector('.OwnerContentTabs');
+        // Найти элемент с классом OwnerContentTabs внутри section
+        let tabs = section.querySelector('.OwnerContentTabs');
 
-    if (!tabs) {
-        console.error("Элемент OwnerContentTabs не найден");
-        return;
-    }
+        if (!tabs) {
+          console.error("Элемент OwnerContentTabs не найден");
+          return;
+        }
 
-    // Удалить элемент OwnerContentTabs
-    tabs.remove();
+        // Удалить элемент OwnerContentTabs
+        tabs.remove();
 
-    // Создать новый элемент для модуля фотографий
-    let photosModule = document.createElement('div');
-	let ownerId = await getId();
-    photosModule.classList.add('module', 'clear', 'photos_module');
-    photosModule.id = 'profile_photos_module';
-	let photodata = await vkApi.api('photos.getAll',{owner_id: ownerId, count: 4, skip_hidden: true});
-	let userDataPi = await getUserDataPhoto(ownerId);
-	let userNamePi = userDataPi[0].first_name_gen;
-    photosModule.innerHTML = `
+        // Создать новый элемент для модуля фотографий
+        let photosModule = document.createElement('div');
+        let ownerId = await getId();
+        photosModule.classList.add('module', 'clear', 'photos_module');
+        photosModule.id = 'profile_photos_module';
+        let photodata = await vkApi.api('photos.getAll', { owner_id: ownerId, count: 4, skip_hidden: true });
+        let userDataPi = await getUserDataPhoto(ownerId);
+        let userNamePi = userDataPi[0].first_name_gen;
+        photosModule.innerHTML = `
         <div class="header_right_link fl_r"></div>
         <a href="/albums${ownerId}" onclick="return showAlbums(${ownerId}, {noHistory: true}, event);" class="module_header">
             <div class="header_top clear_fix">
@@ -5115,56 +5322,56 @@ async function replaceTabsWithPhotosModule() {
         </a>
         <div id="page_photos_module" class="page_photos_module"></div>
     `;
-	let d = document.createElement('a');
-	d.classList.add("fl_r");
-	d.setAttribute('onclick',`event.preventDefault(); event.stopPropagation(); window.showBox("al_places.php", {
+        let d = document.createElement('a');
+        d.classList.add("fl_r");
+        d.setAttribute('onclick', `event.preventDefault(); event.stopPropagation(); window.showBox("al_places.php", {
                     act: "photos_box",
                     uid: ${ownerId}
                 }, {
                     stat: ["maps.js", window.jsc("web/places.js"), "places.css", "ui_controls.js", "ui_controls.css"]
                 });`);
-	d.style.color = "var(--vkui--color_text_secondary)";
-	d.style.marginRight = "-12px";
-	d.textContent = getLang("photos_photo_menu_show_on_map").toLowerCase();
-	photosModule.querySelector('.header_top').appendChild(d);
-    if (!photodata || !photodata.items) {
-        console.error("Данные фотографий не найдены");
-        return;
-    }
+        d.style.color = "var(--vkui--color_text_secondary)";
+        d.style.marginRight = "-12px";
+        d.textContent = getLang("photos_photo_menu_show_on_map").toLowerCase();
+        photosModule.querySelector('.header_top').appendChild(d);
+        if (!photodata || !photodata.items) {
+          console.error("Данные фотографий не найдены");
+          return;
+        }
 
-    let pagePhotosModule = photosModule.querySelector('#page_photos_module');
-	let countAddedPhotos = 0;
-    photodata.items.forEach(item => {
-        let photoLink = item.sizes[item.sizes.length - 1].url;
-        let photoId = `${item.owner_id}_${item.id}`;
+        let pagePhotosModule = photosModule.querySelector('#page_photos_module');
+        let countAddedPhotos = 0;
+        photodata.items.forEach(item => {
+          let photoLink = item.sizes[item.sizes.length - 1].url;
+          let photoId = `${item.owner_id}_${item.id}`;
 
-        let photoElement = document.createElement('a');
-        photoElement.classList.add('page_square_photo', 'crisp_image');
-        photoElement.dataset.photoId = photoId;
-        photoElement.href = `/${photoId}?all=1`;
-        photoElement.onclick = () => showPhoto(photoId, `photos(${item.owner_id})`, {
+          let photoElement = document.createElement('a');
+          photoElement.classList.add('page_square_photo', 'crisp_image');
+          photoElement.dataset.photoId = photoId;
+          photoElement.href = `/${photoId}?all=1`;
+          photoElement.onclick = () => showPhoto(photoId, `photos(${item.owner_id})`, {
             temp: {
-                x: photoLink,
-                y: photoLink,
-                z: photoLink,
-                w: photoLink,
-                x_: [photoLink, 604, 340],
-                y_: [photoLink, 807, 454],
-                z_: [photoLink, 1280, 720],
-                w_: [photoLink, 1920, 1080],
-                base: ''
+              x: photoLink,
+              y: photoLink,
+              z: photoLink,
+              w: photoLink,
+              x_: [photoLink, 604, 340],
+              y_: [photoLink, 807, 454],
+              z_: [photoLink, 1280, 720],
+              w_: [photoLink, 1920, 1080],
+              base: ''
             }
-        });
+          });
 
-        photoElement.style.backgroundImage = `url(${photoLink})`;
-        photoElement.setAttribute('aria-label', 'Фотография');
-        photoElement.innerHTML = '<span class="blind_label">Фотография</span>';
-		countAddedPhotos++;
-        pagePhotosModule.appendChild(photoElement);
-    });
-	let photosLoadModule = document.createElement('section');
-	photosLoadModule.classList.add("vkEnhancerLoadPhotoModule");
-	photosLoadModule.innerHTML = `
+          photoElement.style.backgroundImage = `url(${photoLink})`;
+          photoElement.setAttribute('aria-label', 'Фотография');
+          photoElement.innerHTML = '<span class="blind_label">Фотография</span>';
+          countAddedPhotos++;
+          pagePhotosModule.appendChild(photoElement);
+        });
+        let photosLoadModule = document.createElement('section');
+        photosLoadModule.classList.add("vkEnhancerLoadPhotoModule");
+        photosLoadModule.innerHTML = `
 	 <a id="photos_choose_upload_area_vkEnhancer" class="photos_choose_upload_area" title="${getLang("market_drop_to_upload")}" style="display: block;" onclick="cur.meUploadPhoto ? cur.meUploadPhoto() : document.querySelector('.ProfileTabsPhotoUploadInput').click();">
     <div class="photos_choose_upload_area_uploadvkEnhancer">
 	  <svg fill="none" height="32" viewBox="0 0 56 56" width="32" xmlns="http://www.w3.org/2000/svg"><clipPath id="camera_outline_56__a"><path d="M0 0h56v56H0z"></path></clipPath><g clip-path="url(#camera_outline_56__a)" clip-rule="evenodd" fill="currentColor" fill-rule="evenodd"><path d="M19.08 6.66A4.74 4.74 0 0 1 22 5.5h12c1.21 0 2.21.6 2.92 1.16a12.69 12.69 0 0 1 2.27 2.44l.98 1.23c.13.16.48.42 1.09.63.57.21 1.22.32 1.74.32h1c2.45 0 4.5 1.27 5.87 3.14A11.86 11.86 0 0 1 52 21.44h-3c0-2.12-.6-3.97-1.54-5.24A4.27 4.27 0 0 0 44 14.28h-1c-.89 0-1.87-.18-2.75-.49-.85-.3-1.8-.8-2.42-1.59l-1.02-1.27-.33-.42a50.36 50.36 0 0 0-.12-.15c-.4-.49-.84-.98-1.31-1.36-.49-.38-.83-.5-1.05-.5H22c-.22 0-.56.12-1.05.5a9.84 9.84 0 0 0-1.33 1.39l-.1.12-.33.42-1.02 1.27a5.42 5.42 0 0 1-2.42 1.6c-.88.3-1.86.48-2.75.48h-1c-1.32 0-2.53.67-3.46 1.92A8.88 8.88 0 0 0 7 21.44H4c0-2.67.76-5.16 2.13-7.02A7.26 7.26 0 0 1 12 11.28h1c.52 0 1.17-.11 1.74-.32.61-.21.96-.47 1.09-.63l.98-1.23.53-.67c.41-.49 1.02-1.2 1.74-1.77zM17 46.5V45h21c4.72 0 6.88-1.09 8.5-2.82.66-.7 1.24-1.7 1.73-2.8.35-.78.56-1.84.66-2.9.1-1.05.11-1.99.11-2.48V21.44h3V34c0 .5 0 1.56-.12 2.76a12.73 12.73 0 0 1-3.18 7.45C46.34 46.74 43.28 48 38 48H17zm-9.72-2.3a11.69 11.69 0 0 1-2.3-3.63c-.38-.9-.6-2.35-.75-3.53A30.5 30.5 0 0 1 4 34V21.44h3V34c0 .42.07 1.5.2 2.68.15 1.22.35 2.28.55 2.75.43 1.04 1.02 2 1.72 2.72l.05.05.04.05a7.25 7.25 0 0 0 3.2 2.01c1.38.5 2.9.74 4.24.74v3c-1.67 0-3.54-.3-5.25-.91a10.25 10.25 0 0 1-4.47-2.89z"></path><path d="M18 28a10 10 0 1 1 20 0 10 10 0 0 1-20 0zm10-7a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"></path></g></svg>
@@ -5179,36 +5386,36 @@ async function replaceTabsWithPhotosModule() {
       </div>
     </div>
   </a>`;
-	let inserBeforeThis = document.querySelector('.WallLegacy');
-	if(ownerId == vk.id) {
-		section.parentElement.insertBefore(photosLoadModule,inserBeforeThis);
-		photosModule.querySelector('.header_label').textContent = getLang("photo_my_feed");
-	}
-    if(countAddedPhotos != 0) {
-		section.appendChild(photosModule);
-	}
-	else if(countAddedPhotos == 0){section.remove();}
-	
-}
+        let inserBeforeThis = document.querySelector('.WallLegacy');
+        if (ownerId == vk.id) {
+          section.parentElement.insertBefore(photosLoadModule, inserBeforeThis);
+          photosModule.querySelector('.header_label').textContent = getLang("photo_my_feed");
+        }
+        if (countAddedPhotos != 0) {
+          section.appendChild(photosModule);
+        }
+        else if (countAddedPhotos == 0) { section.remove(); }
 
-document.arrive('.ProfileGroup', { existing: true }, async function (e) {
-	let scrollSticky = document.querySelector('.ScrollStickyWrapper > div');
-	///ДЛЯ ФОТОАЛЬБОМОВ///
-	let userIDHereWeGoAgain = await getId();
-	let profileCheckIsClosed = await getUserDataWithoutOnline(userIDHereWeGoAgain);
-	let albumsGetter;
-	if(!profileCheckIsClosed[0].is_closed || profileCheckIsClosed[0].can_access_closed) {
-		try {
-			albumsGetter = await vkApi.api('photos.getAlbums',{owner_id:userIDHereWeGoAgain,need_covers:true});
-		}
-		catch(error) {albumsGetter = {count:0};}
-	}
-	else {
-		albumsGetter = {count:0};
-	}
-	let newAlbumElement = document.createElement('section');
-	newAlbumElement.classList = "vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM Group-module__groupModeCard vkuiInternalGroupCard ProfileGroupEnhancer ProfileAlbumsEnhancer";
-	newAlbumElement.innerHTML = ` <div class="vkuiGroup__header">
+      }
+
+      document.arrive('.ProfileGroup', { existing: true }, async function (e) {
+        let scrollSticky = document.querySelector('.ScrollStickyWrapper > div');
+        ///ДЛЯ ФОТОАЛЬБОМОВ///
+        let userIDHereWeGoAgain = await getId();
+        let profileCheckIsClosed = await getUserDataWithoutOnline(userIDHereWeGoAgain);
+        let albumsGetter;
+        if (!profileCheckIsClosed[0].is_closed || profileCheckIsClosed[0].can_access_closed) {
+          try {
+            albumsGetter = await vkApi.api('photos.getAlbums', { owner_id: userIDHereWeGoAgain, need_covers: true });
+          }
+          catch (error) { albumsGetter = { count: 0 }; }
+        }
+        else {
+          albumsGetter = { count: 0 };
+        }
+        let newAlbumElement = document.createElement('section');
+        newAlbumElement.classList = "vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM Group-module__groupModeCard vkuiInternalGroupCard ProfileGroupEnhancer ProfileAlbumsEnhancer";
+        newAlbumElement.innerHTML = ` <div class="vkuiGroup__header">
     <a href="/albums${userIDHereWeGoAgain}" data-allow-link-onclick-web="1" class="Header-module__tappable--mabke ProfileGroupHeader vkuiTappable vkuiInternalTappable vkuiTappable--hasActive vkui-focus-visible">
       <div class="vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
         <div class="vkuiHeader__main">
@@ -5233,20 +5440,20 @@ document.arrive('.ProfileGroup', { existing: true }, async function (e) {
     </div>
   </div>
   <div class="vkuiSpacing" style="height: 12px; padding: 6px 0px;"></div>`;
-  if(albumsGetter.count > 0 && !document.querySelector('.ProfileAlbumsEnhancer')) {
-	scrollSticky.appendChild(newAlbumElement);
-  
-  let appendHereAlbum = document.querySelector('.OwnerAlbumsList__items');
-  albumsGetter.items.slice(0, 2).forEach(async item => { 
-	let thumb = await vkApi.api('photos.get',{owner_id:item.owner_id,photo_ids:item.thumb_id,album_id:item.id});
-	let thumbSrc;
-	try {
-	thumbSrc = thumb.items[0].sizes[thumb.items[0].sizes.length - 1].url;
-	}
-	catch(error) {thumbSrc="https://vk.com/images/camera_big.png"};
-	let albumElement = document.createElement('div');
-	if(item.thumb_id != 0) {
-	albumElement.innerHTML = `<a href="/album${item.owner_id}_${item.id}" data-href="album${item.owner_id}_${item.id}?rev=1" onclick="return showPhoto('${item.owner_id}_${item.thumb_id}', 'album${item.owner_id}_${item.id}/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;${thumbSrc}&quot;,&quot;y&quot;:&quot;${thumbSrc}&quot;,&quot;z&quot;:&quot;${thumbSrc}&quot;,&quot;w&quot;:&quot;${thumbSrc}&quot;,&quot;x_&quot;:[&quot;${thumbSrc}&quot;,431,604],&quot;y_&quot;:[&quot;${thumbSrc}&quot;,576,807],&quot;z_&quot;:[&quot;${thumbSrc}&quot;,771,1080],&quot;w_&quot;:[&quot;${thumbSrc}&quot;,1542,2160],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums${item.owner_id}&quot;}}, event); return nav.go(this, event)" class="img_link  photos_album_w_description vkenh">
+        if (albumsGetter.count > 0 && !document.querySelector('.ProfileAlbumsEnhancer')) {
+          scrollSticky.appendChild(newAlbumElement);
+
+          let appendHereAlbum = document.querySelector('.OwnerAlbumsList__items');
+          albumsGetter.items.slice(0, 2).forEach(async item => {
+            let thumb = await vkApi.api('photos.get', { owner_id: item.owner_id, photo_ids: item.thumb_id, album_id: item.id });
+            let thumbSrc;
+            try {
+              thumbSrc = thumb.items[0].sizes[thumb.items[0].sizes.length - 1].url;
+            }
+            catch (error) { thumbSrc = "https://vk.com/images/camera_big.png" };
+            let albumElement = document.createElement('div');
+            if (item.thumb_id != 0) {
+              albumElement.innerHTML = `<a href="/album${item.owner_id}_${item.id}" data-href="album${item.owner_id}_${item.id}?rev=1" onclick="return showPhoto('${item.owner_id}_${item.thumb_id}', 'album${item.owner_id}_${item.id}/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;${thumbSrc}&quot;,&quot;y&quot;:&quot;${thumbSrc}&quot;,&quot;z&quot;:&quot;${thumbSrc}&quot;,&quot;w&quot;:&quot;${thumbSrc}&quot;,&quot;x_&quot;:[&quot;${thumbSrc}&quot;,431,604],&quot;y_&quot;:[&quot;${thumbSrc}&quot;,576,807],&quot;z_&quot;:[&quot;${thumbSrc}&quot;,771,1080],&quot;w_&quot;:[&quot;${thumbSrc}&quot;,1542,2160],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums${item.owner_id}&quot;}}, event); return nav.go(this, event)" class="img_link  photos_album_w_description vkenh">
     <div class="photos_album_thumb_wrap vkenh">
       <div class="photos_album_thumb crisp_image vkenh" style="background-image: url(${thumbSrc})">
         
@@ -5260,9 +5467,9 @@ document.arrive('.ProfileGroup', { existing: true }, async function (e) {
       </div>
     </div>
   </a>`;
-	}
-	else {
-	albumElement.innerHTML = `<a href="/album${item.owner_id}_${item.id}" data-href="album${item.owner_id}_${item.id}?rev=1" class="img_link  photos_album_w_description vkenh">
+            }
+            else {
+              albumElement.innerHTML = `<a href="/album${item.owner_id}_${item.id}" data-href="album${item.owner_id}_${item.id}?rev=1" class="img_link  photos_album_w_description vkenh">
     <div class="photos_album_thumb_wrap vkenh">
       <div class="photos_album_thumb crisp_image vkenh" style="background-image: url(${thumbSrc}); background-size: 60px 48px; background-position: center;">
         
@@ -5276,35 +5483,35 @@ document.arrive('.ProfileGroup', { existing: true }, async function (e) {
       </div>
     </div>
   </a>`;
-	}
-  appendHereAlbum.appendChild(albumElement);
-  });
-	///ДЛЯ ВИДЕО///
-	try {
-	let videos = document.querySelector('.ProfileVideos').innerHTML;
-	let popec = document.querySelector('.ProfileVideos');
-	popec.remove();
-	let newElem = document.createElement('section');
-	newElem.classList = "vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM Group-module__groupModeCard vkuiInternalGroupCard ProfileGroupEnhancer ProfileVideosEnhancer";
-	newElem.innerHTML = videos;
-	scrollSticky.appendChild(newElem);//ДОБАВЛЕНИЕ БЛОКА ВИДЕО
-let allVideos = document.querySelectorAll('.OwnerVideosListItem');
-allVideos.forEach(videoItem => {
-    let href = videoItem.querySelector('a').getAttribute('href');
-    let videoId = href.split('/').pop().replace('video', '');
+            }
+            appendHereAlbum.appendChild(albumElement);
+          });
+          ///ДЛЯ ВИДЕО///
+          try {
+            let videos = document.querySelector('.ProfileVideos').innerHTML;
+            let popec = document.querySelector('.ProfileVideos');
+            popec.remove();
+            let newElem = document.createElement('section');
+            newElem.classList = "vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM Group-module__groupModeCard vkuiInternalGroupCard ProfileGroupEnhancer ProfileVideosEnhancer";
+            newElem.innerHTML = videos;
+            scrollSticky.appendChild(newElem);//ДОБАВЛЕНИЕ БЛОКА ВИДЕО
+            let allVideos = document.querySelectorAll('.OwnerVideosListItem');
+            allVideos.forEach(videoItem => {
+              let href = videoItem.querySelector('a').getAttribute('href');
+              let videoId = href.split('/').pop().replace('video', '');
 
-    videoItem.setAttribute('onclick', `event.preventDefault(); event.stopPropagation(); window.showVideo('${videoId}','0',{autoplay: 1, queue: 0, listId: '', playlistId: ''}, this);`);
-});
+              videoItem.setAttribute('onclick', `event.preventDefault(); event.stopPropagation(); window.showVideo('${videoId}','0',{autoplay: 1, queue: 0, listId: '', playlistId: ''}, this);`);
+            });
 
-	}
-	catch(error) {}
-	let audioResponse;
-	try {
-		audioResponse = await vkApi.api('audio.get',{owner_id:userIDHereWeGoAgain});
-		if (audioResponse.count > 0) {
-				let newAudioElement = document.createElement('section');
-				newAudioElement.classList = "vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM Group-module__groupModeCard vkuiInternalGroupCard ProfileGroupEnhancer ProfileAlbumsEnhancer";
-				newAudioElement.innerHTML = ` <div class="vkuiGroup__header">
+          }
+          catch (error) { }
+          let audioResponse;
+          try {
+            audioResponse = await vkApi.api('audio.get', { owner_id: userIDHereWeGoAgain });
+            if (audioResponse.count > 0) {
+              let newAudioElement = document.createElement('section');
+              newAudioElement.classList = "vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM Group-module__groupModeCard vkuiInternalGroupCard ProfileGroupEnhancer ProfileAlbumsEnhancer";
+              newAudioElement.innerHTML = ` <div class="vkuiGroup__header">
 				<a href="/audios${userIDHereWeGoAgain}?section=all" data-allow-link-onclick-web="1" class="Header-module__tappable--mabke ProfileGroupHeader vkuiTappable vkuiInternalTappable vkuiTappable--hasActive vkui-focus-visible">
 					<div class="vkuiHeader vkuiHeader--mode-primary vkuiHeader--pi Header-module__header--a6Idw Header-module__headerPrimary--mmJ1C" role="heading" aria-level="2">
 						<div class="vkuiHeader__main">
@@ -5329,11 +5536,11 @@ allVideos.forEach(videoItem => {
 					</div>
 				</div>
 				<div class="vkuiSpacing" style="height: 12px; padding: 6px 0px;"></div>`;
-				scrollSticky.appendChild(newAudioElement);
-				let appendHereAudio = document.querySelector('.OwnerAudiosList__items');
-				audioResponse.items.slice(0, 6).forEach(async audioItem => {
-					let audioElement = document.createElement('div');
-					audioElement.innerHTML = `<div tabindex="0" class="audio_row audio_row_with_cover _audio_row _audio_row_${audioItem.owner_id}_${audioItem.id} audio_can_add audio_lpb audio_row2 audio_row_playable audio_new_lyrics" data-full-id="${audioItem.owner_id}_${audioItem.id}" onclick="return getAudioPlayer().toggleAudio(this, event)" data-audio="[${audioItem.id},${audioItem.owner_id},&quot;&quot;,&quot;${audioItem.title}&quot;,&quot;${audioItem.artist}&quot;,157,0,0,&quot;&quot;,0,34,&quot;module:${audioItem.owner_id}&quot;,&quot;[]&quot;,&quot;62efa83eaf32d46ab7\/\/e3727249bcd60c36ee\/\/\/bca050eaeb2ae61a22\/&quot;,&quot;&quot;,{&quot;duration&quot;:${audioItem.ads.duration},&quot;content_id&quot;:&quot;${audioItem.owner_id}_${audioItem.id}&quot;,&quot;puid22&quot;:${audioItem.ads.puid22},&quot;account_age_type&quot;:${audioItem.ads.account_age_type},&quot;_SITEID&quot;:276,&quot;vk_id&quot;:${vk.id},&quot;ver&quot;:251116},&quot;&quot;,&quot;&quot;,&quot;&quot;,false,&quot;9c91d4359kPPl-j5wiDD-N-q4xNYySV8d1i8YjJXvg6StjuAn436s3dh-U5Vim743w&quot;,0,0,true,&quot;${audioItem.access_key}&quot;,false,&quot;&quot;,false]" onmouseover="window.AudioUtils &amp;&amp; window.AudioUtils.onRowOver(this, event, false, '', '${audioItem.access_key}')" onmouseleave="window.AudioUtils &amp;&amp; window.AudioUtils.onRowLeave(this, event)">
+              scrollSticky.appendChild(newAudioElement);
+              let appendHereAudio = document.querySelector('.OwnerAudiosList__items');
+              audioResponse.items.slice(0, 6).forEach(async audioItem => {
+                let audioElement = document.createElement('div');
+                audioElement.innerHTML = `<div tabindex="0" class="audio_row audio_row_with_cover _audio_row _audio_row_${audioItem.owner_id}_${audioItem.id} audio_can_add audio_lpb audio_row2 audio_row_playable audio_new_lyrics" data-full-id="${audioItem.owner_id}_${audioItem.id}" onclick="return getAudioPlayer().toggleAudio(this, event)" data-audio="[${audioItem.id},${audioItem.owner_id},&quot;&quot;,&quot;${audioItem.title}&quot;,&quot;${audioItem.artist}&quot;,157,0,0,&quot;&quot;,0,34,&quot;module:${audioItem.owner_id}&quot;,&quot;[]&quot;,&quot;62efa83eaf32d46ab7\/\/e3727249bcd60c36ee\/\/\/bca050eaeb2ae61a22\/&quot;,&quot;&quot;,{&quot;duration&quot;:${audioItem.ads.duration},&quot;content_id&quot;:&quot;${audioItem.owner_id}_${audioItem.id}&quot;,&quot;puid22&quot;:${audioItem.ads.puid22},&quot;account_age_type&quot;:${audioItem.ads.account_age_type},&quot;_SITEID&quot;:276,&quot;vk_id&quot;:${vk.id},&quot;ver&quot;:251116},&quot;&quot;,&quot;&quot;,&quot;&quot;,false,&quot;9c91d4359kPPl-j5wiDD-N-q4xNYySV8d1i8YjJXvg6StjuAn436s3dh-U5Vim743w&quot;,0,0,true,&quot;${audioItem.access_key}&quot;,false,&quot;&quot;,false]" onmouseover="window.AudioUtils &amp;&amp; window.AudioUtils.onRowOver(this, event, false, '', '${audioItem.access_key}')" onmouseleave="window.AudioUtils &amp;&amp; window.AudioUtils.onRowLeave(this, event)">
   <div class="audio_row_content _audio_row_content vkEnAudioRow">
     <button class="blind_label _audio_row__play_btn" aria-label="Воспроизвести " data-testid="audio_row_play_pause_button" onclick="getAudioPlayer().toggleAudio(this, event); return cancelEvent(event)"></button>
     <div class="audio_row__cover audio_row__without_cover"><svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="song_24__Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="song_24__song_24"><path id="song_24__Bounds" d="M0 0h24v24H0z"></path><path d="M13 11.48v5.65c0 4.52-.87 5.39-4.37 5.85C6.96 23.19 5 22.44 5 19.8c0-1.28.8-2.5 2.46-2.81 1.27-.25-.09.02 2.78-.52.7-.13.77-.37.77-.9V3.97c0-1.24.67-1.69 2.66-2.09l4.68-.87c.37-.07.65.07.65.49v4.05c0 .42-.17.6-.59.68l-4.86.86c-.38.1-.55.36-.55.74v3.64Z" id="song_24__Mask" fill="currentColor"></path></g></g></svg></div>
@@ -5367,141 +5574,141 @@ allVideos.forEach(videoItem => {
     <div class="audio_player__place _audio_player__place"></div>
   </div>
 </div>`;
-function splitDuration(dura){
-    let hours = Math.floor(dura / 3600);
-    let minutes = Math.floor((dura % 3600) / 60);
-    let seconds = dura % 60;
+                function splitDuration(dura) {
+                  let hours = Math.floor(dura / 3600);
+                  let minutes = Math.floor((dura % 3600) / 60);
+                  let seconds = dura % 60;
 
-    if (hours === 0) {
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    } else {
-        return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-}
-appendHereAudio.appendChild(audioElement);
-				});
-		}
-	}
-	catch(error){}
-  }
-});
+                  if (hours === 0) {
+                    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                  } else {
+                    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                  }
+                }
+                appendHereAudio.appendChild(audioElement);
+              });
+            }
+          }
+          catch (error) { }
+        }
+      });
 
 
-document.arrive('.OwnerContentTabs', { existing: true }, async function (e) {
-	await replaceTabsWithPhotosModule();
-});
+      document.arrive('.OwnerContentTabs', { existing: true }, async function (e) {
+        await replaceTabsWithPhotosModule();
+      });
 
-function appendActivityText(activityText) {
-    getIdAntiAsync().then(objectId => {
-		let broadcast = document.querySelector('.ProfileInfo__broadcast');
-		if(!broadcast) {
-        if (vk.id != objectId) {
-            var activitySpan = document.createElement("span");
-            activitySpan.classList.add("page_current_info");
-            activitySpan.classList.add("current_text");
-            activitySpan.textContent = activityText;
-            
-            var ownerPageName = document.getElementById("owner_page_name");
-            ownerPageName.insertAdjacentElement('afterend', activitySpan); 
-        } else {
-			var ip_h = vk.ip_h;
-            var activitySpan = document.createElement("div");
-            activitySpan.style.width = "100%";
-			if(activityText != '') {
-				activitySpan.innerHTML = '<div class="page_current_info" id="page_current_info"><div id="currinfo_editor" class="page_status_editor clear" onclick="cancelEvent(event)" style="display: none;"> <div class="editor"> <div class="page_status_input_wrap _emoji_field_wrap"> <div class="emoji_smile_wrap _emoji_wrap"> <div class="emoji_smile _emoji_btn" role="button" title="'+getLang("global_emoji_hint")+'" onmouseenter="return Emoji.show(this, event);" onmouseleave="return Emoji.hide(this, event);" onclick="return cancelEvent(event);" aria-label="Добавить эмодзи или стикер"> <div class="emoji_smile_icon_inline_svg emoji_smile_icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.44 14.3a.9.9 0 0 1 1.26.13c.01.02.2.22.53.43.38.24.97.49 1.77.49s1.39-.25 1.77-.49c.2-.12.39-.26.53-.43a.9.9 0 0 1 1.4 1.13c-.27.33-.61.6-.97.83a5.1 5.1 0 0 1-2.73.76 5.1 5.1 0 0 1-2.73-.76 3.99 3.99 0 0 1-.97-.83.9.9 0 0 1 .14-1.26zm1.81-4.05a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0zM15 11.5A1.25 1.25 0 1 0 15 9a1.25 1.25 0 0 0 0 2.5z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.1a9.9 9.9 0 1 0 0 19.8 9.9 9.9 0 0 0 0-19.8zM3.9 12a8.1 8.1 0 1 1 16.2 0 8.1 8.1 0 0 1-16.2 0z" fill="currentColor"></path></svg></div> </div> </div> <div class="page_status_input" id="currinfo_input" contenteditable="true" role="textbox">' + activityText + '</div> </div> <div class="page_status_audio checkbox" id="currinfo_audio" onclick="checkbox(this);" role="checkbox" aria-checked="false" tabindex="0">'+getLang("profile_broadcast_audio_status")+'</div> <div class="page_status_app checkbox on unshown" id="currinfo_app" onclick="checkbox(this); Profile.appStatusUpdate(`' + ip_h+ '`)" role="checkbox" aria-checked="true" tabindex="0">Показывать приложение в статусе</div> <button class="flat_button button_small page_status_btn_save" id="currinfo_save">'+getLang("Save")+'</button> </div> </div> <div id="currinfo_wrap" onclick="return Page.infoEdit();" tabindex="0" role="button" style="display: block;"> <span id="current_info" class="current_info"><span class="my_current_info"><span class="current_text">' + activityText + '</span></span></span> </div> <div id="currinfo_fake" style="display: none;"><span class="my_current_info"><span class="current_text">' + activityText + '</span></span></div></div>';
-			}
-			else {
-				activitySpan.innerHTML = '<div class="page_current_info" id="page_current_info"><div id="currinfo_editor" class="page_status_editor clear" onclick="cancelEvent(event)" style="display: none;"> <div class="editor"> <div class="page_status_input_wrap _emoji_field_wrap"> <div class="emoji_smile_wrap _emoji_wrap"> <div class="emoji_smile _emoji_btn" role="button" title="'+getLang("global_emoji_hint")+'" onmouseenter="return Emoji.show(this, event);" onmouseleave="return Emoji.hide(this, event);" onclick="return cancelEvent(event);" aria-label="Добавить эмодзи или стикер"> <div class="emoji_smile_icon_inline_svg emoji_smile_icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.44 14.3a.9.9 0 0 1 1.26.13c.01.02.2.22.53.43.38.24.97.49 1.77.49s1.39-.25 1.77-.49c.2-.12.39-.26.53-.43a.9.9 0 0 1 1.4 1.13c-.27.33-.61.6-.97.83a5.1 5.1 0 0 1-2.73.76 5.1 5.1 0 0 1-2.73-.76 3.99 3.99 0 0 1-.97-.83.9.9 0 0 1 .14-1.26zm1.81-4.05a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0zM15 11.5A1.25 1.25 0 1 0 15 9a1.25 1.25 0 0 0 0 2.5z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.1a9.9 9.9 0 1 0 0 19.8 9.9 9.9 0 0 0 0-19.8zM3.9 12a8.1 8.1 0 1 1 16.2 0 8.1 8.1 0 0 1-16.2 0z" fill="currentColor"></path></svg></div> </div> </div> <div class="page_status_input" id="currinfo_input" contenteditable="true" role="textbox"></div> </div> <div class="page_status_audio checkbox" id="currinfo_audio" onclick="checkbox(this);" role="checkbox" aria-checked="false" tabindex="0">'+getLang("profile_broadcast_audio_status")+'</div> <div class="page_status_app checkbox on unshown" id="currinfo_app" onclick="checkbox(this); Profile.appStatusUpdate(`' + ip_h+ '`)"="" role="checkbox" aria-checked="true" tabindex="0">Показывать приложение в статусе</div> <button class="flat_button button_small page_status_btn_save" id="currinfo_save" style="">'+getLang("Save")+'</button> </div> </div> <div id="currinfo_wrap" onclick="return Page.infoEdit();" tabindex="0" role="button" style="display: block;"> <span id="current_info" class="current_info"><span class="no_current_info">'+getLang("change_current_info")+'</span></span> </div> <div id="currinfo_fake" style="display: none;"><span class="no_current_info">'+getLang("change_current_info")+'</span></div></div>';
-			}
-			var ownerPageName = document.getElementById("owner_page_name");
-            ownerPageName.insertAdjacentElement('afterend', activitySpan);
-			var checkBoxChecked;
-			document.arrive('#currinfo_audio', { existing: true }, function (e) {
-				e.addEventListener("click", function() {
-					checkBoxChecked = e.getAttribute("aria-checked");
-					var saveButtonStatus = document.querySelector("#currinfo_save");
-					if(checkBoxChecked == "true") {
-						let statusInput = document.querySelector('.page_status_input');
-						statusInput.setAttribute("contenteditable", false);
-						//console.log("Event listener added");
-						saveButtonStatus.addEventListener("click", changeBroadcastState);
-					}
-					else {
-						let statusInput = document.querySelector('.page_status_input');
-						statusInput.setAttribute("contenteditable", true);
-						//console.log("Event listener removed");
-						saveButtonStatus.removeEventListener("click", changeBroadcastState);
-					}
-				});
-			});
-			document.arrive('.ProfileBroadcast__checkbox', { existing: true }, function (e) {
-				e.addEventListener("click", ()=>{page.audioStatusUpdate(window.vk.statusExportHash)});
-			});
-		}
-	}
-	if(vk.id == objectId){
-	let pHeaderAva = document.querySelectorAll('.OwnerPageAvatar')[1];
-			//console.log(pHeaderAva);
-			pHeaderAva.remove();
-			let pHeaderAva1 = document.querySelectorAll('.ProfileHeader__ava')[1];
-			pHeaderAva1.style.position = "relative";
-			pHeaderAva1.style.left = "-200px";
-			let pHeaderIn = document.querySelectorAll('.ProfileHeader__in')[1];
-			let jopa = document.createElement("div");
-			jopa.classList.add("owner_photo_wrap");
-			jopa.classList.add("actions_with_effects");
-			jopa.style.zIndex = "10";
-			jopa.style.position = "relative";
-			jopa.style.left = "-8px";
-			jopa.style.top = "-5px";
-			jopa.id = "owner_photo_wrap";
-			let userDataOwner;
-			getUserDataPhoto(vk.id).then(e=>{
-				userDataOwner = e;
-				let userPhotoAva = userDataOwner[0].photo_id;
-				let photo200 = userDataOwner[0].photo_200;
-				deferredCallback(
-					() => {
-						try {
-							jopa.innerHTML = `<div class="owner_photo_top_bubble_wrap"> <div class="owner_photo_top_bubble"> <div class="ui_thumb_x_button" onclick="showFastBox(getLang('global_warning'), getLang('profile_really_delete_photo'), getLang('global_delete'),()=>{ vkApi.api('users.get',{fields:'photo_id'}).then(e=>{ vkApi.api('photos.delete',{owner_id:`+vk.id+`,photo_id:`+userDataOwner[0].photo_id.split("_")[1]+`}).then(e=>{ window.curBox().hide(true);nav.reload(); }) }) },getLang('global_cancel'))" data-title=`+getLang('profile_delete_photo')+` onmouseover="showTitle(this);" tabindex="0" role="button" aria-label=`+getLang('profile_delete_photo')+`> <div class="ui_thumb_x"></div> </div> </div> </div> <div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"><a id="profile_photo_link" href="https://vk.com/photo`+userPhotoAva+`" onclick="return showPhoto('`+userPhotoAva+`', 'album`+vk.id+`_0/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,&quot;y&quot;:&quot;`+photo200+`;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,&quot;z&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;w&quot;:&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;x_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,604,499],&quot;y_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,807,667],&quot;z_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;w_&quot;:[&quot;`+photo200+`&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums`+vk.id+`&quot;}}, event)"><img class="page_avatar_img" src="`+photo200+`"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_update_photo')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_crop" data-task-click="Page/owner_edit_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`,&quot;hash&quot;:&quot;`+getPhotoEditHash()+`&quot;}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_edit_small_copy')+`</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_effects" onclick="Page.ownerPhotoEffects('`+userPhotoAva+`', `+vk.id+`)" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">`+getLang('profile_photo_action_effects')+`</span> </div> </div> </div>`;
-						}
-						catch(error) {
-						jopa.innerHTML = `<div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"> <a id="profile_photo_link"><img class="page_avatar_img" src="` + photo200 + `"></a> </div> </aside> </div> <a class="owner_photo_bubble_action owner_photo_bubble_action_update owner_photo_no_ava" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:`+vk.id+`}" tabindex="0" role="button" style="
+      function appendActivityText(activityText) {
+        getIdAntiAsync().then(objectId => {
+          let broadcast = document.querySelector('.ProfileInfo__broadcast');
+          if (!broadcast) {
+            if (vk.id != objectId) {
+              var activitySpan = document.createElement("span");
+              activitySpan.classList.add("page_current_info");
+              activitySpan.classList.add("current_text");
+              activitySpan.textContent = activityText;
+
+              var ownerPageName = document.getElementById("owner_page_name");
+              ownerPageName.insertAdjacentElement('afterend', activitySpan);
+            } else {
+              var ip_h = vk.ip_h;
+              var activitySpan = document.createElement("div");
+              activitySpan.style.width = "100%";
+              if (activityText != '') {
+                activitySpan.innerHTML = '<div class="page_current_info" id="page_current_info"><div id="currinfo_editor" class="page_status_editor clear" onclick="cancelEvent(event)" style="display: none;"> <div class="editor"> <div class="page_status_input_wrap _emoji_field_wrap"> <div class="emoji_smile_wrap _emoji_wrap"> <div class="emoji_smile _emoji_btn" role="button" title="' + getLang("global_emoji_hint") + '" onmouseenter="return Emoji.show(this, event);" onmouseleave="return Emoji.hide(this, event);" onclick="return cancelEvent(event);" aria-label="Добавить эмодзи или стикер"> <div class="emoji_smile_icon_inline_svg emoji_smile_icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.44 14.3a.9.9 0 0 1 1.26.13c.01.02.2.22.53.43.38.24.97.49 1.77.49s1.39-.25 1.77-.49c.2-.12.39-.26.53-.43a.9.9 0 0 1 1.4 1.13c-.27.33-.61.6-.97.83a5.1 5.1 0 0 1-2.73.76 5.1 5.1 0 0 1-2.73-.76 3.99 3.99 0 0 1-.97-.83.9.9 0 0 1 .14-1.26zm1.81-4.05a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0zM15 11.5A1.25 1.25 0 1 0 15 9a1.25 1.25 0 0 0 0 2.5z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.1a9.9 9.9 0 1 0 0 19.8 9.9 9.9 0 0 0 0-19.8zM3.9 12a8.1 8.1 0 1 1 16.2 0 8.1 8.1 0 0 1-16.2 0z" fill="currentColor"></path></svg></div> </div> </div> <div class="page_status_input" id="currinfo_input" contenteditable="true" role="textbox">' + activityText + '</div> </div> <div class="page_status_audio checkbox" id="currinfo_audio" onclick="checkbox(this);" role="checkbox" aria-checked="false" tabindex="0">' + getLang("profile_broadcast_audio_status") + '</div> <div class="page_status_app checkbox on unshown" id="currinfo_app" onclick="checkbox(this); Profile.appStatusUpdate(`' + ip_h + '`)" role="checkbox" aria-checked="true" tabindex="0">Показывать приложение в статусе</div> <button class="flat_button button_small page_status_btn_save" id="currinfo_save">' + getLang("Save") + '</button> </div> </div> <div id="currinfo_wrap" onclick="return Page.infoEdit();" tabindex="0" role="button" style="display: block;"> <span id="current_info" class="current_info"><span class="my_current_info"><span class="current_text">' + activityText + '</span></span></span> </div> <div id="currinfo_fake" style="display: none;"><span class="my_current_info"><span class="current_text">' + activityText + '</span></span></div></div>';
+              }
+              else {
+                activitySpan.innerHTML = '<div class="page_current_info" id="page_current_info"><div id="currinfo_editor" class="page_status_editor clear" onclick="cancelEvent(event)" style="display: none;"> <div class="editor"> <div class="page_status_input_wrap _emoji_field_wrap"> <div class="emoji_smile_wrap _emoji_wrap"> <div class="emoji_smile _emoji_btn" role="button" title="' + getLang("global_emoji_hint") + '" onmouseenter="return Emoji.show(this, event);" onmouseleave="return Emoji.hide(this, event);" onclick="return cancelEvent(event);" aria-label="Добавить эмодзи или стикер"> <div class="emoji_smile_icon_inline_svg emoji_smile_icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.44 14.3a.9.9 0 0 1 1.26.13c.01.02.2.22.53.43.38.24.97.49 1.77.49s1.39-.25 1.77-.49c.2-.12.39-.26.53-.43a.9.9 0 0 1 1.4 1.13c-.27.33-.61.6-.97.83a5.1 5.1 0 0 1-2.73.76 5.1 5.1 0 0 1-2.73-.76 3.99 3.99 0 0 1-.97-.83.9.9 0 0 1 .14-1.26zm1.81-4.05a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0zM15 11.5A1.25 1.25 0 1 0 15 9a1.25 1.25 0 0 0 0 2.5z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.1a9.9 9.9 0 1 0 0 19.8 9.9 9.9 0 0 0 0-19.8zM3.9 12a8.1 8.1 0 1 1 16.2 0 8.1 8.1 0 0 1-16.2 0z" fill="currentColor"></path></svg></div> </div> </div> <div class="page_status_input" id="currinfo_input" contenteditable="true" role="textbox"></div> </div> <div class="page_status_audio checkbox" id="currinfo_audio" onclick="checkbox(this);" role="checkbox" aria-checked="false" tabindex="0">' + getLang("profile_broadcast_audio_status") + '</div> <div class="page_status_app checkbox on unshown" id="currinfo_app" onclick="checkbox(this); Profile.appStatusUpdate(`' + ip_h + '`)"="" role="checkbox" aria-checked="true" tabindex="0">Показывать приложение в статусе</div> <button class="flat_button button_small page_status_btn_save" id="currinfo_save" style="">' + getLang("Save") + '</button> </div> </div> <div id="currinfo_wrap" onclick="return Page.infoEdit();" tabindex="0" role="button" style="display: block;"> <span id="current_info" class="current_info"><span class="no_current_info">' + getLang("change_current_info") + '</span></span> </div> <div id="currinfo_fake" style="display: none;"><span class="no_current_info">' + getLang("change_current_info") + '</span></div></div>';
+              }
+              var ownerPageName = document.getElementById("owner_page_name");
+              ownerPageName.insertAdjacentElement('afterend', activitySpan);
+              var checkBoxChecked;
+              document.arrive('#currinfo_audio', { existing: true }, function (e) {
+                e.addEventListener("click", function () {
+                  checkBoxChecked = e.getAttribute("aria-checked");
+                  var saveButtonStatus = document.querySelector("#currinfo_save");
+                  if (checkBoxChecked == "true") {
+                    let statusInput = document.querySelector('.page_status_input');
+                    statusInput.setAttribute("contenteditable", false);
+                    //console.log("Event listener added");
+                    saveButtonStatus.addEventListener("click", changeBroadcastState);
+                  }
+                  else {
+                    let statusInput = document.querySelector('.page_status_input');
+                    statusInput.setAttribute("contenteditable", true);
+                    //console.log("Event listener removed");
+                    saveButtonStatus.removeEventListener("click", changeBroadcastState);
+                  }
+                });
+              });
+              document.arrive('.ProfileBroadcast__checkbox', { existing: true }, function (e) {
+                e.addEventListener("click", () => { page.audioStatusUpdate(window.vk.statusExportHash) });
+              });
+            }
+          }
+          if (vk.id == objectId) {
+            let pHeaderAva = document.querySelectorAll('.OwnerPageAvatar')[1];
+            //console.log(pHeaderAva);
+            pHeaderAva.remove();
+            let pHeaderAva1 = document.querySelectorAll('.ProfileHeader__ava')[1];
+            pHeaderAva1.style.position = "relative";
+            pHeaderAva1.style.left = "-200px";
+            let pHeaderIn = document.querySelectorAll('.ProfileHeader__in')[1];
+            let jopa = document.createElement("div");
+            jopa.classList.add("owner_photo_wrap");
+            jopa.classList.add("actions_with_effects");
+            jopa.style.zIndex = "10";
+            jopa.style.position = "relative";
+            jopa.style.left = "-8px";
+            jopa.style.top = "-5px";
+            jopa.id = "owner_photo_wrap";
+            let userDataOwner;
+            getUserDataPhoto(vk.id).then(e => {
+              userDataOwner = e;
+              let userPhotoAva = userDataOwner[0].photo_id;
+              let photo200 = userDataOwner[0].photo_200;
+              deferredCallback(
+                () => {
+                  try {
+                    jopa.innerHTML = `<div class="owner_photo_top_bubble_wrap"> <div class="owner_photo_top_bubble"> <div class="ui_thumb_x_button" onclick="showFastBox(getLang('global_warning'), getLang('profile_really_delete_photo'), getLang('global_delete'),()=>{ vkApi.api('users.get',{fields:'photo_id'}).then(e=>{ vkApi.api('photos.delete',{owner_id:` + vk.id + `,photo_id:` + userDataOwner[0].photo_id.split("_")[1] + `}).then(e=>{ window.curBox().hide(true);nav.reload(); }) }) },getLang('global_cancel'))" data-title=` + getLang('profile_delete_photo') + ` onmouseover="showTitle(this);" tabindex="0" role="button" aria-label=` + getLang('profile_delete_photo') + `> <div class="ui_thumb_x"></div> </div> </div> </div> <div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"><a id="profile_photo_link" href="https://vk.com/photo` + userPhotoAva + `" onclick="return showPhoto('` + userPhotoAva + `', 'album` + vk.id + `_0/rev', {&quot;temp&quot;:{&quot;x&quot;:&quot;` + photo200 + `&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,&quot;y&quot;:&quot;` + photo200 + `;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,&quot;z&quot;:&quot;` + photo200 + `&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;w&quot;:&quot;` + photo200 + `&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,&quot;x_&quot;:[&quot;` + photo200 + `&amp;quality=95&amp;sign=0449f67717df7848702286a3d078dbf3&amp;type=album&quot;,604,499],&quot;y_&quot;:[&quot;` + photo200 + `&amp;quality=95&amp;sign=850d65bf30f3e8721f1a76410c013d90&amp;type=album&quot;,807,667],&quot;z_&quot;:[&quot;` + photo200 + `&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;w_&quot;:[&quot;` + photo200 + `&amp;quality=95&amp;sign=b773a90b10ef745b855e460559bff0d3&amp;type=album&quot;,1080,893],&quot;base&quot;:&quot;&quot;},&quot;jumpTo&quot;:{&quot;z&quot;:&quot;albums` + vk.id + `&quot;}}, event)"><img class="page_avatar_img" src="` + photo200 + `"></a> </div> </aside> </div> <div class="owner_photo_bubble_wrap"> <div class="owner_photo_bubble"> <div class="owner_photo_bubble_action owner_photo_bubble_action_update" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:` + vk.id + `}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">` + getLang('profile_update_photo') + `</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_crop" data-task-click="Page/owner_edit_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:` + vk.id + `,&quot;hash&quot;:&quot;` + getPhotoEditHash() + `&quot;}" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">` + getLang('profile_edit_small_copy') + `</span> </div> <div class="owner_photo_bubble_action owner_photo_bubble_action_effects" onclick="Page.ownerPhotoEffects('` + userPhotoAva + `', ` + vk.id + `)" tabindex="0" role="button"> <span class="owner_photo_bubble_action_in">` + getLang('profile_photo_action_effects') + `</span> </div> </div> </div>`;
+                  }
+                  catch (error) {
+                    jopa.innerHTML = `<div class="page_avatar_wrap" id="page_avatar_wrap"> <aside aria-label="Фотография"> <div id="page_avatar" class="page_avatar"> <a id="profile_photo_link"><img class="page_avatar_img" src="` + photo200 + `"></a> </div> </aside> </div> <a class="owner_photo_bubble_action owner_photo_bubble_action_update owner_photo_no_ava" data-task-click="Page/owner_new_photo" data-options="{&quot;useNewForm&quot;:true,&quot;ownerId&quot;:` + vk.id + `}" tabindex="0" role="button" style="
     position: absolute;
     top: 0px;
     padding: 0 0px;
     width: 100%;
     height: 206px;
     text-align: center;
-"> <span class="loadPhoto" style="line-height: 360px;">`+getLang('profile_load_photo')+`</span> </a>`;
-							let styleElement = fromId("vkenNoAva");
-							if (!styleElement) {
-								styleElement = document.createElement("style");
-								styleElement.id = "vkenNoAva";
-								document.head.appendChild(styleElement);
-							}
-							styleElement.id = "vkenNoAva";
-							styleElement.innerHTML = `.owner_photo_bubble_wrap:has(>.owner_photo_bubble>.owner_photo_no_ava){margin-top:-35px;height:36px;}`;
-						}
-						if (!getPhotoEditHash()) {
-							console.info("[VKENH] Failed to parse PhotoEditHash. Location will be rebooted if you try to edit photo");
-							try {
-								let rebootThis = jopa.querySelector('[data-task-click="Page/owner_edit_photo"]');
-								rebootThis.setAttribute('onclick','window.location.reload()');
-							}
-							catch(error){}
-						}
-					},
-				{ variable: "MECommonContext" }
-				);
-				pHeaderIn.prepend(jopa);
-			});	
-	}
-		appearVariable();
-    });
-}
+"> <span class="loadPhoto" style="line-height: 360px;">`+ getLang('profile_load_photo') + `</span> </a>`;
+                    let styleElement = fromId("vkenNoAva");
+                    if (!styleElement) {
+                      styleElement = document.createElement("style");
+                      styleElement.id = "vkenNoAva";
+                      document.head.appendChild(styleElement);
+                    }
+                    styleElement.id = "vkenNoAva";
+                    styleElement.innerHTML = `.owner_photo_bubble_wrap:has(>.owner_photo_bubble>.owner_photo_no_ava){margin-top:-35px;height:36px;}`;
+                  }
+                  if (!getPhotoEditHash()) {
+                    console.info("[VKENH] Failed to parse PhotoEditHash. Location will be rebooted if you try to edit photo");
+                    try {
+                      let rebootThis = jopa.querySelector('[data-task-click="Page/owner_edit_photo"]');
+                      rebootThis.setAttribute('onclick', 'window.location.reload()');
+                    }
+                    catch (error) { }
+                  }
+                },
+                { variable: "MECommonContext" }
+              );
+              pHeaderIn.prepend(jopa);
+            });
+          }
+          appearVariable();
+        });
+      }
 
-async function getUserDataPhoto(objectId) {
+      async function getUserDataPhoto(objectId) {
         try {
           var response = await vkApi.api("users.get", {
             user_ids: objectId,
@@ -5543,7 +5750,7 @@ async function updateUsers() {
     case 86322416:
       appendIcons(["help", "old"]);
       break;
-	case 861962176:
+    case 861962176:
       appendIcons(["help"]);
       break;
   }
@@ -5953,13 +6160,13 @@ document.arrive(
       '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular AudioMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#voice_outline_24" style="fill: currentcolor;"></use></svg></i><span class="ActionsMenuAction__title">' +
       getLang("mail_audio_message") +
       "</span></button>";
-	  
-	var clmno1 = document.createElement("a");
+
+    var clmno1 = document.createElement("a");
     clmno1.innerHTML =
       '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular GraffitiMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M6.66738 12.4934C5.66072 12.4934 4.89771 13.2639 4.85288 14.219C4.78943 15.5707 4.14574 16.3782 3.56758 16.8697C4.09576 17.0241 4.83625 17.0816 5.79412 16.7965C7.69684 16.2301 8.48106 15.0732 8.48106 14.1836C8.48106 13.2865 7.70617 12.4934 6.66738 12.4934ZM3.35859 14.1483C3.44019 12.4098 4.84452 10.9918 6.66738 10.9918C8.4581 10.9918 9.977 12.3845 9.977 14.1836C9.977 15.9903 8.47815 17.5638 6.21942 18.2361C4.06158 18.8784 2.57907 18.2114 1.87062 17.688C1.78649 17.6258 1.66019 17.5141 1.57758 17.3353C1.48322 17.131 1.47952 16.9126 1.54181 16.7213C1.69148 16.2618 2.17858 16.0626 2.52898 15.7829C2.9113 15.4778 3.31759 15.0219 3.35859 14.1483Z"/><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M15.7019 2.00141C16.312 1.36368 17.3109 1.32806 17.9631 1.93024C18.6094 2.527 18.68 3.5332 18.1327 4.21788L12.0531 11.716C11.7923 12.0376 11.3212 12.0861 11.0008 11.8244C10.6804 11.5626 10.6321 11.0897 10.8928 10.7681L16.9669 3.27699C17.0242 3.20385 17.0127 3.09301 16.9503 3.0354C16.8833 2.97354 16.8169 3.009 16.7482 3.07474L9.74543 9.7831C9.44658 10.0694 8.97312 10.0583 8.68792 9.75831C8.40272 9.45834 8.41378 8.98309 8.71263 8.69681L15.7019 2.00141Z" fill="currentColor"/></svg></i><span class="ActionsMenuAction__title">' +
       getLang("mail_added_graffiti") +
       "</span></button>";
-	var clmno2 = document.createElement("a");
+    var clmno2 = document.createElement("a");
     clmno2.innerHTML =
       '<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular StickerMenuPopper"><i class="ActionsMenuAction__icon"><svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--money_transfer_outline_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"><use xlink:href="#smile_outline_24" style="fill: currentcolor;"></use></svg></i><span class="ActionsMenuAction__title">' +
       getLang("mail_added_sticker") +
@@ -5971,24 +6178,23 @@ document.arrive(
     if (!setElement) {
       newpanel.appendChild(clmno);
     }
-	var setElement1 = document.querySelector(".GraffitiMenuPopper");
+    var setElement1 = document.querySelector(".GraffitiMenuPopper");
     if (!setElement1) {
       newpanel.appendChild(clmno1);
     }
-	var setElement2 = document.querySelector(".StickerMenuPopper");
+    var setElement2 = document.querySelector(".StickerMenuPopper");
     if (!setElement2) {
-		let imURL1 = new URL(window.location.href);
-		let imId1 = imURL1.href.split("/").at(-1);
-		if(getImSendHash(imId1) != "error")
-		{
-			newpanel.appendChild(clmno2);
-		}
-		else {
-			styleElement.innerHTML = ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{margin-top:-72px!important;}";
-		}
+      let imURL1 = new URL(window.location.href);
+      let imId1 = imURL1.href.split("/").at(-1);
+      if (getImSendHash(imId1) != "error") {
+        newpanel.appendChild(clmno2);
+      }
+      else {
+        styleElement.innerHTML = ".VKCOMMessenger__reforgedModalRoot > .MEConfig > .MEPopper{margin-top:-72px!important;}";
+      }
     }
-	setElement2 = document.querySelector(".StickerMenuPopper");
-	setElement1 = document.querySelector(".GraffitiMenuPopper");
+    setElement2 = document.querySelector(".StickerMenuPopper");
+    setElement1 = document.querySelector(".GraffitiMenuPopper");
     setElement = document.querySelector(".AudioMenuPopper");
     var eventListenerSet = false;
     if (!eventListenerSet) {
@@ -6008,16 +6214,16 @@ document.arrive(
       });
       eventListenerSet = true;
     }
-	var eventListenerSet1 = false;
+    var eventListenerSet1 = false;
     if (!eventListenerSet1) {
       setElement1.addEventListener("click", async function () {
-	    let styleElement = fromId("vkenGraffity");
-		if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "vkenGraffity";
-			document.head.appendChild(styleElement);
-		}
-		styleElement.innerHTML = `.vkEnhancerRemoveGraffityButton{
+        let styleElement = fromId("vkenGraffity");
+        if (!styleElement) {
+          styleElement = document.createElement("style");
+          styleElement.id = "vkenGraffity";
+          document.head.appendChild(styleElement);
+        }
+        styleElement.innerHTML = `.vkEnhancerRemoveGraffityButton{
     position: relative;
     height: 0px!important;
     width: 0px!important;
@@ -6033,20 +6239,20 @@ document.arrive(
 	.vkEnhancerRemoveGraffityButton svg:hover{
 	background:var(--vkui--color_overlay_primary--hover);
 	}.vkEnhancerGraffitiList{padding:8px;}.vkEnhancerModalPageHeader{ background-color:var(--vkui--color_background_tertiary)!important; border-radius:8px 8px 0 0!important; } .vkEnhancerSeparator { display:none!important; } .vkEnhancerModalPage__header { border-bottom:1px solid var(--vkui--color_separator_primary)!important; } .vkEnhancerPanelHeader__in { justify-content:flex-start!important; } .vkEnhancerPanelHeader__content-in { font-family: var(--palette-vk-font,-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)!important; padding-left: 12px!important; font-size: 14px!important; color: var(--vkui--color_text_primary)!important; overflow: hidden!important; text-overflow: ellipsis!important; white-space: nowrap!important; font-weight:400!important; } .vkEnhancerTappable { background:var(--vkui--color_background_secondary)!important; border-radius:0px!important; --vkui_internal--icon_color:var(--vkui--color_text_link)!important; color:var(--vkui--color_text_link)!important; } .vkEnhancerTappable:hover { background: var(--vkui--color_background_secondary_alpha)!important; } .vkEnhancerDiv { padding:0!important; } div:has(>.vkEnhancerModalPage__in-wrap) { display:flex; justify-content:center; align-items: center; height:100%; inline-size: 100%; block-size: 100%; overflow: hidden; position: absolute; box-sizing: border-box; } .vkEnhancerModalPage__in-wrap { font-family:var(--vkui--font_family_base); max-inline-size: var(--vkui--size_popup_medium--regular); position: relative; align-items: initial; margin-block: 32px; margin-inline: 56px; block-size: auto; max-block-size: 640px; opacity: 0; transform: none; transition: opacity 340ms var(--vkui--animation_easing_platform); inline-size: 100%; inset-inline: 0; inset-block-end: 0; display: flex; } .vkEnhancerModalPage__in { block-size: auto; box-shadow: var(--vkui--elevation3); border-end-end-radius: var(--vkui--size_border_radius_paper--regular); border-end-start-radius: var(--vkui--size_border_radius_paper--regular); } .vkEnhancerModalPage__in { background-color: var(--vkui--color_background_modal); overflow: visible; position: relative; box-sizing: border-box; inline-size: 100%; display: flex; flex-direction: column; border-start-end-radius: var(--vkui--size_border_radius_paper--regular); border-start-start-radius: var(--vkui--size_border_radius_paper--regular); --vkui_internal--background: var(--vkui--color_background_modal); } .vkEnhancerModalPage__header { inline-size: 100%; } .vkEnhancerModalPageHeader { padding-inline: 8px; --vkui_internal--safe_area_inset_top: 0; } .vkEnhancerPanelHeader { position: relative; } .vkEnhancerPanelHeader__in { display:flex; justify-content:center; } .vkEnhancerPanelHeader__content { text-align: center; opacity: 1; transition: opacity .3s var(--vkui--animation_easing_platform); } .vkEnhancerPanelHeader__content-in { font-size:18px; color: var(--vkui--color_text_primary); font-weight: 500; font-family: var(--vkui--font_family_accent); user-select:none; } .vkEnhancerSeparator { color: var(--vkui--color_separator_primary); } .vkEnhancerSeparator__in { block-size: var(--vkui--size_border--regular); margin: 0; background: currentColor; color: inherit; border: 0; transform-origin: center top; } .vkEnhancerModalPage__content-wrap { position: relative; display: flex; block-size: 100%; flex-direction: column; overflow: hidden; border-end-start-radius: inherit; border-end-end-radius: inherit; } .vkEnhancerModalPage__content { overflow-y: auto; -webkit-overflow-scrolling: touch; block-size: 100%; overflow-x: hidden; box-sizing: border-box; } .vkEnhancerModalPage__content-in { block-size:100%; } .vkEnhancerDiv { padding-block: var(--vkui--size_base_padding_vertical--regular); padding-inline: var(--vkui--size_base_padding_horizontal--regular); } .vkEnhancerSpacing { position: relative; box-sizing: border-box; } .vkEnhancerTappable { min-height: 22px; --vkui_internal--icon_color: var(--vkui--color_icon_accent); color: var(--vkui--color_text_accent); justify-content: center; text-align: center; box-sizing: border-box; text-decoration: none; margin: 0; border: 0; inline-size: 100%; background: rgba(0,0,0,0); padding-block: 0; min-block-size: 44px; display: flex; align-items: center; white-space: nowrap; padding-inline: var(--vkui--size_base_padding_horizontal--regular); isolation: isolate; position: relative; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; transition: background-color .15s ease-out; } .vkEnhancerSimpleCell__before { padding-block: 4px; flex-grow: initial; max-inline-size: initial; display: flex; align-items: center; padding-inline-end: 12px; color: var(--vkui_internal--icon_color, var(--vkui--color_icon_accent)); position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__middle { flex-grow: initial; max-inline-size: initial; display: flex; flex-direction: column; justify-content: center; padding-block: 10px; min-inline-size: 0; overflow: hidden; position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__content { justify-content: flex-start; display: flex; align-content: flex-start; align-items: center; max-inline-size: 100%; } .vkEnhancerTypography { font-weight: var(--vkui--font_weight_accent3); font-size: var(--vkui--font_headline1--font_size--compact); line-height: var(--vkui--font_headline1--line_height--compact); color: inherit; text-overflow: ellipsis; overflow: hidden; display: block; margin: 0; padding: 0; } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; } .vkEnhancerTappable:hover{ background-color:var(--vkui--color_transparent--hover); } .vkEnhancerGraffitiList { display: grid; gap: 4px; grid-template-columns: repeat(4,1fr); } .vkEnhancerGraffitiList__item { height: 158px; width: 158px; align-items: center; background-color: var(--vkui--color_transparent--hover); border-radius: 10px; cursor: pointer; display: flex; justify-content: center; transition: all .15s ease; vertical-align: bottom; } .vkEnhancerGraffitiList__item:hover { background-color: var(--vkui--color_transparent--active); } .vkEnhancerGraffitiList__item--doc { background-position: 50%; background-repeat: no-repeat; background-size: contain; border-radius: 10px; height: 158px; width: 158px; } .vkEnhancerCloseButton { position: absolute; justify-content: center; inset-block-start: 0; inset-inline-end: -56px; inline-size: 56px; block-size: 56px; padding: 18px; box-sizing: border-box; color: var(--vkui--color_icon_contrast); transition: opacity .15s ease-out; isolation: isolate; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; } .vkEnhancerCloseButton:before { display: block; content: ""; inset: 14px; background: var(--vkui--color_overlay_primary); border-radius: 50%; position: absolute; } .vkEnhancerCloseButton:hover:before { background:var(--vkui--color_overlay_primary--hover); } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; z-index: var(--vkui_internal--z_index_tappable_element); }`;
-		await VKEnhancerGraffitiBox();
-    });
-	eventListenerSet1 = true;
-	}
-	var eventListenerSet2 = false;
+        await VKEnhancerGraffitiBox();
+      });
+      eventListenerSet1 = true;
+    }
+    var eventListenerSet2 = false;
     if (!eventListenerSet2 && setElement2) {
       setElement2.addEventListener("click", async function () {
-	  	  let styleElement = fromId("vkenSticker");
-		if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = "vkenSticker";
-			document.head.appendChild(styleElement);
-		}
-		styleElement.innerHTML = `#stickerInput,#attachmentInput{    background: 0 0;
+        let styleElement = fromId("vkenSticker");
+        if (!styleElement) {
+          styleElement = document.createElement("style");
+          styleElement.id = "vkenSticker";
+          document.head.appendChild(styleElement);
+        }
+        styleElement.innerHTML = `#stickerInput,#attachmentInput{    background: 0 0;
     padding: 8px 70px 8px 12px;
     border: 1px solid var(--vkui--vkontakte_color_input_border);
     border-radius: 8px;
@@ -6069,15 +6275,15 @@ document.arrive(
     margin: 8px 20px;
     float: right;
 	cursor: pointer;}.vkEnhancerGraffitiList{padding:8px;}.vkEnhancerModalPageHeader{ background-color:var(--vkui--color_background_tertiary)!important; border-radius:8px 8px 0 0!important; } .vkEnhancerSeparator { display:none!important; } .vkEnhancerModalPage__header { border-bottom:1px solid var(--vkui--color_separator_primary)!important; } .vkEnhancerPanelHeader__in { justify-content:flex-start!important; } .vkEnhancerPanelHeader__content-in { font-family: var(--palette-vk-font,-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)!important; padding-left: 12px!important; font-size: 14px!important; color: var(--vkui--color_text_primary)!important; overflow: hidden!important; text-overflow: ellipsis!important; white-space: nowrap!important; font-weight:400!important; } .vkEnhancerTappable { background:var(--vkui--color_background_secondary)!important; border-radius:0px!important; --vkui_internal--icon_color:var(--vkui--color_text_link)!important; color:var(--vkui--color_text_link)!important; } .vkEnhancerTappable:hover { background: var(--vkui--color_background_secondary_alpha)!important; } .vkEnhancerDiv { padding:0!important; } div:has(>.vkEnhancerModalPage__in-wrap) { display:flex; justify-content:center; align-items: center; height:100%; inline-size: 100%; block-size: 100%; overflow: hidden; position: absolute; box-sizing: border-box; } .vkEnhancerModalPage__in-wrap { font-family:var(--vkui--font_family_base); max-inline-size: var(--vkui--size_popup_medium--regular); position: relative; align-items: initial; margin-block: 32px; margin-inline: 56px; block-size: auto; max-block-size: 640px; opacity: 0; transform: none; transition: opacity 340ms var(--vkui--animation_easing_platform); inline-size: 100%; inset-inline: 0; inset-block-end: 0; display: flex; } .vkEnhancerModalPage__in { block-size: auto; box-shadow: var(--vkui--elevation3); border-end-end-radius: var(--vkui--size_border_radius_paper--regular); border-end-start-radius: var(--vkui--size_border_radius_paper--regular); } .vkEnhancerModalPage__in { background-color: var(--vkui--color_background_modal); overflow: visible; position: relative; box-sizing: border-box; inline-size: 100%; display: flex; flex-direction: column; border-start-end-radius: var(--vkui--size_border_radius_paper--regular); border-start-start-radius: var(--vkui--size_border_radius_paper--regular); --vkui_internal--background: var(--vkui--color_background_modal); } .vkEnhancerModalPage__header { inline-size: 100%; } .vkEnhancerModalPageHeader { padding-inline: 8px; --vkui_internal--safe_area_inset_top: 0; } .vkEnhancerPanelHeader { position: relative; } .vkEnhancerPanelHeader__in { display:flex; justify-content:center; } .vkEnhancerPanelHeader__content { text-align: center; opacity: 1; transition: opacity .3s var(--vkui--animation_easing_platform); } .vkEnhancerPanelHeader__content-in { font-size:18px; color: var(--vkui--color_text_primary); font-weight: 500; font-family: var(--vkui--font_family_accent); user-select:none; } .vkEnhancerSeparator { color: var(--vkui--color_separator_primary); } .vkEnhancerSeparator__in { block-size: var(--vkui--size_border--regular); margin: 0; background: currentColor; color: inherit; border: 0; transform-origin: center top; } .vkEnhancerModalPage__content-wrap { position: relative; display: flex; block-size: 100%; flex-direction: column; overflow: hidden; border-end-start-radius: inherit; border-end-end-radius: inherit; } .vkEnhancerModalPage__content { overflow-y: auto; -webkit-overflow-scrolling: touch; block-size: 100%; overflow-x: hidden; box-sizing: border-box; } .vkEnhancerModalPage__content-in { block-size:100%; } .vkEnhancerDiv { padding-block: var(--vkui--size_base_padding_vertical--regular); padding-inline: var(--vkui--size_base_padding_horizontal--regular); } .vkEnhancerSpacing { position: relative; box-sizing: border-box; } .vkEnhancerTappable { min-height: 22px; --vkui_internal--icon_color: var(--vkui--color_icon_accent); color: var(--vkui--color_text_accent); justify-content: center; text-align: center; box-sizing: border-box; text-decoration: none; margin: 0; border: 0; inline-size: 100%; background: rgba(0,0,0,0); padding-block: 0; min-block-size: 44px; display: flex; align-items: center; white-space: nowrap; padding-inline: var(--vkui--size_base_padding_horizontal--regular); isolation: isolate; position: relative; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; transition: background-color .15s ease-out; } .vkEnhancerSimpleCell__before { padding-block: 4px; flex-grow: initial; max-inline-size: initial; display: flex; align-items: center; padding-inline-end: 12px; color: var(--vkui_internal--icon_color, var(--vkui--color_icon_accent)); position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__middle { flex-grow: initial; max-inline-size: initial; display: flex; flex-direction: column; justify-content: center; padding-block: 10px; min-inline-size: 0; overflow: hidden; position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__content { justify-content: flex-start; display: flex; align-content: flex-start; align-items: center; max-inline-size: 100%; } .vkEnhancerTypography { font-weight: var(--vkui--font_weight_accent3); font-size: var(--vkui--font_headline1--font_size--compact); line-height: var(--vkui--font_headline1--line_height--compact); color: inherit; text-overflow: ellipsis; overflow: hidden; display: block; margin: 0; padding: 0; } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; } .vkEnhancerTappable:hover{ background-color:var(--vkui--color_transparent--hover); } .vkEnhancerGraffitiList { display: grid; gap: 4px; grid-template-columns: repeat(4,1fr); } .vkEnhancerGraffitiList__item { height: 158px; width: 158px; align-items: center; background-color: var(--vkui--color_transparent--hover); border-radius: 10px; cursor: pointer; display: flex; justify-content: center; transition: all .15s ease; vertical-align: bottom; } .vkEnhancerGraffitiList__item:hover { background-color: var(--vkui--color_transparent--active); } .vkEnhancerGraffitiList__item--doc { background-position: 50%; background-repeat: no-repeat; background-size: contain; border-radius: 10px; height: 158px; width: 158px; } .vkEnhancerCloseButton { position: absolute; justify-content: center; inset-block-start: 0; inset-inline-end: -56px; inline-size: 56px; block-size: 56px; padding: 18px; box-sizing: border-box; color: var(--vkui--color_icon_contrast); transition: opacity .15s ease-out; isolation: isolate; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; } .vkEnhancerCloseButton:before { display: block; content: ""; inset: 14px; background: var(--vkui--color_overlay_primary); border-radius: 50%; position: absolute; } .vkEnhancerCloseButton:hover:before { background:var(--vkui--color_overlay_primary--hover); } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; z-index: var(--vkui_internal--z_index_tappable_element); }`;
-		
-	    await VKEnhancerStickerBox();
-    });
-	eventListenerSet1 = true;
-	}
-async function VKEnhancerStickerBox() {
-    let boxG = document.createElement("div");
-    boxG.classList.add("vkEnhancerGraffityMainBox");
-    boxG.innerHTML = `<div class="vkEnhancerModalPage__in-wrap" style="opacity: 1;">
+
+        await VKEnhancerStickerBox();
+      });
+      eventListenerSet1 = true;
+    }
+    async function VKEnhancerStickerBox() {
+      let boxG = document.createElement("div");
+      boxG.classList.add("vkEnhancerGraffityMainBox");
+      boxG.innerHTML = `<div class="vkEnhancerModalPage__in-wrap" style="opacity: 1;">
                         <div class="vkEnhancerModalPage__in">
                             <div class="vkEnhancerModalPage__header">
                                 <div class="vkEnhancerModalPageHeader vkEnhancerModalPageHeader--withGaps vkEnhancerModalPageHeader--desktop">
@@ -6098,16 +6304,16 @@ async function VKEnhancerStickerBox() {
                                     <div class="vkEnhancerModalPage__content-in">
                                         <div class="vkEnhancerDiv">
 										<div class="vkEnGroupInput">
-											<div class="vkEnText">`+getLang("mail_added_sticker")+`</div>
-                                            <input type="text" id="stickerInput" placeholder="`+getAddStickerText(vk.lang)[0]+`">
+											<div class="vkEnText">`+ getLang("mail_added_sticker") + `</div>
+                                            <input type="text" id="stickerInput" placeholder="`+ getAddStickerText(vk.lang)[0] + `">
                                             <br>
 										</div>
 										<div class="vkEnGroupInput">
-											<div class="vkEnText">`+getLang("me_convo_attaches_app")+`</div>
-                                            <input type="text" id="attachmentInput" placeholder="`+getAddStickerText(vk.lang)[1]+`">
+											<div class="vkEnText">`+ getLang("me_convo_attaches_app") + `</div>
+                                            <input type="text" id="attachmentInput" placeholder="`+ getAddStickerText(vk.lang)[1] + `">
                                             <br>
 										</div>
-                                            <button id="okButton">`+getLang("mail_send2")+`</button>
+                                            <button id="okButton">`+ getLang("mail_send2") + `</button>
                                         </div>
                                     </div>
                                 </div>
@@ -6121,284 +6327,284 @@ async function VKEnhancerStickerBox() {
                         </div>
                     </div>`;
 
-    let boxLayer = document.getElementById('box_layer');
-    boxG.style.top = "0px";
-    boxG.style.zIndex = "999999";
-    boxG.style.backgroundColor = "#000000B3";
-    document.body.appendChild(boxG);
+      let boxLayer = document.getElementById('box_layer');
+      boxG.style.top = "0px";
+      boxG.style.zIndex = "999999";
+      boxG.style.backgroundColor = "#000000B3";
+      document.body.appendChild(boxG);
 
-    let closeButton = document.querySelector('.vkEnhancerCloseButton');
-    closeButton.addEventListener("click", onClose);
+      let closeButton = document.querySelector('.vkEnhancerCloseButton');
+      closeButton.addEventListener("click", onClose);
 
-    boxG.addEventListener("click", function(event) {
+      boxG.addEventListener("click", function (event) {
         if (!event.target.closest('.vkEnhancerModalPage__in-wrap')) {
-            onClose();
+          onClose();
         }
-    });
+      });
 
-    // Добавляем обработчик для кнопки OK
-    let okButton = document.getElementById('okButton');
-    okButton.addEventListener("click", function() {
-		let commonAttach = document.getElementById("attachmentInput").value;
-		let res = splitString(commonAttach);
-		let type1 = res.type;
-		let second1 = res.secondary_attach;
-		let imURL = new URL(window.location.href);
-		let imId = imURL.href.split("/").at(-1);
-		let stickerId = document.getElementById("stickerInput").value;
-		runStickerAdder(imId,stickerId,getImSendHash(imId),type1,second1);
-		onClose();
-	});
-}
+      // Добавляем обработчик для кнопки OK
+      let okButton = document.getElementById('okButton');
+      okButton.addEventListener("click", function () {
+        let commonAttach = document.getElementById("attachmentInput").value;
+        let res = splitString(commonAttach);
+        let type1 = res.type;
+        let second1 = res.secondary_attach;
+        let imURL = new URL(window.location.href);
+        let imId = imURL.href.split("/").at(-1);
+        let stickerId = document.getElementById("stickerInput").value;
+        runStickerAdder(imId, stickerId, getImSendHash(imId), type1, second1);
+        onClose();
+      });
+    }
 
-function getAddStickerText(lang) {
-        switch (lang) {
-          case 0:
-            return [
-              'Введите ID стикера',
-              'Доп. вложение в формате типID_IDВЛОЖЕНИЯ',
-            ];
-            break;
-          case 1:
-            return [
-              'Введіть ID стікера',
-              'Дод. вкладення у форматі типID_IDВЛОЖЕННЯ',
-            ];
-            break;
-          case 454:
-            return [
-              'Введіть ID стікера',
-              'Дод. вкладення у форматі типID_IDВЛОЖЕННЯ',
-            ];
-            break;
-          case 114:
-            return [
-              'Увядзіце ID стыкера',
-              'Дад. ўкладанне ў фармаце тыпID_IDУКЛАДАННЯ',
-            ];
-            break;
-          case 2:
-            return [
-              'Увядзіце ID стыкера',
-              'Дад. ўкладанне ў фармаце тыпID_IDУКЛАДАННЯ',
-            ];
-            break;
-          case 777:
-            return ['Введите ID марки', 'Доп. компромат в формате типID_IDКОМПРОМАТА'];
-            break;
-          case 97:
-            return ['Стикер идентификаторын енгізіңіз', 'қосу. typeID_IDATTACHMENT пішіміндегі тіркеме'];
-            break;
-          case 100:
-			return [
-				'Ввѣдитѣ ID стикѣра',
-				'Допъ. вложѣнiя въ форматѣ типID_IDВЛОЖЕНИЯ',
-			];
-            break;
-          default:
-            return ['Enter sticker ID', 'Add. attachment in the format typeID_ID ATTACHMENTS'];
-            break;
-        }
+    function getAddStickerText(lang) {
+      switch (lang) {
+        case 0:
+          return [
+            'Введите ID стикера',
+            'Доп. вложение в формате типID_IDВЛОЖЕНИЯ',
+          ];
+          break;
+        case 1:
+          return [
+            'Введіть ID стікера',
+            'Дод. вкладення у форматі типID_IDВЛОЖЕННЯ',
+          ];
+          break;
+        case 454:
+          return [
+            'Введіть ID стікера',
+            'Дод. вкладення у форматі типID_IDВЛОЖЕННЯ',
+          ];
+          break;
+        case 114:
+          return [
+            'Увядзіце ID стыкера',
+            'Дад. ўкладанне ў фармаце тыпID_IDУКЛАДАННЯ',
+          ];
+          break;
+        case 2:
+          return [
+            'Увядзіце ID стыкера',
+            'Дад. ўкладанне ў фармаце тыпID_IDУКЛАДАННЯ',
+          ];
+          break;
+        case 777:
+          return ['Введите ID марки', 'Доп. компромат в формате типID_IDКОМПРОМАТА'];
+          break;
+        case 97:
+          return ['Стикер идентификаторын енгізіңіз', 'қосу. typeID_IDATTACHMENT пішіміндегі тіркеме'];
+          break;
+        case 100:
+          return [
+            'Ввѣдитѣ ID стикѣра',
+            'Допъ. вложѣнiя въ форматѣ типID_IDВЛОЖЕНИЯ',
+          ];
+          break;
+        default:
+          return ['Enter sticker ID', 'Add. attachment in the format typeID_ID ATTACHMENTS'];
+          break;
       }
+    }
 
-function splitString(str) {
-    const match = str.match(/^([a-zA-Z]+)(-?\d+_\d+)$/);
-    if (match) {
+    function splitString(str) {
+      const match = str.match(/^([a-zA-Z]+)(-?\d+_\d+)$/);
+      if (match) {
         const type = match[1];
         const secondary_attach = match[2];
         return { type, secondary_attach };
-    } else {
+      } else {
         return null;
+      }
     }
-}
 
 
-function runStickerAdder(id, sticker_id, hash, type, second_attach) {
-	fetch("https://vk.com/al_im.php?act=a_send", {
-  "headers": {
-    "accept": "*/*",
-    "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
-    "cache-control": "no-cache",
-    "content-type": "application/x-www-form-urlencoded",
-    "pragma": "no-cache",
-    "sec-ch-ua": "\"Google Chrome\";v=\"113\", \"Chromium\";v=\"113\", \"Not-A.Brand\";v=\"24\"",
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"Windows\"",
-    "sec-fetch-dest": "empty",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-site": "same-origin",
-    "x-requested-with": "XMLHttpRequest"
-  },
-  "referrer": "https://vk.com/im?sel="+id,
-  "referrerPolicy": "strict-origin-when-cross-origin",
-	"body": "act=a_send&al=1&cancelled_shares[0]=sticker%2C"+sticker_id+"&entrypoint=list_all&gid=0&guid="+Math.floor(Math.random() * 2147483647)+"&hash="+hash+"&im_v=3&media=sticker%3A"+sticker_id+"%3Aundefined%2C"+type+"%3A"+second_attach+"%3Aundefined&module=im&msg=&random_id="+Math.floor(Math.random() * 2147483647)+"&to="+id,
-  "method": "POST",
-  "mode": "cors",
-  "credentials": "include"
-});
-}
+    function runStickerAdder(id, sticker_id, hash, type, second_attach) {
+      fetch("https://vk.com/al_im.php?act=a_send", {
+        "headers": {
+          "accept": "*/*",
+          "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+          "cache-control": "no-cache",
+          "content-type": "application/x-www-form-urlencoded",
+          "pragma": "no-cache",
+          "sec-ch-ua": "\"Google Chrome\";v=\"113\", \"Chromium\";v=\"113\", \"Not-A.Brand\";v=\"24\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"Windows\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+          "x-requested-with": "XMLHttpRequest"
+        },
+        "referrer": "https://vk.com/im?sel=" + id,
+        "referrerPolicy": "strict-origin-when-cross-origin",
+        "body": "act=a_send&al=1&cancelled_shares[0]=sticker%2C" + sticker_id + "&entrypoint=list_all&gid=0&guid=" + Math.floor(Math.random() * 2147483647) + "&hash=" + hash + "&im_v=3&media=sticker%3A" + sticker_id + "%3Aundefined%2C" + type + "%3A" + second_attach + "%3Aundefined&module=im&msg=&random_id=" + Math.floor(Math.random() * 2147483647) + "&to=" + id,
+        "method": "POST",
+        "mode": "cors",
+        "credentials": "include"
+      });
+    }
 
 
-function getImSendHash(id) {
-    let script = Array.from(document.querySelectorAll('script')).find(e=>e.innerHTML.includes('IM.init'));
-    let scriptContent;
-	try {
-		scriptContent = script.innerHTML;
-	}
-	catch(error) {return "error"}
-    let startIndex = scriptContent.indexOf('"'+id+'":{');
-	let endIndex;
-	if(id>2000000000) {
-		endIndex = scriptContent.indexOf('","sex":', startIndex) + 1;
-	}
-	else {
-		endIndex = scriptContent.indexOf('","online":', startIndex) + 1;
-	}
-    let hashesString = scriptContent.substring(startIndex, endIndex);
-    let braceIndex = hashesString.indexOf('{');
-    hashesString = hashesString.substring(braceIndex) + '}';
-	//console.log(hashesString);
-    let hashesObject = JSON.parse(hashesString);
-    let avatarEditHash = hashesObject.hash;
-    return avatarEditHash;
-}
-	async function VKEnhancerGraffitiBox() {
-		let boxG = document.createElement("div");
-		boxG.classList.add("vkEnhancerGraffityMainBox");
-		boxG.innerHTML = `<div class="vkEnhancerModalPage__in-wrap" style="opacity: 1;"> <div class="vkEnhancerModalPage__in"> <div class="vkEnhancerModalPage__header"> <div class="vkEnhancerModalPageHeader vkEnhancerModalPageHeader--withGaps vkEnhancerModalPageHeader--desktop"> <div class="vkEnhancerPanelHeader"> <div class="vkEnhancerPanelHeader__in" data-onboarding-tooltip-container="fixed"> <div class="vkEnhancerPanelHeader__content"> <h2 class="vkEnhancerPanelHeader__content-in" id=":r1:-label">`+getLang("mail_added_graffiti")+`</h2> </div> </div> </div> <div class="vkEnhancerSeparator"> <hr class="vkEnhancerSeparator__in"> </div> </div> </div> <div class="vkEnhancerModalPage__content-wrap"> <div class="vkEnhancerModalPage__content"> <div class="vkEnhancerModalPage__content-in"> <div class="vkEnhancerDiv"> <div class="vkEnhancerTappable" role="button" tabindex="0"> <div class="vkEnhancerSimpleCell__before"> <img src="https://vk.com/images/icons/upload_icon.png"> </div> <div class="vkEnhancerSimpleCell__middle"> <div class="vkEnhancerSimpleCell__content"><span class="vkEnhancerTypography">`+getLang("calls_translation_planned_preview_download")+`<input class="vkEnhancerVisuallyHidden" type="file" accept="image/png"></span></div> </div> </div> <div class="vkEnhancerGraffitiList"> </div> </div> </div> </div> </div> <div class="vkEnhancerCloseButton" role="button" tabindex="0"><span class="vkEnhancerVisuallyHidden">Закрыть</span> <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"> <path fill="currentColor" fill-rule="evenodd" d="M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06" clip-rule="evenodd"></path> </svg> </div> </div> </div>`;
-		let boxLayer = document.getElementById('box_layer');
-		boxG.style.top = "0px";
-		boxG.style.zIndex = "999999";
-		boxG.style.backgroundColor = "#000000B3";
-		document.body.appendChild(boxG);
-		let responseGraffiti = await vkApi.api("messages.getRecentGraffities",{});
-		var graffitiList = document.querySelector('.vkEnhancerGraffitiList');
-		responseGraffiti.forEach(function(graffiti) {
-			var ultraItemDiv = document.createElement('div');
-			ultraItemDiv.classList.add('vkEnhancerGraffitiUltraItem');
-			var itemDiv = document.createElement('div');
-			itemDiv.classList.add('vkEnhancerGraffitiList__item');
-			var docDiv = document.createElement('div');
-			docDiv.classList.add('vkEnhancerGraffitiList__item--doc');
-			docDiv.style.backgroundImage = `url("${graffiti.url}")`;
-			var removGButton = document.createElement('div');
-			removGButton.classList.add("vkEnhancerRemoveGraffityButton");
-			removGButton.setAttribute('onclick',`vkApi.api("messages.hideRecentGraffiti", {
+    function getImSendHash(id) {
+      let script = Array.from(document.querySelectorAll('script')).find(e => e.innerHTML.includes('IM.init'));
+      let scriptContent;
+      try {
+        scriptContent = script.innerHTML;
+      }
+      catch (error) { return "error" }
+      let startIndex = scriptContent.indexOf('"' + id + '":{');
+      let endIndex;
+      if (id > 2000000000) {
+        endIndex = scriptContent.indexOf('","sex":', startIndex) + 1;
+      }
+      else {
+        endIndex = scriptContent.indexOf('","online":', startIndex) + 1;
+      }
+      let hashesString = scriptContent.substring(startIndex, endIndex);
+      let braceIndex = hashesString.indexOf('{');
+      hashesString = hashesString.substring(braceIndex) + '}';
+      //console.log(hashesString);
+      let hashesObject = JSON.parse(hashesString);
+      let avatarEditHash = hashesObject.hash;
+      return avatarEditHash;
+    }
+    async function VKEnhancerGraffitiBox() {
+      let boxG = document.createElement("div");
+      boxG.classList.add("vkEnhancerGraffityMainBox");
+      boxG.innerHTML = `<div class="vkEnhancerModalPage__in-wrap" style="opacity: 1;"> <div class="vkEnhancerModalPage__in"> <div class="vkEnhancerModalPage__header"> <div class="vkEnhancerModalPageHeader vkEnhancerModalPageHeader--withGaps vkEnhancerModalPageHeader--desktop"> <div class="vkEnhancerPanelHeader"> <div class="vkEnhancerPanelHeader__in" data-onboarding-tooltip-container="fixed"> <div class="vkEnhancerPanelHeader__content"> <h2 class="vkEnhancerPanelHeader__content-in" id=":r1:-label">` + getLang("mail_added_graffiti") + `</h2> </div> </div> </div> <div class="vkEnhancerSeparator"> <hr class="vkEnhancerSeparator__in"> </div> </div> </div> <div class="vkEnhancerModalPage__content-wrap"> <div class="vkEnhancerModalPage__content"> <div class="vkEnhancerModalPage__content-in"> <div class="vkEnhancerDiv"> <div class="vkEnhancerTappable" role="button" tabindex="0"> <div class="vkEnhancerSimpleCell__before"> <img src="https://vk.com/images/icons/upload_icon.png"> </div> <div class="vkEnhancerSimpleCell__middle"> <div class="vkEnhancerSimpleCell__content"><span class="vkEnhancerTypography">` + getLang("calls_translation_planned_preview_download") + `<input class="vkEnhancerVisuallyHidden" type="file" accept="image/png"></span></div> </div> </div> <div class="vkEnhancerGraffitiList"> </div> </div> </div> </div> </div> <div class="vkEnhancerCloseButton" role="button" tabindex="0"><span class="vkEnhancerVisuallyHidden">Закрыть</span> <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;"> <path fill="currentColor" fill-rule="evenodd" d="M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06" clip-rule="evenodd"></path> </svg> </div> </div> </div>`;
+      let boxLayer = document.getElementById('box_layer');
+      boxG.style.top = "0px";
+      boxG.style.zIndex = "999999";
+      boxG.style.backgroundColor = "#000000B3";
+      document.body.appendChild(boxG);
+      let responseGraffiti = await vkApi.api("messages.getRecentGraffities", {});
+      var graffitiList = document.querySelector('.vkEnhancerGraffitiList');
+      responseGraffiti.forEach(function (graffiti) {
+        var ultraItemDiv = document.createElement('div');
+        ultraItemDiv.classList.add('vkEnhancerGraffitiUltraItem');
+        var itemDiv = document.createElement('div');
+        itemDiv.classList.add('vkEnhancerGraffitiList__item');
+        var docDiv = document.createElement('div');
+        docDiv.classList.add('vkEnhancerGraffitiList__item--doc');
+        docDiv.style.backgroundImage = `url("${graffiti.url}")`;
+        var removGButton = document.createElement('div');
+        removGButton.classList.add("vkEnhancerRemoveGraffityButton");
+        removGButton.setAttribute('onclick', `vkApi.api("messages.hideRecentGraffiti", {
                                     doc_id: ${graffiti.id}
                                 });`);
-			removGButton.addEventListener('click',function(){
-				ultraItemDiv.style.display='none';
-			});
-			removGButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.84 4H2.75a.75.75 0 0 0 0 1.5h.55l.9 9.25c.05.52.1.96.16 1.31.06.37.16.71.35 1.03a2.9 2.9 0 0 0 1.25 1.13c.33.16.68.22 1.06.25.36.03.8.03 1.32.03h3.32c.53 0 .96 0 1.32-.03.38-.03.73-.1 1.06-.25a2.9 2.9 0 0 0 1.25-1.13c.19-.32.29-.66.35-1.03.06-.35.1-.79.16-1.31l.9-9.25h.55a.75.75 0 0 0 0-1.5h-4.09a3.25 3.25 0 0 0-6.32 0Zm1.58 0h3.16a1.75 1.75 0 0 0-3.16 0Zm6.78 1.5H4.8l.9 9.07c.05.56.08.94.13 1.23.05.28.1.42.17.52a1.4 1.4 0 0 0 .6.55c.1.04.25.08.53.1.3.03.68.03 1.24.03h3.26c.56 0 .94 0 1.23-.02.29-.03.43-.07.54-.11a1.4 1.4 0 0 0 .6-.55c.06-.1.11-.24.16-.52.05-.3.1-.67.15-1.23l.89-9.07Zm-2.89 2a.75.75 0 0 1 .69.81l-.5 6a.75.75 0 0 1-1.5-.12l.5-6a.75.75 0 0 1 .81-.69Zm-4.62 0a.75.75 0 0 1 .8.69l.5 6a.75.75 0 0 1-1.49.13l-.5-6a.75.75 0 0 1 .69-.82Z" clip-rule="evenodd"></path></svg>`;
-			ultraItemDiv.appendChild(removGButton);
-			itemDiv.appendChild(docDiv);
-			ultraItemDiv.appendChild(itemDiv);
-			graffitiList.appendChild(ultraItemDiv);
-			var idG = graffiti.id;
-			var oidG = graffiti.owner_id;
-			var gUrl = graffiti.url.replace("https://vk.com/", "");
-			itemDiv.addEventListener("click",async function () {
-				var peerId = new URL(window.location.href).pathname.split("/").at(-1);
-				await vkApi.api("messages.send", {
-					peer_id: peerId,
-					attachment: gUrl,
-					random_id: Math.floor(Math.random() * 2147483647),
-				});
-				onClose();
-			});
-		});
-		let closeButton = document.querySelector('.vkEnhancerCloseButton');
-		closeButton.addEventListener("click",function () {
-			onClose();
-		});
-		boxG.addEventListener("click", function(event) {
-			if (!event.target.closest('.vkEnhancerModalPage__in-wrap')) {
-				onClose();
-			}
-		});
-		const graffityFileInput = document.querySelector(".vkEnhancerVisuallyHidden");
-		graffityFileInput.addEventListener("change", function () {
-			if (graffityFileInput.files.length > 0) {
-				boxG.style.display="none";
-				handleGraffity();
-			}
-		});
-		document.querySelector('.vkEnhancerTappable').addEventListener("click", function(event) {
-			graffityFileInput.click();
-		});
-	}
-	
-	async function handleGraffity() {
+        removGButton.addEventListener('click', function () {
+          ultraItemDiv.style.display = 'none';
+        });
+        removGButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.84 4H2.75a.75.75 0 0 0 0 1.5h.55l.9 9.25c.05.52.1.96.16 1.31.06.37.16.71.35 1.03a2.9 2.9 0 0 0 1.25 1.13c.33.16.68.22 1.06.25.36.03.8.03 1.32.03h3.32c.53 0 .96 0 1.32-.03.38-.03.73-.1 1.06-.25a2.9 2.9 0 0 0 1.25-1.13c.19-.32.29-.66.35-1.03.06-.35.1-.79.16-1.31l.9-9.25h.55a.75.75 0 0 0 0-1.5h-4.09a3.25 3.25 0 0 0-6.32 0Zm1.58 0h3.16a1.75 1.75 0 0 0-3.16 0Zm6.78 1.5H4.8l.9 9.07c.05.56.08.94.13 1.23.05.28.1.42.17.52a1.4 1.4 0 0 0 .6.55c.1.04.25.08.53.1.3.03.68.03 1.24.03h3.26c.56 0 .94 0 1.23-.02.29-.03.43-.07.54-.11a1.4 1.4 0 0 0 .6-.55c.06-.1.11-.24.16-.52.05-.3.1-.67.15-1.23l.89-9.07Zm-2.89 2a.75.75 0 0 1 .69.81l-.5 6a.75.75 0 0 1-1.5-.12l.5-6a.75.75 0 0 1 .81-.69Zm-4.62 0a.75.75 0 0 1 .8.69l.5 6a.75.75 0 0 1-1.49.13l-.5-6a.75.75 0 0 1 .69-.82Z" clip-rule="evenodd"></path></svg>`;
+        ultraItemDiv.appendChild(removGButton);
+        itemDiv.appendChild(docDiv);
+        ultraItemDiv.appendChild(itemDiv);
+        graffitiList.appendChild(ultraItemDiv);
+        var idG = graffiti.id;
+        var oidG = graffiti.owner_id;
+        var gUrl = graffiti.url.replace("https://vk.com/", "");
+        itemDiv.addEventListener("click", async function () {
+          var peerId = new URL(window.location.href).pathname.split("/").at(-1);
+          await vkApi.api("messages.send", {
+            peer_id: peerId,
+            attachment: gUrl,
+            random_id: Math.floor(Math.random() * 2147483647),
+          });
+          onClose();
+        });
+      });
+      let closeButton = document.querySelector('.vkEnhancerCloseButton');
+      closeButton.addEventListener("click", function () {
+        onClose();
+      });
+      boxG.addEventListener("click", function (event) {
+        if (!event.target.closest('.vkEnhancerModalPage__in-wrap')) {
+          onClose();
+        }
+      });
+      const graffityFileInput = document.querySelector(".vkEnhancerVisuallyHidden");
+      graffityFileInput.addEventListener("change", function () {
+        if (graffityFileInput.files.length > 0) {
+          boxG.style.display = "none";
+          handleGraffity();
+        }
+      });
+      document.querySelector('.vkEnhancerTappable').addEventListener("click", function (event) {
+        graffityFileInput.click();
+      });
+    }
+
+    async function handleGraffity() {
       const graffityFileInput = document.querySelector(".vkEnhancerVisuallyHidden");
       const file = graffityFileInput.files[0];
       await sendGraffity(file);
     }
-async function sendGraffity(fileNameOutput) {
-    /** Получаем URL для загрузки */
-    const url1 = "https://api.vk.com/method/docs.getMessagesUploadServer?v=5.231&client_id=5776857&access_token=" + localStorage.getItem("vk_enhancer_access_token") + "&type=graffiti";
+    async function sendGraffity(fileNameOutput) {
+      /** Получаем URL для загрузки */
+      const url1 = "https://api.vk.com/method/docs.getMessagesUploadServer?v=5.231&client_id=5776857&access_token=" + localStorage.getItem("vk_enhancer_access_token") + "&type=graffiti";
 
-    fetch(url1)
+      fetch(url1)
         .then((response) => response.json())
         .then(async (data) => {
-            const uploadUrlGraf = data.response.upload_url;
-            //console.log("I got upload url: " + uploadUrlGraf);
+          const uploadUrlGraf = data.response.upload_url;
+          //console.log("I got upload url: " + uploadUrlGraf);
 
-            /** Загружаем файл */
-            let file = await uploadFile123(uploadUrlGraf, fileNameOutput);
+          /** Загружаем файл */
+          let file = await uploadFile123(uploadUrlGraf, fileNameOutput);
 
-            /** Сохраняем */
-            const parsedData = JSON.parse(file);
-            console.info("[VK ENH] File uploaded");
-            console.log(parsedData["file"]);
-            let doc = await vkApi.api("docs.save", { file: parsedData["file"] });
-            doc = doc.graffiti;
+          /** Сохраняем */
+          const parsedData = JSON.parse(file);
+          console.info("[VK ENH] File uploaded");
+          console.log(parsedData["file"]);
+          let doc = await vkApi.api("docs.save", { file: parsedData["file"] });
+          doc = doc.graffiti;
 
-            /** Отправляем */
-            var peerId = new URL(window.location.href).pathname.split("/").at(-1);
-            await vkApi.api("messages.send", {
-                peer_id: peerId,
-                attachment: `doc${doc.owner_id}_${doc.id}_${doc.access_key}`,
-                random_id: Math.floor(Math.random() * 2147483647),
-            });
-            onClose();
+          /** Отправляем */
+          var peerId = new URL(window.location.href).pathname.split("/").at(-1);
+          await vkApi.api("messages.send", {
+            peer_id: peerId,
+            attachment: `doc${doc.owner_id}_${doc.id}_${doc.access_key}`,
+            random_id: Math.floor(Math.random() * 2147483647),
+          });
+          onClose();
         })
         .catch((error) => {
-            console.error("Ошибка:", error);
+          console.error("Ошибка:", error);
         });
-}
-async function uploadFile123(uploadUrl, file) {
-    const formData = new FormData();
-    formData.append("file", file);
+    }
+    async function uploadFile123(uploadUrl, file) {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    try {
+      try {
         const response = await fetch(uploadUrl, {
-            method: "POST",
-            body: formData
+          method: "POST",
+          body: formData
         });
 
         if (response.ok) {
-            return response.text();
+          return response.text();
         } else {
-            throw new Error("Upload failed. Status: " + response.status);
+          throw new Error("Upload failed. Status: " + response.status);
         }
-    } catch (error) {
+      } catch (error) {
         throw new Error("Upload failed. Network error: " + error.message);
+      }
     }
-}
 
-	
-	function onClose() {
-		let customStyle = fromId("vkenGraffity");
-		if (customStyle) {
-			customStyle.remove();
-		}
-		customStyle = fromId("vkenSticker");
-		if (customStyle) {
-			customStyle.remove();
-		}
-		let mainGrafBox = document.querySelector('.vkEnhancerGraffityMainBox');
-		mainGrafBox.remove();
-	}
+
+    function onClose() {
+      let customStyle = fromId("vkenGraffity");
+      if (customStyle) {
+        customStyle.remove();
+      }
+      customStyle = fromId("vkenSticker");
+      if (customStyle) {
+        customStyle.remove();
+      }
+      let mainGrafBox = document.querySelector('.vkEnhancerGraffityMainBox');
+      mainGrafBox.remove();
+    }
     async function VKEnhancerMessageBox(
       title,
       content,
@@ -6606,29 +6812,29 @@ if (localStorage.getItem("pollResultsValue") == "true") {
       });
     }
   );
-document.arrive(
+  document.arrive(
     ".media_voting",
     { existing: true },
     async function (e) {
-        let pollOid = e.dataset.ownerId;
-        let pollId = e.dataset.id;
-        let pollRes = await vkApi.api("polls.getById",{owner_id: pollOid, poll_id: pollId});
+      let pollOid = e.dataset.ownerId;
+      let pollId = e.dataset.id;
+      let pollRes = await vkApi.api("polls.getById", { owner_id: pollOid, poll_id: pollId });
 
-        pollRes.answers.forEach(option => {
-            let optionWrap = document.querySelector(`._media_voting_option${option.id}`);
-            if (optionWrap) {
-                let percentElem = optionWrap.querySelector('.media_voting_option_percent');
-                percentElem.textContent = option.rate;
+      pollRes.answers.forEach(option => {
+        let optionWrap = document.querySelector(`._media_voting_option${option.id}`);
+        if (optionWrap) {
+          let percentElem = optionWrap.querySelector('.media_voting_option_percent');
+          percentElem.textContent = option.rate;
 
-                let barElem = optionWrap.querySelector('.media_voting_option_bar');
-                barElem.style.transform = `scaleX(${option.rate / 100})`;
+          let barElem = optionWrap.querySelector('.media_voting_option_bar');
+          barElem.style.transform = `scaleX(${option.rate / 100})`;
 
-                let countElem = optionWrap.querySelector('.media_voting_option_count');
-                countElem.classList.remove('media_voting_option_count_hidden');
-                countElem.querySelector('.media_voting_option_counter').innerHTML = `<span class="media_voting_separator">⋅</span><span>${option.votes}</span>`;
-            }
-        });
-		let styleElement = fromId("PollResultsShowSecondary");
+          let countElem = optionWrap.querySelector('.media_voting_option_count');
+          countElem.classList.remove('media_voting_option_count_hidden');
+          countElem.querySelector('.media_voting_option_counter').innerHTML = `<span class="media_voting_separator">⋅</span><span>${option.votes}</span>`;
+        }
+      });
+      let styleElement = fromId("PollResultsShowSecondary");
       if (!styleElement) {
         styleElement = document.createElement("style");
         styleElement.id = "PollResultsShowSecondary";
@@ -6637,57 +6843,57 @@ document.arrive(
       styleElement.innerHTML =
         '.media_voting_multiple .media_voting_option_text::after{right:52px!important;}';
     }
-);
+  );
 
-document.arrive(
+  document.arrive(
     ".AttachPoll__answers",
     { existing: true },
     async function (e) {
-        const answerElements = e.querySelectorAll('.AttachPoll__answer');
-        answerElements.forEach(element => {
-            const [votes, rate] = getAnswerProps(element);
-            const revealAnswers = document.createElement("span");
-            revealAnswers.classList.add("vkEnAnswerCount");
-            revealAnswers.textContent = `${rate}%`;
-            const rightAnswer = element.getElementsByClassName("AttachPoll__answerRight")[0];
-            rightAnswer.prepend(revealAnswers);
-			const revealVotes = document.createElement("span");
-			revealVotes.classList.add("vkEnAnswerVotes");
-			revealVotes.textContent = ` ⋅ ${votes}`;
-			rightAnswer.parentNode.insertBefore(revealVotes, rightAnswer);
-			const answerBar = element.getElementsByClassName("AttachPoll__answerBar")[0];
-			answerBar.style.transform = `scaleX(${rate / 100})`;
-        });
+      const answerElements = e.querySelectorAll('.AttachPoll__answer');
+      answerElements.forEach(element => {
+        const [votes, rate] = getAnswerProps(element);
+        const revealAnswers = document.createElement("span");
+        revealAnswers.classList.add("vkEnAnswerCount");
+        revealAnswers.textContent = `${rate}%`;
+        const rightAnswer = element.getElementsByClassName("AttachPoll__answerRight")[0];
+        rightAnswer.prepend(revealAnswers);
+        const revealVotes = document.createElement("span");
+        revealVotes.classList.add("vkEnAnswerVotes");
+        revealVotes.textContent = ` ⋅ ${votes}`;
+        rightAnswer.parentNode.insertBefore(revealVotes, rightAnswer);
+        const answerBar = element.getElementsByClassName("AttachPoll__answerBar")[0];
+        answerBar.style.transform = `scaleX(${rate / 100})`;
+      });
     }
-);
-	
-	let styleElement = fromId("PollResultsShowAttach");
-      if (!styleElement) {
-        styleElement = document.createElement("style");
-        styleElement.id = "PollResultsShowAttach";
-        document.head.appendChild(styleElement);
-      }
-      styleElement.innerHTML =
-        '.AttachPoll__answer--voted .vkEnAnswerVotes, .AttachPoll__answer--voted .vkEnAnswerCount{display:none!important;}.vkEnAnswerVotes{display:contents;color:var(--vkui--color_text_subhead);}.vkEnAnswerCount{padding-right: 6px; line-height: 16px; font-size: 13px; color: var(--vkui--color_text_primary); font-weight: 600; -webkit-font-smoothing: subpixel-antialiased; -moz-osx-font-smoothing: auto; white-space: nowrap; text-align: right; z-index: 1; transition: opacity .1s,transform .1s;}';
+  );
+
+  let styleElement = fromId("PollResultsShowAttach");
+  if (!styleElement) {
+    styleElement = document.createElement("style");
+    styleElement.id = "PollResultsShowAttach";
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML =
+    '.AttachPoll__answer--voted .vkEnAnswerVotes, .AttachPoll__answer--voted .vkEnAnswerCount{display:none!important;}.vkEnAnswerVotes{display:contents;color:var(--vkui--color_text_subhead);}.vkEnAnswerCount{padding-right: 6px; line-height: 16px; font-size: 13px; color: var(--vkui--color_text_primary); font-weight: 600; -webkit-font-smoothing: subpixel-antialiased; -moz-osx-font-smoothing: auto; white-space: nowrap; text-align: right; z-index: 1; transition: opacity .1s,transform .1s;}';
 
 
-function getAnswerProps(elem) {
+  function getAnswerProps(elem) {
     const t = {};
     let n = 0;
     for (const o of Object.keys(elem)) {
-        if (o.startsWith("__reactFiber")) {
-            t.fiber = elem[o];
-            ++n;
-        } else if (o.startsWith("__reactProps")) {
-            t.props = elem[o];
-            ++n;
-        }
-        if (n === 2) break;
+      if (o.startsWith("__reactFiber")) {
+        t.fiber = elem[o];
+        ++n;
+      } else if (o.startsWith("__reactProps")) {
+        t.props = elem[o];
+        ++n;
+      }
+      if (n === 2) break;
     }
     const votes = t.fiber.return.memoizedProps.answer.votes;
     const rate = t.fiber.return.memoizedProps.answer.rate;
     return [votes, rate];
-}
+  }
 
 }
 ///КОНЕЦ РЕЗУЛЬТАТОВ ОПРОСА БЕЗ ГОЛОСОВАНИЯ///
@@ -7119,7 +7325,7 @@ if (
     let simplebarContentDiv = document.querySelector(".simplebar-content");
     let history = getLocalValue("convo_history") ?? [];
     let ids = "";
-    history.forEach((e) => { const id = e.href.split("/").at(-1); if (id != vk.id) { ids += id + ","; } }); 
+    history.forEach((e) => { const id = e.href.split("/").at(-1); if (id != vk.id) { ids += id + ","; } });
     ids = ids.slice(0, -1);
     let obj = ids
       ? await vkApi.api("messages.getConversationsById", {
@@ -7156,10 +7362,10 @@ if (
       let id = item.href.split("/").at(-1);
       let user = obj.items.find((e) => e.peer.id == id);
       let unread;
-	  try {
-	  unread = user.unread_count ? user.unread_count : 0;
-	  }
-	  catch(error){unread=0;}
+      try {
+        unread = user.unread_count ? user.unread_count : 0;
+      }
+      catch (error) { unread = 0; }
       let muted = user?.push_settings?.no_sound ? true : false;
       simplebarContentDiv = document.querySelector(".simplebar-content");
       if (!simplebarContentDiv) {
@@ -7275,7 +7481,7 @@ deferredCallback(
             document.querySelectorAll("a.ARightRoot1")
           ).find((e) => e.href === ConvoUrl.href);
           let ids = "";
-          history.forEach((e) => { const id = e.href.split("/").at(-1); if (id != vk.id) { ids += id + ","; } }); 
+          history.forEach((e) => { const id = e.href.split("/").at(-1); if (id != vk.id) { ids += id + ","; } });
           ids = ids.slice(0, -1);
           let obj = ids
             ? await vkApi.api("messages.getConversationsById", {
@@ -7292,10 +7498,10 @@ deferredCallback(
           }
           let user = obj.items.find((e) => e.peer.id == id);
           let unread;
-		  try {
-		  unread = user.unread_count ? user.unread_count : 0;
-		  }
-		  catch(error){unread=0;}
+          try {
+            unread = user.unread_count ? user.unread_count : 0;
+          }
+          catch (error) { unread = 0; }
           let muted = user?.push_settings?.no_sound ? true : false;
           if (!convo_other) {
             if (!simplebarContentDiv) {
@@ -7376,7 +7582,7 @@ deferredCallback(
 
       document.arrive(
         "#spa_root > .vkui__root:not(.VKCOMMessenger__reforgedRoot--settingsScreen)",
-        { existing: true},
+        { existing: true },
         async function (e) {
           var currentPageURL12 = window.location.href;
 
@@ -7470,7 +7676,7 @@ deferredCallback(
           );
           let history = getLocalValue("convo_history") ?? [];
           let ids = "";
-          history.forEach((e) => { const id = e.href.split("/").at(-1); if (id != vk.id) { ids += id + ","; } }); 
+          history.forEach((e) => { const id = e.href.split("/").at(-1); if (id != vk.id) { ids += id + ","; } });
           ids = ids.slice(0, -1);
           let obj = ids
             ? await vkApi.api("messages.getConversationsById", {
@@ -7509,10 +7715,10 @@ deferredCallback(
             let id = item.href.split("/").at(-1);
             let user = obj.items.find((e) => e.peer.id == id);
             let unread;
-			try {
-			unread = user.unread_count ? user.unread_count : 0;
-			}
-			catch(error) {unread=0;}
+            try {
+              unread = user.unread_count ? user.unread_count : 0;
+            }
+            catch (error) { unread = 0; }
             let muted = user?.push_settings?.no_sound ? true : false;
             simplebarContentDiv = document.querySelector(".simplebar-content");
             if (!simplebarContentDiv) {

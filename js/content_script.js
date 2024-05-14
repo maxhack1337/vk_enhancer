@@ -1037,24 +1037,28 @@ function applyStyles(
     );
   }
   if (nechitalkaChecked) {
+	//console.log("Nechitalka true");
     window.postMessage(
       { action: "nechitalka", value: nechitalkaChecked },
       "*"
     );
   }
   else {
+	//console.log("Nechitalka false");
     window.postMessage(
       { action: "nechitalka", value: nechitalkaChecked },
       "*"
     );  
   }
   if (nepisalkaChecked) {
+	//console.log("Nepisalka true");
     window.postMessage(
       { action: "nepisalka", value: nepisalkaChecked },
       "*"
     ); 
   }
   else {
+	//console.log("Nepisalka false");
     window.postMessage(
       { action: "nepisalka", value: nepisalkaChecked },
       "*"
