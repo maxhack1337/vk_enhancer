@@ -115,17 +115,17 @@ function XHRListener() {
 
   XMLHttpRequest.prototype.send = function (data) {
     //console.log(data)
-    if (/type=typing/.test(data) && nepisalkaValue) {
+    if (/type=typing/.test(data) && JSON.parse(localStorage.getItem("nepisalkaValue"))) {
       return this.abort();
     }
-    if (/type=audiomessage/.test(data) && nepisalkaValue) {
+    if (/type=audiomessage/.test(data) && JSON.parse(localStorage.getItem("nepisalkaValue"))) {
       return this.abort();
     }
 
-    if (/act=a_mark_read/.test(data) && nechitalkaValue) {
+    if (/act=a_mark_read/.test(data) && JSON.parse(localStorage.getItem("nechitalkaValue"))) {
       return this.abort();
     }
-    if (/act=a_mard_listened/.test(data) && nechitalkaValue) {
+    if (/act=a_mard_listened/.test(data) && JSON.parse(localStorage.getItem("nechitalkaValue"))) {
       return this.abort();
     }
     return send.apply(this, Array.prototype.slice.call(arguments));
