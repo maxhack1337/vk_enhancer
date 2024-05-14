@@ -4,6 +4,8 @@
 ## Функции расширения
 ```
  * Возможность активации классического интерфейса профиля
+ * Возможность просмотра удалённых сообщений
+ * Возможность просмотра оригинала отредактированного сообщения
  * Возможность скачивания музыки, видео, альбомов
  * Возможность подмены фотографии без потери лайков
  * Возможность удаления граффити
@@ -89,7 +91,7 @@
 </p>
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.9/VK.Enhancer.zip">
+<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.10/VK.Enhancer.zip">
   <img src="https://nimble-wisp-54a226.netlify.app/download.png" width="202" height="83">
 </a></p>
 <p align="center"><a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v1.0/VK.Enhancer.Legacy.zip">Установить legacy-версию расширения(для старого вида мессенджера)</a></p>
