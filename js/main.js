@@ -483,7 +483,13 @@ document.arrive(".ConvoHistory__messageBlock", { existing: true }, function (e) 
 		buttonShowOrig.setAttribute('onmouseout', 'this.style.backgroundColor = `transparent`');
 		let msg = e;
 		if (getAllMessageProps(msg)?.updatedAt) {
-			if(!e.querySelector('.vkEnButtonShowOrig')) e.querySelector('.MessageActionsButtonWrapper').prepend(buttonShowOrig);
+			if(!e.querySelector('.vkEnButtonShowOrig')) 
+			{
+				try {
+					e.querySelector('.MessageActionsButtonWrapper').prepend(buttonShowOrig);
+				}
+				catch(error){}
+			}
 			let originalProps = getMessageProps(msg);
 			buttonShowOrig.addEventListener('click', function () {
 				msg.innerHTML = localStorage.getItem("convoMessage" + originalProps[1] + "_" + originalProps[0]);
