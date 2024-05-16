@@ -1,58 +1,53 @@
 console.log("Content script is running!");
 function CheckToken() {
-    if (window.location.href.indexOf('https://oauth.vk.com/blank.html') === -1) {
-        location.href = 'https://oauth.vk.com/authorize?client_id=6121396&scope=196608&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1';
-    }
+  if (window.location.href.indexOf('https://oauth.vk.com/blank.html') === -1) {
+    location.href = 'https://oauth.vk.com/authorize?client_id=6121396&scope=196608&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1';
+  }
 
-    const closeButton = document.querySelector('.button_indent');
-    if (closeButton) {
-        closeButton.click();
-    }
-    const accessToken = new URLSearchParams(window.location.hash.slice(1)).get('access_token');
-    if (accessToken) {
-        console.log("Токен загружен успешно:", accessToken);
-        chrome.runtime.sendMessage({
-                type: 'vken_access_token',
-                value: accessToken
-        });
-        window.location.href = "https://vk.com/feed";
-    } else {
-        console.log("Токен не найден в URL");
-    }
+  const closeButton = document.querySelector('.button_indent');
+  if (closeButton) {
+    closeButton.click();
+  }
+  const accessToken = new URLSearchParams(window.location.hash.slice(1)).get('access_token');
+  if (accessToken) {
+    console.log("Токен загружен успешно:", accessToken);
+    chrome.runtime.sendMessage({
+      type: 'vken_access_token',
+      value: accessToken
+    });
+    window.location.href = "https://vk.com/feed";
+  } else {
+    console.log("Токен не найден в URL");
+  }
 }
 var vkenAccessToken1 = '';
-chrome.storage.local.get(['vkenAccessToken'], function(result) {
-        vkenAccessToken1 = result.vkenAccessToken;
-		if(!vkenAccessToken1 || vkenAccessToken1 == ''){
-			document.addEventListener(
-				"DOMContentLoaded",
-				function () {
-					CheckToken();
-				},
-				false
-			);
-		}
-		else {
-			document.addEventListener(
-				"DOMContentLoaded",
-				function () {
-					window.postMessage(
-						{ action: "vkEnhancerAccessToken", value: vkenAccessToken1},
-							"*"
-					); 
-				},
-				false
-			);
-		}
+chrome.storage.local.get(['vkenAccessToken'], function (result) {
+  try {
+    vkenAccessToken1 = result.vkenAccessToken;
+    if (!vkenAccessToken1 || vkenAccessToken1 == '') {
+      window.onload = () => {
+        CheckToken();
+      }
+    }
+    else {
+      window.onload = () => {
+          window.postMessage(
+            { action: "vkEnhancerAccessToken", value: vkenAccessToken1 },
+            "*"
+          );
+    }
+	}} catch (e) {
+    console.log(e)
+  }
 });
 window.addEventListener("message", async (event) => {
   switch (event.data.action) {
-	case "tokenRemove": {
-        chrome.runtime.sendMessage({
-                type: 'vken_access_token_remove'
-        });
-		break;
-	}
+    case "tokenRemove": {
+      chrome.runtime.sendMessage({
+        type: 'vken_access_token_remove'
+      });
+      break;
+    }
   }
 });
 const { testfunc } = importVarsFrom("helper");
@@ -80,7 +75,7 @@ const fromId = document.getElementById.bind(document);
   window.postMessage(
     {
       action: "Urls",
-      urls: { im_css: chrome.runtime.getURL("css/im-page-open.css"),profile_css: chrome.runtime.getURL("css/classical-profile-view.css") },
+      urls: { im_css: chrome.runtime.getURL("css/im-page-open.css"), profile_css: chrome.runtime.getURL("css/classical-profile-view.css") },
     },
     "*"
   );
@@ -162,72 +157,72 @@ function createReloadButton() {
     "showTooltip(this, { text: 'Перезагрузить функции VK Enhancer', black: true, shift: [4, 5] });"
   );
   reloadButton.addEventListener("click", (event) => {
-	reloadButton.classList.add("vkEnhancerRebootLoading");
+    reloadButton.classList.add("vkEnhancerRebootLoading");
     chrome.storage.local.get(
       ["tabletMenuState",
-	  "oldHoverState",
-	  "middleNameState",
-	  "newProfilesState",
-	  "removeAwayState",
-	  "pollResultsState",
-	  "nepisalkaState",
-	  "nechitalkaState",
-      "integrationMediaState",
-      "newDesignState",
-      "hideButtonState",
-      "cameraPhotoState",
-      "addstickerState",
-      "customHotbar",
-      "muteCallsState",
-      "altSBState",
-      "recentGroupsState",
-      "emojiStatusState",
-      "sliderValue",
-      "checkboxStateAva",
-      "checkboxState",
-      "checkboxState1",
-      "secretFuncState",
-      "postReactionsState",
-      "hiderState",
-      "customAccent",
-      "colorPicker",
-      "colorPickerText",
-      "customLogo",
-      "customBg",
-      "customFont",
+        "oldHoverState",
+        "middleNameState",
+        "newProfilesState",
+        "removeAwayState",
+        "pollResultsState",
+        "nepisalkaState",
+        "nechitalkaState",
+        "integrationMediaState",
+        "newDesignState",
+        "hideButtonState",
+        "cameraPhotoState",
+        "addstickerState",
+        "customHotbar",
+        "muteCallsState",
+        "altSBState",
+        "recentGroupsState",
+        "emojiStatusState",
+        "sliderValue",
+        "checkboxStateAva",
+        "checkboxState",
+        "checkboxState1",
+        "secretFuncState",
+        "postReactionsState",
+        "hiderState",
+        "customAccent",
+        "colorPicker",
+        "colorPickerText",
+        "customLogo",
+        "customBg",
+        "customFont",
       ],
       ({
         checkboxState,
-checkboxState1,
-postReactionsState,
-secretFuncState,
-hiderState,
-customAccent,
-colorPicker,
-colorPickerText,
-customLogo,
-customBg,
-customFont,
-checkboxStateAva,
-sliderValue,
-emojiStatusState,
-recentGroupsState,
-altSBState,
-muteCallsState,
-customHotbar,
-addstickerState,
-cameraPhotoState,
-hideButtonState,
-newDesignState,
-integrationMediaState,
-nechitalkaState,
-nepisalkaState,
-pollResultsState,
-removeAwayState,
-newProfilesState,
-middleNameState,
-oldHoverState,
-tabletMenuState
+        checkboxState1,
+        postReactionsState,
+        secretFuncState,
+        hiderState,
+        customAccent,
+        colorPicker,
+        colorPickerText,
+        customLogo,
+        customBg,
+        customFont,
+        checkboxStateAva,
+        sliderValue,
+        emojiStatusState,
+        recentGroupsState,
+        altSBState,
+        muteCallsState,
+        customHotbar,
+        addstickerState,
+        cameraPhotoState,
+        hideButtonState,
+        newDesignState,
+        integrationMediaState,
+        nechitalkaState,
+        nepisalkaState,
+        pollResultsState,
+        removeAwayState,
+        newProfilesState,
+        middleNameState,
+        oldHoverState,
+        tabletMenuState
       }) =>
         applyStyles(
           checkboxState,
@@ -250,20 +245,21 @@ tabletMenuState
           customHotbar,
           addstickerState,
           cameraPhotoState,
-		  hideButtonState,
-		  newDesignState,
-integrationMediaState,
-nechitalkaState,
-nepisalkaState,
-pollResultsState,
-removeAwayState,
-newProfilesState,
-middleNameState,
-oldHoverState,
-tabletMenuState
+          hideButtonState,
+          newDesignState,
+          integrationMediaState,
+          nechitalkaState,
+          nepisalkaState,
+          pollResultsState,
+          removeAwayState,
+          newProfilesState,
+          middleNameState,
+          oldHoverState,
+          tabletMenuState
         )
     );
-    setTimeout(() => reloadButton.classList.remove("vkEnhancerRebootLoading"), 250);});
+    setTimeout(() => reloadButton.classList.remove("vkEnhancerRebootLoading"), 250);
+  });
   topNav.appendChild(reloadButton);
 }
 document.addEventListener("DOMContentLoaded", createReloadButton);
@@ -456,7 +452,7 @@ function HotBarAppear(cHotBarValue) {
     });
     try {
       chatInputContainer[0].appendChild(hotbarDiv);
-    } catch (error) {}
+    } catch (error) { }
   }
 }
 // Функция для получения ID эмодзи
@@ -697,13 +693,16 @@ function removeCAccent() {
   if (customStyle) {
     customStyle.remove();
   }
-  const svgElement = document.querySelector(
-    "#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg"
-  );
-  const pathElement = svgElement.querySelector("g > g > path:nth-child(2)");
-  if (pathElement != null) {
-    pathElement.setAttribute("fill", "#07F");
+  try {
+    const svgElement = document.querySelector(
+      "#top_nav > li.HeaderNav__item.HeaderNav__item--logo > a.TopHomeLink > svg"
+    );
+    const pathElement = svgElement.querySelector("g > g > path:nth-child(2)");
+    if (pathElement != null) {
+      pathElement.setAttribute("fill", "#07F");
+    }
   }
+  catch (error) { }
 }
 //Цвета выделения текста
 function addColorPicker(cColorValue, cTextValue) {
@@ -858,7 +857,7 @@ function initTabletMenu() {
     document.head.appendChild(styleElement);
   }
   styleElement.innerHTML =
-    `.side_bar_inner { background-color: var(--block, var(--vkui--color_background_content)) !important; box-shadow: var(--page-block-shadow) !important; border-radius: 100px; } .side_bar { [class^="LeftMenuOld-module__container--"] { padding: 5px 0; } [class^="LeftMenuItem-module__settings--"] { left: -24px !important; } } .side_bar_nav_wrap { margin: 0 !important; margin-bottom: 10px !important; } body { .side_bar { width: 54px !important; padding-left: 258px !important; margin-left: -149px !important; padding-right: 0px !important; margin-right: -149px !important; .LeftMenu__separator, [class^='LeftMenuOld-module__separator--'] { margin-left: 0; margin-right: 0; } [class^='LeftMenuSection-module__hiddenItems--'], [class*=' LeftMenuSection-module__hiddenItems--'] { position: relative; width: calc(var(--left-menu-icon-size, 20px) + 21) !important; } [class^="LeftMenuItem-module__icon"] { scale:1.3; color: var(--vkui--color_icon_secondary); } #l_pr [class^="LeftMenuItem-module__icon"] { width:20px; height:20px; background-image:url(`+localStorage.getItem("ownerPhoto200")+`); background-size:cover; margin-right:0; border-radius:100px; } li[class^="LeftMenuItem-module__container"]:not(:last-child) { padding-bottom:8px; } #l_pr [class^="LeftMenuItem-module__icon"] svg { display:none; } .LeftMenu__itemLink, [class^='LeftMenuItem-module__item--'] { border-radius:100px; position: relative; width: calc(var(--left-menu-icon-size, 20px) + 21) !important; .left_count_wrap, [class^='LeftMenuItem-module__counter--'] { position: absolute; top: 0px; left: 12px; font-size:14px; transform: scale(0.7); background: var(--vkui--color_background_accent_themed) !important; color: var(--vkui--color_icon_contrast_themed) !important; } &:hover { .LeftMenu__itemLabel, [class^='LeftMenuItem-module__label--'] { display: block !important; position: fixed !important; background: var(--vkui--color_avatar_overlay--hover) !important; color: var(--vkui--color_background_content) !important; border-radius: 100px !important; padding: 4px 7px !important; height: auto !important; line-height: initial !important; margin-left: 36px !important; margin-top: 16px !important; margin-top: 0 !important; } } } .LeftMenu__itemLabel,[class^='LeftMenuItem-module__label--'] { font-size:12px; } .side_bar_inner { width: 42px !important; padding: 2px 0 !important; margin-top: 64px !important; } ol { margin: 0 5px 10px 5px !important; } .LeftMenu__itemLabel, [class^='LeftMenuItem-module__label--'], .left_menu_nav_wrap { display: none !important; } } } li.HeaderNav__item.HeaderNav__item--logo { margin: 0 !important; } [class*="LeftMenuOld-module__separator"] { margin: 4px 0px 8px 0px; } .LegalRecommendationsLinkLeftMenuAuthorized,.WideSeparator--legalRecommendationsLink { display:none; }`;
+    `.side_bar_inner { background-color: var(--block, var(--vkui--color_background_content)) !important; box-shadow: var(--page-block-shadow) !important; border-radius: 100px; } .side_bar { [class^="LeftMenuOld-module__container--"] { padding: 5px 0; } [class^="LeftMenuItem-module__settings--"] { left: -24px !important; } } .side_bar_nav_wrap { margin: 0 !important; margin-bottom: 10px !important; } body { .side_bar { width: 54px !important; padding-left: 258px !important; margin-left: -149px !important; padding-right: 0px !important; margin-right: -149px !important; .LeftMenu__separator, [class^='LeftMenuOld-module__separator--'] { margin-left: 0; margin-right: 0; } [class^='LeftMenuSection-module__hiddenItems--'], [class*=' LeftMenuSection-module__hiddenItems--'] { position: relative; width: calc(var(--left-menu-icon-size, 20px) + 21) !important; } [class^="LeftMenuItem-module__icon"] { scale:1.3; color: var(--vkui--color_icon_secondary); } #l_pr [class^="LeftMenuItem-module__icon"] { width:20px; height:20px; background-image:url(` + localStorage.getItem("ownerPhoto200") + `); background-size:cover; margin-right:0; border-radius:100px; } li[class^="LeftMenuItem-module__container"]:not(:last-child) { padding-bottom:8px; } #l_pr [class^="LeftMenuItem-module__icon"] svg { display:none; } .LeftMenu__itemLink, [class^='LeftMenuItem-module__item--'] { border-radius:100px; position: relative; width: calc(var(--left-menu-icon-size, 20px) + 21) !important; .left_count_wrap, [class^='LeftMenuItem-module__counter--'] { position: absolute; top: 0px; left: 12px; font-size:14px; transform: scale(0.7); background: var(--vkui--color_background_accent_themed) !important; color: var(--vkui--color_icon_contrast_themed) !important; } &:hover { .LeftMenu__itemLabel, [class^='LeftMenuItem-module__label--'] { display: block !important; position: fixed !important; background: var(--vkui--color_avatar_overlay--hover) !important; color: var(--vkui--color_background_content) !important; border-radius: 100px !important; padding: 4px 7px !important; height: auto !important; line-height: initial !important; margin-left: 36px !important; margin-top: 16px !important; margin-top: 0 !important; } } } .LeftMenu__itemLabel,[class^='LeftMenuItem-module__label--'] { font-size:12px; } .side_bar_inner { width: 42px !important; padding: 2px 0 !important; margin-top: 64px !important; } ol { margin: 0 5px 10px 5px !important; } .LeftMenu__itemLabel, [class^='LeftMenuItem-module__label--'], .left_menu_nav_wrap { display: none !important; } } } li.HeaderNav__item.HeaderNav__item--logo { margin: 0 !important; } [class*="LeftMenuOld-module__separator"] { margin: 4px 0px 8px 0px; } .LegalRecommendationsLinkLeftMenuAuthorized,.WideSeparator--legalRecommendationsLink { display:none; }`;
 }
 
 function closeTabletMenu() {
@@ -915,10 +914,10 @@ function applyStyles(
     backMessageReactions();
   }
   if (isPostReactionsChecked) {
-	window.postMessage({ action: "removePostReactions" }, "*");
+    window.postMessage({ action: "removePostReactions" }, "*");
     removePostReactions();
   } else {
-	window.postMessage({ action: "backPostReactions" }, "*");
+    window.postMessage({ action: "backPostReactions" }, "*");
     backPostReactions();
   }
   if (isNameAva) {
@@ -931,10 +930,10 @@ function applyStyles(
     removeNameAva();
   }
   if (isSecretChecked) {
-	window.postMessage({ action: "secretFunctionsEnabled" }, "*");
+    window.postMessage({ action: "secretFunctionsEnabled" }, "*");
     secretFunctionsEnabled();
   } else {
-	window.postMessage({ action: "secretFunctionsDisabled" }, "*");
+    window.postMessage({ action: "secretFunctionsDisabled" }, "*");
     secretFunctionsDisabled();
   }
   /*console.log("isHiderChecked now " + isHiderChecked)*/
@@ -1037,115 +1036,115 @@ function applyStyles(
     );
   }
   if (nechitalkaChecked) {
-	//console.log("Nechitalka true");
+    //console.log("Nechitalka true");
     window.postMessage(
       { action: "nechitalka", value: nechitalkaChecked },
       "*"
     );
   }
   else {
-	//console.log("Nechitalka false");
+    //console.log("Nechitalka false");
     window.postMessage(
       { action: "nechitalka", value: nechitalkaChecked },
       "*"
-    );  
+    );
   }
   if (nepisalkaChecked) {
-	//console.log("Nepisalka true");
+    //console.log("Nepisalka true");
     window.postMessage(
       { action: "nepisalka", value: nepisalkaChecked },
       "*"
-    ); 
+    );
   }
   else {
-	//console.log("Nepisalka false");
+    //console.log("Nepisalka false");
     window.postMessage(
       { action: "nepisalka", value: nepisalkaChecked },
       "*"
-    );  
+    );
   }
   if (pollResultsChecked) {
-	//console.log("Polls true");
-    window.postMessage(
-      { action: "pollResults", value: pollResultsChecked },
-      "*"
-    );  
-  }
-  else {
-	//console.log("Polls false");
+    //console.log("Polls true");
     window.postMessage(
       { action: "pollResults", value: pollResultsChecked },
       "*"
     );
   }
-   if(removeAwayChecked) {
+  else {
+    //console.log("Polls false");
+    window.postMessage(
+      { action: "pollResults", value: pollResultsChecked },
+      "*"
+    );
+  }
+  if (removeAwayChecked) {
     window.postMessage(
       { action: "removeAway", value: removeAwayChecked },
       "*"
-    );   
-   }
-   else {
-	window.postMessage(
+    );
+  }
+  else {
+    window.postMessage(
       { action: "removeAway", value: removeAwayChecked },
       "*"
-    );    
-   }
-   if(newProfilesChecked) {
+    );
+  }
+  if (newProfilesChecked) {
     window.postMessage(
       { action: "newProfiles", value: newProfilesChecked },
       "*"
-    );   
-   }
-   else {
-	window.postMessage(
+    );
+  }
+  else {
+    window.postMessage(
       { action: "newProfiles", value: newProfilesChecked },
       "*"
-    );  
-	}
-	if(middleNameChecked) {
+    );
+  }
+  if (middleNameChecked) {
     window.postMessage(
       { action: "middleName", value: middleNameChecked },
       "*"
-    );   
-   }
-   else {
-	window.postMessage(
+    );
+  }
+  else {
+    window.postMessage(
       { action: "middleName", value: middleNameChecked },
       "*"
-    ); 
- 
-	}
-	if(oldHoverChecked) {
+    );
+
+  }
+  if (oldHoverChecked) {
     window.postMessage(
       { action: "oldHover", value: oldHoverChecked },
       "*"
-    );   
-   }
-   else {
-	window.postMessage(
+    );
+  }
+  else {
+    window.postMessage(
       { action: "oldHover", value: oldHoverChecked },
       "*"
-    ); 
-   }
-   if(tabletMenuChecked) {
-    initTabletMenu();  
-   }
-   else {
-	closeTabletMenu(); 
-	}
+    );
+  }
+  if (tabletMenuChecked) {
+    initTabletMenu();
+  }
+  else {
+    closeTabletMenu();
+  }
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
   chrome.storage.local.get(
     [
-	  "tabletMenuState",
+      "tabletMenuState",
       "oldHoverState",
-	  "middleNameState",
-	  "newProfilesState",
-	  "removeAwayState",
-	  "pollResultsState",
-	  "nepisalkaState",
-	  "nechitalkaState",
+      "middleNameState",
+      "newProfilesState",
+      "removeAwayState",
+      "pollResultsState",
+      "nepisalkaState",
+      "nechitalkaState",
       "integrationMediaState",
       "newDesignState",
       "hideButtonState",
@@ -1194,14 +1193,14 @@ function applySavedStyles() {
       const hideButtonChecked = items.hideButtonState;
       const newDesignChecked = items.newDesignState;
       const integrationMediaChecked = items.integrationMediaState;
-	  const nechitalkaChecked = items.nechitalkaState;
-	  const nepisalkaChecked = items.nepisalkaState;
-	  const pollResultsChecked = items.pollResultsState;
-	  const removeAwayChecked = items.removeAwayState;
-	  const newProfilesChecked = items.newProfilesState;
-	  const middleNameChecked = items.middleNameState;
-	  const oldHoverChecked = items.oldHoverState;
-	  const tabletMenuChecked = items.tabletMenuState;
+      const nechitalkaChecked = items.nechitalkaState;
+      const nepisalkaChecked = items.nepisalkaState;
+      const pollResultsChecked = items.pollResultsState;
+      const removeAwayChecked = items.removeAwayState;
+      const newProfilesChecked = items.newProfilesState;
+      const middleNameChecked = items.middleNameState;
+      const oldHoverChecked = items.oldHoverState;
+      const tabletMenuChecked = items.tabletMenuState;
       applyStyles(
         isOldAccentChecked,
         isMsgReactionsChecked,
@@ -1226,14 +1225,14 @@ function applySavedStyles() {
         hideButtonChecked,
         newDesignChecked,
         integrationMediaChecked,
-		nechitalkaChecked,
-		nepisalkaChecked,
-		pollResultsChecked,
-		removeAwayChecked,
-		newProfilesChecked,
-		middleNameChecked,
-		oldHoverChecked,
-		tabletMenuChecked
+        nechitalkaChecked,
+        nepisalkaChecked,
+        pollResultsChecked,
+        removeAwayChecked,
+        newProfilesChecked,
+        middleNameChecked,
+        oldHoverChecked,
+        tabletMenuChecked
       );
     }
   );
@@ -1266,14 +1265,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     message.type === "toggleHideButton" ||
     message.type === "toggleNewDesign" ||
     message.type === "toggleIntegrationMedia" ||
-	message.type === "toggleNechitalka" ||
-	message.type === "toggleNepisalka" ||
-	message.type === "togglePollResults" ||
-	message.type === "toggleRemoveAway" ||
-	message.type === "toggleNewProfiles" ||
-	message.type === "toggleMiddleName" ||
-	message.type === "toggleOldHover" ||
-	message.type === "toggleTabletMenu"
+    message.type === "toggleNechitalka" ||
+    message.type === "toggleNepisalka" ||
+    message.type === "togglePollResults" ||
+    message.type === "toggleRemoveAway" ||
+    message.type === "toggleNewProfiles" ||
+    message.type === "toggleMiddleName" ||
+    message.type === "toggleOldHover" ||
+    message.type === "toggleTabletMenu"
   ) {
     applySavedStyles();
   }
@@ -1787,7 +1786,7 @@ function isSecretCheckFunc() {
       parentlnk.insertBefore(k, loglnk);
       parentlnk.insertBefore(n, setlnk);
     }
-  } catch (e) {}
+  } catch (e) { }
   const styleElement = document.createElement("style");
   styleElement.id = "top_name";
   styleElement.innerHTML = ".top_profile_name {padding-right: 10px;}";
@@ -1840,7 +1839,7 @@ function fixname1() {
         parentlnk.insertBefore(k, loglnk);
         parentlnk.insertBefore(n, setlnk);
       }
-    } catch (e) {}
+    } catch (e) { }
     const styleElement = document.createElement("style");
     styleElement.id = "top_name";
     styleElement.innerHTML = ".top_profile_name {padding-right: 10px;}";
@@ -1948,9 +1947,9 @@ function vkbynmh() {
       var link = links[i];
       if (
         link.getAttribute("onclick") ===
-          "return Gifts.showGiftBox(cur.oid, event, 'gifts');" ||
+        "return Gifts.showGiftBox(cur.oid, event, 'gifts');" ||
         link.getAttribute("onclick") ===
-          "return Gifts.showGiftBox(cur.oid, event, 'gifts_own');"
+        "return Gifts.showGiftBox(cur.oid, event, 'gifts_own');"
       ) {
         link.style.color = "#fff";
       }
@@ -2130,7 +2129,7 @@ function vkbynmh() {
     });
   });
   // Название
-  function title() {}
+  function title() { }
   const element = document.querySelector(
     "a.ui_actions_menu_item.im-action.im-action_favorites._im_search_more_action"
   );
@@ -2234,7 +2233,7 @@ function vkbynmh() {
     // Установка старого поиска
   }
 
-  function seacrh3() {}
+  function seacrh3() { }
 
   function my_vid() {
     var head = document.querySelectorAll(".page_block_header.clear_fix");
@@ -2381,7 +2380,7 @@ function vkbynmh() {
       for (var i = 0, l = mutations.length; i < l; i++) {
         for (var j = 0, m = mutations[i].addedNodes.length; j < m; j++) {
           if (mutations[i].addedNodes[j].nodeType === 1) {
-            for (var k = KPP._list.length; k--; ) {
+            for (var k = KPP._list.length; k--;) {
               if (mutations[i].addedNodes[j].matches(KPP._list[k])) {
                 // Обрабатывает только существующие элементы до DOMContentLoaded
                 if (!mutations[i].addedNodes[j].KPPPassed) {
@@ -2428,7 +2427,7 @@ function vkbynmh() {
     add: function (selector, callback) {
       var q = document.querySelectorAll(selector);
       if (q.length > 0) {
-        for (var i = q.length; i--; ) {
+        for (var i = q.length; i--;) {
           callback(q[i]);
         }
       }
