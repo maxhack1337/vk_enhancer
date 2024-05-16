@@ -94,7 +94,6 @@
 <a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.10/VK.Enhancer.zip">
   <img src="https://vkenhancer.ru/download.png" width="202" height="83">
 </a></p>
-<p align="center"><a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v1.0/VK.Enhancer.Legacy.zip">Установить legacy-версию расширения(для старого вида мессенджера)</a></p>
 <div>
   
 <div>
