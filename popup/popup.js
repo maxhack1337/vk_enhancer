@@ -1,4 +1,4 @@
-console.log('Версия 3.10 Release');
+console.log('Версия 3.10.1 Release');
 var accentC = document.getElementById('oldaccent');
 var msgreact = document.getElementById('messagereactions');
 var recentgroups = document.getElementById('recentgroups');
@@ -51,7 +51,7 @@ var newprofiles = document.getElementById('newprofiles');
 var middlename = document.getElementById('middlename');
 var oldhover = document.getElementById('oldhover');
 var tabletmenu = document.getElementById('tabletmenu');
-var tab1 = document.getElementById('tab0');
+var tab0 = document.getElementById('tab0');
 var tab1 = document.getElementById('tab1');
 var tab2 = document.getElementById('tab2');
 var tab3 = document.getElementById('tab3');
@@ -735,7 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 document.querySelector('.vkenhancerLogo').addEventListener('click', function () {
     chrome.tabs.create({
-        url: 'https://vk.com/vkenhancer'
+        url: 'https://vkenhancer.ru/'
     });
 });
 themeChange.addEventListener('click', (event) => {
@@ -994,7 +994,7 @@ colorPicker.addEventListener('change', saveToCache);
 colorPickerText.addEventListener('change', saveToCache);
 document.querySelector('#emojigo').addEventListener('click', function () {
     chrome.tabs.create({
-        url: 'https://nimble-wisp-54a226.netlify.app/emoji.html'
+        url: 'https://vkenhancer.ru/emoji.html'
     });
 });
 copyLink.addEventListener('click', (event) => {
