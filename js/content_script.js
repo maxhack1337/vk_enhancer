@@ -159,7 +159,9 @@ function createReloadButton() {
   reloadButton.addEventListener("click", (event) => {
     reloadButton.classList.add("vkEnhancerRebootLoading");
     chrome.storage.local.get(
-      ["tabletMenuState",
+      [ "oldBadgeState",
+	    "defaultThemeState",
+	    "tabletMenuState",
         "oldHoverState",
         "middleNameState",
         "newProfilesState",
@@ -222,7 +224,9 @@ function createReloadButton() {
         newProfilesState,
         middleNameState,
         oldHoverState,
-        tabletMenuState
+        tabletMenuState,
+		defaultThemeState,
+		oldBadgeState
       }) =>
         applyStyles(
           checkboxState,
@@ -255,7 +259,9 @@ function createReloadButton() {
           newProfilesState,
           middleNameState,
           oldHoverState,
-          tabletMenuState
+          tabletMenuState,
+		  defaultThemeState,
+		  oldBadgeState
         )
     );
     setTimeout(() => reloadButton.classList.remove("vkEnhancerRebootLoading"), 250);
@@ -898,7 +904,9 @@ function applyStyles(
   newProfilesChecked,
   middleNameChecked,
   oldHoverChecked,
-  tabletMenuChecked
+  tabletMenuChecked,
+  defaultThemeChecked,
+  oldBadgeChecked
 ) {
   if (isOldAccentChecked) {
     hideNFT_Avatars();
@@ -1132,11 +1140,37 @@ function applyStyles(
   else {
     closeTabletMenu();
   }
+    if (defaultThemeChecked) {
+    window.postMessage(
+      { action: "defaultThemeFix", value: defaultThemeChecked },
+      "*"
+    );
+  }
+  else {
+    window.postMessage(
+      { action: "defaultThemeFix", value: defaultThemeChecked },
+      "*"
+    );
+  }
+      if (oldBadgeChecked) {
+    window.postMessage(
+      { action: "oldBadge", value: oldBadgeChecked },
+      "*"
+    );
+  }
+  else {
+    window.postMessage(
+      { action: "oldBadge", value: oldBadgeChecked },
+      "*"
+    );
+  }
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
   chrome.storage.local.get(
     [
+	  "oldBadgeState",
+	  "defaultThemeState",
       "tabletMenuState",
       "oldHoverState",
       "middleNameState",
@@ -1201,6 +1235,8 @@ function applySavedStyles() {
       const middleNameChecked = items.middleNameState;
       const oldHoverChecked = items.oldHoverState;
       const tabletMenuChecked = items.tabletMenuState;
+	  const defaultThemeChecked = items.defaultThemeState;
+	  const oldBadgeChecked = items.oldBadgeState;
       applyStyles(
         isOldAccentChecked,
         isMsgReactionsChecked,
@@ -1232,7 +1268,9 @@ function applySavedStyles() {
         newProfilesChecked,
         middleNameChecked,
         oldHoverChecked,
-        tabletMenuChecked
+        tabletMenuChecked,
+		defaultThemeChecked,
+		oldBadgeChecked
       );
     }
   );
@@ -1272,7 +1310,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     message.type === "toggleNewProfiles" ||
     message.type === "toggleMiddleName" ||
     message.type === "toggleOldHover" ||
-    message.type === "toggleTabletMenu"
+    message.type === "toggleTabletMenu" ||
+    message.type === "toggleDefaultTheme" ||
+    message.type === "toggleOldBadge"
   ) {
     applySavedStyles();
   }

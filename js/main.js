@@ -49,6 +49,11 @@ const newDesignFunctions = [
   "vkm_admin_can_delete_message",
   "vkm_photo_save_to_album",
   "vkm_media_viewer_report",
+  "vkm_convo_check_can_read",
+  "vkm_new_chunk_parser",
+  "vkm_business_folder",
+  "vkm_sublists_in_folder",
+  "vkm_new_convo_folder_logic",
 ];
 const adsSelector = [
   ".page_block.feed_blog_reminder_large",
@@ -75,6 +80,10 @@ const createTextNode = document.createTextNode.bind(document);
 const fromId = document.getElementById.bind(document);
 
 let intMedia = false;
+try {
+	intMedia = JSON.parse(localStorage.getItem('intMediaValue'));
+}
+catch(error){}
 var pollResultsValue = false;
 var nechitalkaValue = false;
 var nepisalkaValue = false;
@@ -197,7 +206,7 @@ deferredCallback(
 window.addEventListener("message", async (event) => {
   switch (event.data.action) {
     case "integrationMedia": {
-      intMedia = event.data.value;
+      localStorage.setItem("intMediaValue", event.data.value);
       break;
     }
     case "nechitalka": {
@@ -316,6 +325,14 @@ window.addEventListener("message", async (event) => {
       localStorage.setItem("isOldHover", event.data.value);
       break;
     }
+	case "defaultThemeFix": {
+      localStorage.setItem("isDefaultTheme", event.data.value);
+      break;
+    }
+	case "oldBadge": {
+      localStorage.setItem("isOldBadge", event.data.value);
+      break;
+    }
     case "vkEnhancerAccessToken": {
       localStorage.setItem("vk_enhancer_access_token", event.data.value);
       break;
@@ -343,6 +360,10 @@ document.arrive(".ConvoHistory__messageBlock", { existing: true }, async functio
       e.classList.add("vkEnhancerDeletedMessageMain");
       const appendHere = e.querySelector(".ConvoMessageBottomInfo,.ConvoMessage__info");
       if (appendHere) {
+	  					  const customStyle = fromId("DeletedMessageTT");
+  if (customStyle) {
+    customStyle.remove();
+  }
         const spanDeleted = document.createElement("span");
         spanDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [12, 5] });`)
         spanDeleted.classList.add("vkEnhancerDeletedMessage");
@@ -356,8 +377,15 @@ document.arrive(".ConvoHistory__messageBlock", { existing: true }, async functio
       }
       const appendHere1 = e.querySelector(".ConvoMessageInfoWithoutBubbles");
       if (appendHere1) {
+	  									    let styleElement = fromId("DeletedMessageTT");
+  if (!styleElement) {
+    styleElement = create("style", {}, { id: "DeletedMessageTT" });
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML =
+    `.ConvoMessageWithoutBubble__wrapper .tt_w:after{display:none;}`;
         const divDeleted = document.createElement("div");
-        divDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [12, 5] });`)
+        divDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [52, 5] });`)
         divDeleted.classList.add("vkEnhancerDeletedMessageWithoutBubbles");
         divDeleted.style.width = "16px";
         divDeleted.style.height = "16px";
@@ -389,6 +417,10 @@ deferredCallback(
                     se.classList.add("vkEnhancerDeletedMessageMain");
                     const appendHere = se.querySelector(".ConvoMessageBottomInfo,.ConvoMessage__info");
                     if (appendHere) {
+					  const customStyle = fromId("DeletedMessageTT");
+  if (customStyle) {
+    customStyle.remove();
+  }
                       const spanDeleted = document.createElement("span");
                       spanDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [12, 5] });`)
                       spanDeleted.classList.add("vkEnhancerDeletedMessage");
@@ -402,8 +434,15 @@ deferredCallback(
                     }
                     const appendHere1 = se.querySelector(".ConvoMessageInfoWithoutBubbles");
                     if (appendHere1) {
+									    let styleElement = fromId("DeletedMessageTT");
+  if (!styleElement) {
+    styleElement = create("style", {}, { id: "DeletedMessageTT" });
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML =
+    `.ConvoMessageWithoutBubble__wrapper .tt_w:after{display:none;}`;
                       const divDeleted = document.createElement("div");
-                      divDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [12, 5] });`)
+                      divDeleted.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("mail_deleted_stop")}', black: true, shift: [52, 5] });`)
                       divDeleted.classList.add("vkEnhancerDeletedMessageWithoutBubbles");
                       divDeleted.style.width = "16px";
                       divDeleted.style.height = "16px";
@@ -421,13 +460,11 @@ deferredCallback(
               break
             }
             case 10019: {
-              console.log(e);
               mess.push(e);
               break
             }
             case 10005: {
               mess.push(e);
-              console.log(e)
               break
             }
             default: {
@@ -5909,7 +5946,9 @@ function removeAway(str) {
 }
 ///КОНЕЦ УБРАТЬ AWAY.PHP///
 ///ДЛЯ НОВОГО ДИЗАЙНА ССЫЛКИ В ЛС ИЗ ПРОФИЛЯ///
-if (localStorage.getItem("isNewDesign") === "true") {
+deferredCallback(
+  () => {
+if (localStorage.getItem("isNewDesign") === "true" || vk.pe.vkm_reforged_in_vkcom == 1) {
   const imHrefs = ['a[href^="/im?sel="]', 'a[href^="https://vk.com/im?sel="]'];
   document.arrive(imHrefs, { existing: true }, function (e) {
     const links = document.querySelectorAll(imHrefs.join(", "));
@@ -5928,6 +5967,8 @@ if (localStorage.getItem("isNewDesign") === "true") {
     });
   });
 }
+  },
+  { variable: "vk" });
 ///КОНЕЦ ДЛЯ НОВОГО ДИЗАЙНА ССЫЛКИ В ЛС ИЗ ПРОФИЛЯ///
 function backPostReactionsFunc() {
   if (localStorage.getItem("removePostReactions") != "true") {
@@ -7905,6 +7946,26 @@ function newDesign() {
           newDesignFunctions.forEach((flag) => {
             e.store.featureFlags[flag] = true;
           });
+		  try {
+			if(localStorage.getItem("isDefaultTheme") == "true") {
+				e.store.featureFlags["vkm_bubble_theme_default_value"] = 1;
+			}
+		  } catch(error){}
+		  try {
+				if(localStorage.getItem("isOldBadge") == "false") {
+					e.store.featureFlags["vkm_new_read_indicator"] = true;
+					e.store.featureFlags["me_new_read_indicator"] = true;
+				}
+				else {
+					e.store.featureFlags["vkm_new_read_indicator"] = false;
+					e.store.featureFlags["me_new_read_indicator"] = false;	
+				}
+			} catch(error) {
+					e.store.featureFlags["vkm_new_read_indicator"] = true;
+					e.store.featureFlags["me_new_read_indicator"] = true;
+			}
+		  e.store.featureFlags["vkm_reactions"] = 20;
+		  e.store.featureFlags["me_reactions"] = 20;
           e.store.featureFlags["vkm_integration_media_viewer"] = intMedia;
           resolve(true);
           //console.info("[VK ENH] Messenger injection completed.");
@@ -8135,6 +8196,26 @@ function OldDesign() {
             newDesignFunctions.forEach((flag) => {
               e.store.featureFlags[flag] = false;
             });
+		    try {
+				if(localStorage.getItem("isDefaultTheme") == "true") {
+					e.store.featureFlags["vkm_bubble_theme_default_value"] = 1;
+				}
+			} catch(error){}
+			try {
+				if(localStorage.getItem("isOldBadge") == "false") {
+					e.store.featureFlags["vkm_new_read_indicator"] = true;
+					e.store.featureFlags["me_new_read_indicator"] = true;
+				}
+				else {
+					e.store.featureFlags["vkm_new_read_indicator"] = false;
+					e.store.featureFlags["me_new_read_indicator"] = false;	
+				}
+			} catch(error) {
+					e.store.featureFlags["vkm_new_read_indicator"] = true;
+					e.store.featureFlags["me_new_read_indicator"] = true;
+			}
+			e.store.featureFlags["vkm_reactions"] = 20;
+			e.store.featureFlags["me_reactions"] = 20;
             e.store.featureFlags["vkm_integration_media_viewer"] = false;
           } else {
             console.error("Feature flags object is not available");
