@@ -33,9 +33,11 @@ function fillStrings() {
     document.querySelector('#PollsRes > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.showPollResults);
     document.querySelector('#CallsM > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.doNotDisturb);
 	document.querySelector('#TabletMenu > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.tabletMenu);
+	document.querySelector('#OldBadge > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.oldMessagesBadge);
     document.querySelector('#NewProfiles > div > div > .vkenhancerChoosePickerText1').innerHTML = '<span class="newSpan"><img class="newFire" src="assets/new.png"></span>' + getLocalizedString(strings.classicProfileInterface);
     document.querySelector('#NewMessenger > div > div > .vkenhancerChoosePickerText1').innerHTML = '<span class="newSpan"><img class="newFire" src="assets/new.png"></span>' + getLocalizedString(strings.newMessengerDesign);
-    document.querySelector('#SecretOldDesign > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.additionalVKEnhancerFunctions);
+    document.querySelector('#MessagesDefaultTheme > div > div > .vkenhancerChoosePickerText1').innerHTML = getLocalizedString(strings.messagesDefaultTheme);
+	document.querySelector('#SecretOldDesign > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.additionalVKEnhancerFunctions);
     document.querySelector('#SliderBlock > div > label').textContent = getLocalizedString(strings.blockTransparency);
 
     document.querySelector('div.footerInfo > h3:nth-child(1)').textContent = getLocalizedString(strings.usefulLinks);
@@ -97,6 +99,7 @@ function fillStrings() {
     document.querySelector('#CallsM > div.vkenhancerChoosePicker > div:nth-child(2) > span').textContent = getLocalizedString(strings.doNotDisturbDescription);
     document.querySelector('#NewProfiles > div.vkenhancerChoosePicker > div:nth-child(2) > span').innerHTML = getLocalizedString(strings.classicProfileInterfaceDescription);
     document.querySelector('#NewMessenger > div.vkenhancerChoosePicker > div:nth-child(2) > span').innerHTML = getLocalizedString(strings.newMessengerDesignDescription);
+	document.querySelector('#MessagesDefaultTheme > div.vkenhancerChoosePicker > div:nth-child(2) > span').innerHTML = getLocalizedString(strings.messagesDefaultThemeDescription);
     document.querySelector('#textfieldprotip').textContent = getLocalizedString(strings.emojiHotbarDescription);
     document.querySelector('#textfieldprotipID').textContent = getLocalizedString(strings.enterProfileGroupIDDescription);
 
@@ -115,6 +118,7 @@ function fillStrings() {
 	document.querySelector('.vkEnhancerHeaderRatioPseudo1').textContent = getLocalizedString(strings.pseudoTab1);
 	document.querySelector('.vkEnhancerHeaderRatioPseudo2').textContent = getLocalizedString(strings.pseudoTab2);
 	document.querySelector('.vkEnhancerHeaderRatioPseudo3').textContent = getLocalizedString(strings.pseudoTab3);
+	document.querySelector('.vkEnhancerHeaderRatio5').textContent = getLocalizedString(strings.afterReboot);
 	
 	document.querySelector("#parseid").value = getLocalizedString(strings.notGroupOrUserId);;
 }
