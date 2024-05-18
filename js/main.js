@@ -7956,7 +7956,11 @@ function newDesign() {
 					e.store.featureFlags["vkm_new_read_indicator"] = true;
 					e.store.featureFlags["me_new_read_indicator"] = true;
 				}
-				else {
+				else if(localStorage.getItem("isOldBadge") == "undefined"){
+					e.store.featureFlags["vkm_new_read_indicator"] = true;
+					e.store.featureFlags["me_new_read_indicator"] = true;	
+				}
+				else if(localStorage.getItem("isOldBadge") == "true"){
 					e.store.featureFlags["vkm_new_read_indicator"] = false;
 					e.store.featureFlags["me_new_read_indicator"] = false;	
 				}
@@ -8201,12 +8205,16 @@ function OldDesign() {
 					e.store.featureFlags["vkm_bubble_theme_default_value"] = 1;
 				}
 			} catch(error){}
-			try {
+		  try {
 				if(localStorage.getItem("isOldBadge") == "false") {
 					e.store.featureFlags["vkm_new_read_indicator"] = true;
 					e.store.featureFlags["me_new_read_indicator"] = true;
 				}
-				else {
+				else if(localStorage.getItem("isOldBadge") == "undefined"){
+					e.store.featureFlags["vkm_new_read_indicator"] = true;
+					e.store.featureFlags["me_new_read_indicator"] = true;	
+				}
+				else if(localStorage.getItem("isOldBadge") == "true"){
 					e.store.featureFlags["vkm_new_read_indicator"] = false;
 					e.store.featureFlags["me_new_read_indicator"] = false;	
 				}
