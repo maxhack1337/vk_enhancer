@@ -4,6 +4,7 @@
 ## Функции расширения
 ```
  * Возможность активации классического интерфейса профиля
+ * Возвращение возможности публикации постеров в записи
  * Возможность просмотра удалённых сообщений
  * Возможность просмотра оригинала отредактированного сообщения
  * Возможность скачивания музыки, видео, альбомов
@@ -91,7 +92,7 @@
 </p>
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.11/VK.Enhancer.zip">
+<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.11.1/VK.Enhancer.zip">
   <img src="https://vkenhancer.ru/download.png" width="202" height="83">
 </a></p>
 <div>
