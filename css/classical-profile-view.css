@@ -594,7 +594,7 @@ div.ProfileHeader__ava > div > div[role="button"] {
 .ProfileInfo__fullInfo {
     display:none;
 }
-.page_current_info.current_text,#page_current_info,.ProfileInfo__broadcast{
+.page_current_info.current_text,[style="width: 100%;"] > #page_current_info,.ProfileInfo__broadcast{
     margin-left:26px;
     border-bottom: 1px solid var(--vkui--color_separator_primary);
     padding-bottom:16px;
@@ -701,13 +701,18 @@ div.ProfileHeader.ProfileHeader--noCover.ProfileHeader--withSnowballs > div > di
     border-bottom: var(--thin-border, .5px) solid var(--vkui--color_separator_primary);  
 }
 .vkEnhancerAdditionalJob {
+	padding-bottom:20px;
     display:flex;
     margin-left:165px;
+	line-height:12px!important;
+}
+.RedesignedPageBlockContainer:has(a[href^="/bugs"]) {
+	margin-top:15px;
 }
 .vkEnhancerAdditionalJob > div {
-    color: #828282; 
+    color: black; 
     margin-top:-2px;
-    margin-left:2px;
+    /*margin-left:2px;*/
 }
 .education_info,.school_info,.job_row,.voin_info {
     padding-top:12px;
