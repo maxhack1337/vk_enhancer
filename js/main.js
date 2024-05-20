@@ -355,7 +355,7 @@ document.arrive(".OwnerPageName__icons", { existing: true }, function (e) {
 document.arrive("#page_add_media > .media_selector", { existing: true }, function (e) {
   let posters = document.createElement('a');
   posters.classList.add('fl_r');
-  posters.innerHTML = `<div style="display:block; bottom:-2px; padding-left:6px; width:20px; right: 6px; margin-top:0px; position:relative;" class="poster__open-btn-wrapper poster " id="page_poster_btn">
+  posters.innerHTML = `<div style="display:block; bottom:-1px; padding-left:6px; width:20px; right: 6px; margin-top:0px; position:relative;" class="poster__open-btn-wrapper poster " id="page_poster_btn">
     <div class="poster__open-btn-layout" style="margin-left:3px;">
       <div class="poster__open-btn poster" onclick="cur.poster.openEditor()" onmouseenter="showTooltip(this, { text: getLang('wall_poster_open_tt'), black: 1, shift: [10, 9] })"></div>
       </div>
