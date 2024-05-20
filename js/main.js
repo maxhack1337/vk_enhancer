@@ -351,6 +351,18 @@ window.addEventListener("message", async (event) => {
 document.arrive(".OwnerPageName__icons", { existing: true }, function (e) {
   updateUsers();
 });
+///ПОСТЕРЫ///
+document.arrive("#page_add_media > .media_selector", { existing: true }, function (e) {
+  let posters = document.createElement('a');
+  posters.classList.add('fl_r');
+  posters.innerHTML = `<div style="display:block; bottom:-2px; padding-left:6px; width:20px; right: 6px; margin-top:0px; position:relative;" class="poster__open-btn-wrapper poster " id="page_poster_btn">
+    <div class="poster__open-btn-layout" style="margin-left:3px;">
+      <div class="poster__open-btn poster" onclick="cur.poster.openEditor()" onmouseenter="showTooltip(this, { text: getLang('wall_poster_open_tt'), black: 1, shift: [10, 9] })"></div>
+      </div>
+    </div>`;
+	e.appendChild(posters);
+});
+///КОНЕЦ ПОСТЕРОВ///
 ///УДАЛЕННОЕ СООБЩЕНИЕ///
 document.arrive(".ConvoHistory__messageBlock", { existing: true }, async function (e) {
   try {
@@ -2132,21 +2144,25 @@ deferredCallback(
 
                   var additionalS = document.createElement("div");
                   additionalS.classList.add("vkEnhancerAdditionalJob");
-                  if (job.position) {
-                    var positionLink = document.createElement("a");
-                    positionLink.href = `/search/people?c[name]=0&c[position]=${job.position}`;
-                    positionLink.textContent = job.position + " ";
-                    positionLink.classList.add(
-                      "vkuiLink",
-                      "Link-module__link--V7bkY",
-                      "ProfileModalInfoLink",
-                      "vkuiTappable",
-                      "vkuiInternalTappable",
-                      "vkuiTappable--hasActive",
-                      "vkui-focus-visible"
-                    );
-                    additionalS.appendChild(positionLink);
+				  if (job.city_name) {
+                    var city_nameLink = document.createElement("div");
+                    city_nameLink.textContent = job.city_name;
+                    additionalS.appendChild(city_nameLink);
                   }
+				  else if(job.city_id) {
+					var city_nameID = document.createElement("div");
+					let cids = await vkApi.api('database.getCitiesById',{city_ids:job.city_id});
+					let cidThis = cids[0].title;
+                    city_nameID.textContent = cidThis;
+                    additionalS.appendChild(city_nameID);
+				  }
+				  if(job.city_id || job.city_name) {
+					if(job.from || job.until) {
+						let zapytaya = document.createElement('div');
+						zapytaya.textContent = ', ​';
+						additionalS.appendChild(zapytaya);
+					}
+				  }
                   if (job.from && job.until) {
                     var PIZDA = document.createElement("div");
                     PIZDA.textContent = ` ${job.from}-${job.until}`;
@@ -2164,15 +2180,44 @@ deferredCallback(
                     ).replace("%s", job.until);
                     additionalS.appendChild(untilLink);
                   }
-                  if (job.city_name) {
-                    var city_nameLink = document.createElement("div");
-                    city_nameLink.textContent = ", " + job.city_name;
-                    additionalS.appendChild(city_nameLink);
+				  if (job.position) {
+                    var positionLink = document.createElement("a");
+                    positionLink.href = `/search/people?c[name]=0&c[position]=${job.position}`;
+					positionLink.style.position = `absolute`;
+					positionLink.style.marginTop = `16px`;
+                    positionLink.innerHTML = job.position + " ";
+                    positionLink.classList.add(
+                      "vkuiLink",
+                      "Link-module__link--V7bkY",
+                      "ProfileModalInfoLink",
+                      "vkuiTappable",
+                      "vkuiInternalTappable",
+                      "vkuiTappable--hasActive",
+                      "vkui-focus-visible"
+                    );
+                    additionalS.appendChild(positionLink);
                   }
-
                   var jobRow = document.createElement("div");
-                  jobRow.classList.add("job_row");
+				  jobRow.classList.add("job_row");
                   jobRow.appendChild(careerDiv);
+				  if (job.group_id) {
+					let groupAva = document.createElement("a");
+					groupAva.classList.add('fl_r');
+					groupAva.classList.add('profile_career_group');
+					groupAva.setAttribute('mention','');
+					groupAva.setAttribute('mention_id','club'+job.group_id);
+					groupAva.setAttribute('onmouseover','mentionOver(this, {shift: [31, 9, 4]});');
+					groupAva.href = "https://vk.com/club"+job.group_id;
+					let groupAvaImg = document.createElement('img');
+					groupAvaImg.classList.add('profile_career_img');
+					groupAvaImg.style.width = '50px';
+					groupAvaImg.style.height = '50px';
+					groupAvaImg.style.borderRadius = '100px';
+					let groupInfo = await vkApi.api('groups.getById',{group_ids:job.group_id});
+					groupAvaImg.src = groupInfo.groups[0].photo_50;
+					groupAva.appendChild(groupAvaImg);
+					jobRow.appendChild(groupAva);
+				  }
                   jobRow.appendChild(groupLink);
                   jobRow.appendChild(additionalS);
 
@@ -2424,14 +2469,23 @@ deferredCallback(
               );
               schoolInfo.appendChild(schoolLink);
             }
-
             // Годы обучения и класс
             if (school.year_from && school.year_to) {
               var yearClassDiv = document.createElement("div");
               yearClassDiv.classList.add("yearClassDiv");
-
+			  if(school.city) {
+				vkApi.api('database.getCitiesById', { city_ids: school.city })
+					.then(cidSchool => {
+						let schoolCity = document.createElement("div");
+						schoolCity.textContent = cidSchool[0].title + ", ​";
+						yearClassDiv.prepend(schoolCity);
+					})
+					.catch(error => {
+						console.error('Error fetching city:', error);
+					});
+				}
               var yearRangeDiv = document.createElement("div");
-              yearRangeDiv.textContent = `${school.year_from}-${school.year_to} `;
+              yearRangeDiv.textContent = `${school.year_from}-${school.year_to} ​`;
               yearClassDiv.appendChild(yearRangeDiv);
 
               // Класс
@@ -2455,7 +2509,57 @@ deferredCallback(
               schoolInfo.appendChild(yearClassDiv);
             } else if (school.year_from) {
               var yearFromDiv = document.createElement("div");
-              yearFromDiv.textContent = `с ${school.year_from}`;
+			  yearFromDiv.classList.add('yearClassDiv');
+			  let yearFromString = getLang("profile_places_year_from");
+              yearFromDiv.textContent = yearFromString.replace('%s',`${school.year_from}`);
+			  if(school.city) {
+				vkApi.api('database.getCitiesById', { city_ids: school.city })
+					.then(cidSchool => {
+						let schoolCity = document.createElement("div");
+						schoolCity.textContent = cidSchool[0].title + ", ​";
+						yearFromDiv.prepend(schoolCity);
+					})
+					.catch(error => {
+						console.error('Error fetching city:', error);
+					});
+				}
+              schoolInfo.appendChild(yearFromDiv);
+
+              // Класс
+              if (school.class) {
+                var classLink = document.createElement("a");
+                classLink.href = `/search/people?c[name]=0&c[school_country]=${school.country}&c[school_city]=${school.city}&c[school]=${school.id}&c[school_year]=${school.year_graduated}&c[school_class]=${school.class}`;
+                classLink.textContent = `(${school.class})`;
+                classLink.classList.add(
+                  "classLinkA",
+                  "vkuiLink",
+                  "Link-module__link--V7bkY",
+                  "ProfileModalInfoLink",
+                  "vkuiTappable",
+                  "vkuiInternalTappable",
+                  "vkuiTappable--hasActive",
+                  "vkui-focus-visible"
+                );
+                schoolInfo.appendChild(classLink);
+              }
+            }
+			
+			else if (school.year_to) {
+              var yearFromDiv = document.createElement("div");
+			  yearFromDiv.classList.add('yearClassDiv');
+			  let yearFromString = getLang("profile_places_year_to");
+              yearFromDiv.textContent = yearFromString.replace('%s',`${school.year_to}`);
+			  if(school.city) {
+				vkApi.api('database.getCitiesById', { city_ids: school.city })
+					.then(cidSchool => {
+						let schoolCity = document.createElement("div");
+						schoolCity.textContent = cidSchool[0].title + ", ​";
+						yearFromDiv.prepend(schoolCity);
+					})
+					.catch(error => {
+						console.error('Error fetching city:', error);
+					});
+				}
               schoolInfo.appendChild(yearFromDiv);
 
               // Класс
@@ -2549,8 +2653,14 @@ deferredCallback(
                 voinInfo.appendChild(voinClassDiv);
               } else if (voin.from) {
                 var voinFromDiv = document.createElement("div");
-                voinFromDiv.textContent = `с ${voin.from}`;
+				let voinFromString = getLang("profile_places_year_from");
+                voinFromDiv.textContent = voinFromString.replace('%s',`${voin.from}`);
                 voinInfo.appendChild(voinFromDiv);
+              } else if (voin.until) {
+                var voinUntilDiv = document.createElement("div");
+				let voinUntilString = getLang("profile_places_year_to");
+                voinUntilDiv.textContent = voinUntilString.replace('%s',`${voin.until}`);
+                voinInfo.appendChild(voinUntilDiv);
               }
               moreItemsLoaded.appendChild(voinInfo);
             });
@@ -5391,7 +5501,7 @@ deferredCallback(
           let photoElement = document.createElement('a');
           photoElement.classList.add('page_square_photo', 'crisp_image');
           photoElement.dataset.photoId = photoId;
-          photoElement.href = `/${photoId}?all=1`;
+          photoElement.href = `/photo${photoId}?all=1`;
           photoElement.onclick = () => showPhoto(photoId, `photos(${item.owner_id})`, {
             temp: {
               x: photoLink,
@@ -7506,6 +7616,7 @@ deferredCallback(
         ".ConvoHeader__infoContainer",
         { existing: true },
         async function (e) {
+		  try{
           // Проверяем, существует ли элемент div с классом simplebar-content
           var simplebarContentDiv = document.querySelector(
             ".simplebar-content"
@@ -7520,10 +7631,13 @@ deferredCallback(
 
           let history = getLocalValue("convo_history") ?? [];
           let convo = { name: ConvoTitle__title, href: ConvoHref };
-          history.find((e) => e.href === ConvoHref)
-            ? null
-            : (history.push(convo),
-              localStorage.setItem("convo_history", JSON.stringify(history)));
+		  if(ConvoHref.startsWith('/im/convo/'))
+	      {
+			history.find((e) => e.href === ConvoHref)
+				? null
+				: (history.push(convo),
+				localStorage.setItem("convo_history", JSON.stringify(history)));
+		  }
           let convo_other = Array.from(
             document.querySelectorAll("a.ARightRoot1")
           ).find((e) => e.href === ConvoUrl.href);
@@ -7557,6 +7671,7 @@ deferredCallback(
                 "section.vkenhancer--right-section"
               );
               try {
+			  if(ConvoHref.startsWith('/im/convo/')){
                 sectionElement.appendChild(
                   addConvoItem(
                     ConvoTitle__title,
@@ -7566,15 +7681,18 @@ deferredCallback(
                     muted
                   )
                 );
+			  }
               } catch (error) {
                 location.reload;
               }
               closeButtons();
               checkPickerOfIm();
             } else {
+			if(ConvoHref.startsWith('/im/convo/')){
               simplebarContentDiv.appendChild(
                 addConvoItem(ConvoTitle__title, ConvoHref, false, unread, muted)
               );
+			}
               closeButtons();
               checkPickerOfIm();
             }
@@ -7606,6 +7724,7 @@ deferredCallback(
             },
             { variable: "MECommonContext" }
           );
+		  } catch(error){}
           const convoHeader = document.querySelector(".ConvoHeader");
           // Создаем элемент div
           const backButtonDiv = document.createElement("a");
@@ -7923,7 +8042,7 @@ function newDesign() {
       if (e) for (const t of e.childNodes) e.removeChild(t);
       if (
         new URL(window.location.href).searchParams.get("sel") ||
-        new URL(window.location.href).searchParams.get("peers")
+        new URL(window.location.href).searchParams.get("peers") 
       ) {
         console.log(new URL(window.location.href).searchParams);
         const t = { ...window.nav.objLoc };
