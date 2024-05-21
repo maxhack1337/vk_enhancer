@@ -22,7 +22,6 @@
   ],
   "permissions": [
     "browsingData",
-    "tabs",
     "unlimitedStorage",
     "storage",
     "declarativeNetRequestWithHostAccess",
