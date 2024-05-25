@@ -2,6 +2,12 @@
 {
 	display:none;
 }
+.ConvoProfileSettings {
+	min-width: calc(100% - 319px - var(--aside_panel_width));
+}
+.ConvoList__footer:has(.ConvoList__footerIcon) {
+	display:none!important;
+}
 .MEApp__mainPanel,
   div#reforged-root:not(.VKCOMMessenger__reforgedRoot--settingsScreen) {
 	width:550px;

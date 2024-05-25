@@ -804,7 +804,7 @@ div.ProfileHeader.ProfileHeader--noCover.ProfileHeader--withSnowballs > div > di
 }
 /*каунтеры*/
 
-.page_counter {
+.page_counter:not([href*="bugs?act="]) {
     margin-top:18px;
     text-align: center;
     padding-left:0px!important;
@@ -813,11 +813,11 @@ div.ProfileHeader.ProfileHeader--noCover.ProfileHeader--withSnowballs > div > di
     padding-bottom:0px!important;
     border-top: 1px solid var(--vkui--color_separator_primary);
 }
-.page_counter {
+.page_counter:not([href*="bugs?act="]) {
     min-height: 69px;
     width:100%;
 }
-.counts_module {
+.counts_module:not(:has([href*="bugs?act="])) {
     display:flex;
     justify-content: center;
     max-height: 138px;
