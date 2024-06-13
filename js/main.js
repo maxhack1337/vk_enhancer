@@ -355,6 +355,434 @@ window.addEventListener("message", async (event) => {
 document.arrive(".OwnerPageName__icons", { existing: true }, function (e) {
   updateUsers();
 });
+///ДАТА РЕГИ В НОВОМ ПРОФИЛЕ///
+async function getIdAntiAsync1() {
+        const url = window.location.href;
+        var parts = url.split("/");
+        var username = parts[parts.length - 1];
+        if (username.includes("?")) {
+          username = username.split("?")[0];
+        }
+        const url1 = `https://vkenhancer-api.vercel.app/getId?username=${username}`;
+        return fetch(url1)
+          .then(response => response.json())
+          .then(data => data.response.object_id)
+          .catch(error => {
+            console.error(error);
+            return 1;
+          });
+      }
+	  function getMonthName(month) {
+          var monthNames = [
+            getLang("month1_of"),
+            getLang("month2_of"),
+            getLang("month3_of"),
+            getLang("month4_of"),
+            getLang("month5_of"),
+            getLang("month6_of"),
+            getLang("month7_of"),
+            getLang("month8_of"),
+            getLang("month9_of"),
+            getLang("month10_of"),
+            getLang("month11_of"),
+            getLang("month12_of"),
+          ];
+          return monthNames[parseInt(month) - 1];
+        }
+	  function formatRegister(bdate) {
+          if (!bdate) return null;
+          var parts = bdate.split(".");
+          var day = parts[0];
+          var month = getMonthName(parts[1]);
+          var year = parts[2];
+          var formattedDate = `${day} ${month}`;
+          var profileBDayYearLetter = getLang("profile_birthday_year_date");
+          let regex = /{year}(.*?){\/link_year}/;
+          let match = profileBDayYearLetter.match(regex);
+          let formattedYearLetter = match ? match[1].replace(/\s/g, "") : "";
+          var yearLink = year;
+          if (year) {
+            formattedDate += ` ${yearLink}`;
+          }
+          return `${formattedDate}`;
+        }
+	  function padZero(num) {
+        return num < 10 ? `0${num}` : num;
+      }
+	  function formatRegDate1(unixTimestamp) {
+        const date = new Date(unixTimestamp);
+        const formattedDate = [
+          `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`,
+          `(${padZero(date.getHours())}:${padZero(date.getMinutes())})`
+        ];
+        return formattedDate;
+      }
+async function getRegDateValue1(id) {
+        const regDateAlready = Number(localStorage.getItem(`regDate_${id}`));
+        if (regDateAlready) return formatRegDate1(regDateAlready);
+
+        const foafGet = await fetch(`https://vk.com/foaf.php?id=${id}`);
+        const response = await foafGet.text();
+        const [, regDateReady] = response.match(/ya:created dc:date="(.+?)"/) || [];
+        if (regDateReady) {
+          const regDateReadyUNIX = new Date(regDateReady).getTime();
+          localStorage.setItem(`regDate_${id}`, regDateReadyUNIX);
+          return formatRegDate1(regDateReadyUNIX);
+        }
+      }
+	  function getRegDateLabelNew(lang) {
+        switch (lang) {
+          case 0:
+            return "Дата регистрации:";
+            break;
+          case 1:
+            return "Дата реєстрації:";
+            break;
+          case 454:
+            return "Дата реєстрації:";
+            break;
+          case 114:
+            return "Дата рэгістрацыі:";
+            break;
+          case 2:
+            return "Дата рэгістрацыі:";
+            break;
+          case 777:
+            return "Дата заведения досье:";
+            break;
+          case 97:
+            return "Тіркеу күні:";
+            break;
+          case 100:
+            return "Дата рѣгистрацiи:";
+            break;
+          default:
+            return "Registration date:";
+            break;
+        }
+      }
+	  document.arrive(`[class^="ProfileFullInfoModal-module__content"]>section:nth-child(1)`, { existing: true }, async function (e) {
+	try {
+          let regDateText1 = getRegDateLabelNew(vk.lang);
+		  let uiddd = await getIdAntiAsync1();
+          let regDateValue1 = await getRegDateValue1(uiddd);
+          let regDateDate1 = formatRegister(regDateValue1[0]);
+          regDateDate1 += " " + regDateValue1[1];
+		  let registrationRow1 = document.createElement(`div`);
+		  registrationRow1.classList.add('ProfileModalMiniInfoCell');
+		  registrationRow1.innerHTML = `
+		  <div class="ProfileModalMiniInfoCell__before">
+		  <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 ProfileFullCommonInfo__icon" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;">
+		  <path fill="currentColor" d="M7.13 1.323a.75.75 0 0 1 1.043-.197c.749.51 1.235 1.012 1.484 1.56.262.577.212 1.095.128 1.5a10 10 0 0 1-.086.363l-.038.154a2 2 0 0 0-.06.381c-.008.187.025.408.254.721a.75.75 0 1 1-1.21.886c-.43-.586-.565-1.141-.543-1.67.01-.248.055-.472.098-.658l.057-.233c.022-.084.04-.156.06-.249.053-.258.049-.41-.026-.575-.087-.192-.32-.503-.963-.942a.75.75 0 0 1-.198-1.041m9.844 4.73c-.211.338-.49.702-.899.99-.72.509-1.495.721-2.106.889l-.2.055c-.672.189-1.114.357-1.456.745a.75.75 0 0 1-1.124-.992c.657-.744 1.488-1.004 2.175-1.197l.193-.054c.635-.176 1.158-.322 1.653-.67.184-.13.337-.313.49-.56a6 6 0 0 0 .275-.492c.057-.109.119-.226.194-.361.167-.3.39-.662.726-.94a2.04 2.04 0 0 1 1.369-.467.75.75 0 1 1-.018 1.5c-.204-.003-.309.05-.393.12-.111.092-.224.246-.373.514-.039.07-.085.158-.135.254-.11.207-.24.456-.371.666"></path><path fill="currentColor" fill-rule="evenodd" d="M6.145 7.997a2.3 2.3 0 0 1 .505.05c.4.086.727.31 1.021.56.287.244.616.58 1.007.978l1.795 1.83c.387.395.713.727.95 1.016.242.297.457.625.536 1.023a2.25 2.25 0 0 1-.32 1.664c-.22.34-.541.566-.877.752-.327.18-.752.368-1.258.592L6.25 17.899c-.86.38-1.553.686-2.097.872-.521.178-1.088.316-1.61.15a2.25 2.25 0 0 1-1.47-1.482c-.162-.524-.02-1.089.163-1.608.19-.543.502-1.232.89-2.09l1.471-3.255c.23-.509.424-.937.61-1.265q.128-.233.293-.445a1.8 1.8 0 0 1 .472-.432 2.25 2.25 0 0 1 1.173-.347m-1.137 3.009-.809 1.79a5.32 5.32 0 0 0 2.764 3.149l2.032-.898a6.83 6.83 0 0 1-3.987-4.041m5.494 2.905a5.31 5.31 0 0 1-4.339-4.415.8.8 0 0 1 .17.017c.04.008.14.043.366.236.23.195.51.48.933.91l1.746 1.782c.418.425.695.709.883.94.186.227.219.326.227.366q.015.082.014.164m-5.22 2.775a6.8 6.8 0 0 1-1.901-2.079c-.34.752-.581 1.298-.73 1.72a3 3 0 0 0-.14.517c-.016.112-.005.154-.005.154a.75.75 0 0 0 .49.493s.041.012.153-.003c.12-.015.285-.056.519-.136.402-.138.917-.358 1.615-.666Zm8.599-4.702c.746-.137 1.704-.123 2.435.206.353.159.639.384.84.69.2.304.346.737.346 1.365a.75.75 0 0 0 1.5 0c0-.871-.207-1.601-.592-2.188a3.4 3.4 0 0 0-1.478-1.234c-1.106-.498-2.401-.483-3.322-.314a.75.75 0 1 0 .271 1.475m1.989 2.697-.556-.556a.444.444 0 0 0-.628 0l-.556.556a.443.443 0 0 0 0 .628l.556.556a.444.444 0 0 0 .628 0l.556-.556a.443.443 0 0 0 0-.628M5.314 4.129l.556.556a.443.443 0 0 1 0 .627l-.556.556a.444.444 0 0 1-.628 0l-.556-.556a.443.443 0 0 1 0-.627l.556-.556a.444.444 0 0 1 .628 0m8.556-.444-.556-.556a.444.444 0 0 0-.628 0l-.556.556a.443.443 0 0 0 0 .628l.556.556a.444.444 0 0 0 .628 0l.556-.556a.443.443 0 0 0 0-.628m4.444 4.442.556.557a.443.443 0 0 1 0 .627l-.556.556a.444.444 0 0 1-.628 0l-.556-.556a.443.443 0 0 1 0-.627l.556-.557a.444.444 0 0 1 .628 0"></path>
+		  </svg>
+		  </div>
+		  <div class="ProfileModalMiniInfoCell__in">
+		  <span class="ProfileFullCommonInfo__caption">${regDateText1}
+		  <span>${regDateDate1}</span>
+		  </span></div>
+		  `
+          if (registrationRow1) {
+            e.appendChild(registrationRow1);
+          }
+    }
+    catch (error) {
+          console.error("[VKENH Error]: There is no registration date for user " + await getIdAntiAsync1() + error);
+    }
+});
+function formatBirthday(bdate) {
+          if (!bdate) return null;
+          var parts = bdate.split(".");
+          var day = parts[0];
+          var month = getMonthName(parts[1]);
+          var year = parts[2];
+          var formattedDate = `${day} ${month}`;
+          var profileBDayYearLetter = getLang("profile_birthday_year_date");
+          let regex = /{year}(.*?){\/link_year}/;
+          let match = profileBDayYearLetter.match(regex);
+          let formattedYearLetter = match ? match[1].replace(/\s/g, "") : "";
+          var yearLink = year
+            ? `<a href="https://vk.com/search?c[section]=people&c[byear]=${year}">${year} ${formattedYearLetter}</a>`
+            : "";
+          if (year) {
+            formattedDate += ` ${yearLink}`;
+          }
+          return `<a href="https://vk.com/search?c[section]=people&c[bday]=${day}&c[bmonth]=${parts[1]}">${formattedDate}</a>`;
+        }
+		
+function getLangYearsOld(e, t, n) {
+        const o = window.langConfig;
+        if (!t || !o) {
+          if (!(0, r.isNumeric)(e)) {
+            const t = new Error("Non-numeric value passed to langNumeric");
+            throw (console.log(e, t), t);
+          }
+          return String(e);
+        }
+        let i;
+        Array.isArray(t)
+          ? ((i = t[1]),
+            e != Math.floor(e)
+              ? (i = t[o.numRules.float])
+              : (o.numRules.int || []).some((n) => {
+                if ("*" === n[0]) return (i = t[n[2]]), !0;
+                const r = n[0] ? e % n[0] : e;
+                return Array.isArray(n[1]) && n[1].includes(r)
+                  ? ((i = t[n[2]]), !0)
+                  : void 0;
+              }))
+          : (i = t);
+        let a = String(e);
+        if (n) {
+          const e = a.split("."),
+            t = [];
+          for (let n = e[0].length - 3; n > -3; n -= 3)
+            t.unshift(e[0].slice(n > 0 ? n : 0, n + 3));
+          (e[0] = t.join(o.numDel)), (a = e.join(o.numDec));
+        }
+        return (i = (i || "%s").replace("%s", a)), i;
+      }
+	  
+	  function getZodiacIndex(den, month) {
+        var value = "";
+        den = Number(den);
+        month = Number(month);
+        switch (month) {
+          case 1:
+            if (den <= 19)
+              value = getZodiacSigns(vk.lang)[9];
+            else
+              value = getZodiacSigns(vk.lang)[10];
+            break;
+          case 2:
+            if (den <= 18)
+              value = getZodiacSigns(vk.lang)[10];
+            else
+              value = getZodiacSigns(vk.lang)[11];
+            break;
+          case 3:
+            if (den <= 20)
+              value = getZodiacSigns(vk.lang)[11];
+            else
+              value = getZodiacSigns(vk.lang)[0];
+            break;
+          case 4:
+            if (den <= 19)
+              value = getZodiacSigns(vk.lang)[0];
+            else
+              value = getZodiacSigns(vk.lang)[1];
+            break;
+          case 5:
+            if (den <= 20)
+              value = getZodiacSigns(vk.lang)[1];
+            else
+              value = getZodiacSigns(vk.lang)[2];
+            break;
+          case 6:
+            if (den <= 21)
+              value = getZodiacSigns(vk.lang)[2];
+            else
+              value = getZodiacSigns(vk.lang)[3];
+            break;
+          case 7:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[3];
+            else
+              value = getZodiacSigns(vk.lang)[4];
+            break;
+          case 8:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[4];
+            else
+              value = getZodiacSigns(vk.lang)[5];
+            break;
+          case 9:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[5];
+            else
+              value = getZodiacSigns(vk.lang)[6];
+            break;
+          case 10:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[6];
+            else
+              value = getZodiacSigns(vk.lang)[7];
+            break;
+          case 11:
+            if (den <= 22)
+              value = getZodiacSigns(vk.lang)[7];
+            else
+              value = getZodiacSigns(vk.lang)[8];
+            break;
+          case 12:
+            if (den <= 21)
+              value = getZodiacSigns(vk.lang)[8];
+            else
+              value = getZodiacSigns(vk.lang)[9];
+            break;
+          default:
+            value = 'Zodiac parsing failed'
+        }
+        return value;
+      }
+      function getZodiacSigns(lang) {
+        switch (lang) {
+          case 0:
+            return ["Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"];
+          case 1:
+          case 454:
+            return ["Овен", "Телец", "Близнюки", "Рак", "Лев", "Діва", "Терези", "Скорпіон", "Стрілець", "Козеріг", "Водолій", "Риби"];
+          case 2:
+          case 114:
+            return ["Баран", "Тэлец", "Блізнюкі", "Рак", "Лев", "Дзева", "Вагі", "Шкапец", "Стралец", "Козераг", "Вадалей", "Рыбы"];
+          case 777:
+          case 100:
+            return ["Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"];
+          case 97:
+            return ["Овен", "Телец", "Близнесін", "Рак", "Лев", "Дева", "Терезе", "Ақшақар", "Оят", "Козерге", "Суғайыр", "Балық"];
+          default:
+            return ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+        }
+      }
+document.arrive(`.ProfileModalMiniInfoCell:has(.vkuiIcon--gift_outline_20)`, { existing: true }, async function (e) {
+	      let respsp = await vkApi.api('users.get',{user_ids: await getIdAntiAsync1(),fields: 'bdate'});
+		  let birthday = respsp[0].bdate;
+	      var formattedBirthday = formatBirthday(birthday);
+          var ageAndZodiac = '';
+
+          var parts = birthday.split('.');
+          if (parts.length === 3) {
+            let bDayFull = birthday;
+            let ptsOfAfe = bDayFull.split('.');
+            let birthYear1 = parseInt(ptsOfAfe[2], 10);
+            let birthMonth1 = parseInt(ptsOfAfe[1], 10);
+            let birthDay1 = parseInt(ptsOfAfe[0], 10);
+            let todayDate1 = new Date();
+            let currentYear1 = todayDate1.getFullYear();
+            let currentMonth1 = todayDate1.getMonth() + 1;
+            let currentDay1 = todayDate1.getDate();
+            let age = currentYear1 - birthYear1;
+            if (currentMonth1 < birthMonth1 || (currentMonth1 === birthMonth1 && currentDay1 < birthDay1)) {
+              age--;
+            }
+            ageAndZodiac = `${getLangYearsOld(age, getLang("global_years_accusative", "raw"))}, ${getZodiacIndex(parts[0], parts[1])}`
+          }
+          else if (parts.length === 2) {
+            ageAndZodiac = `${getZodiacIndex(parts[0], parts[1])}`
+          }
+		  let appherenow = e.querySelector('.ProfileFullCommonInfo__caption');
+		  appherenow.textContent += ' (' + ageAndZodiac + ')';
+});
+///КОНЕЦ ДАТЫ РЕГИ В НОВОМ ПРОФИЛЕ///
+///СТАРЫЙ ДИЗАЙН ПОКАЗАТЬ ВЛОЖЕНИЯ - МЕНЮ ЭНХАНСЕРА///
+function getPeerProps(elem) {
+  const t = {};
+  let n = 0;
+  for (const o of Object.keys(elem)) {
+    if (o.startsWith("__reactFiber")) {
+      t.fiber = elem[o];
+      ++n;
+    } else if (o.startsWith("__reactProps")) {
+      t.props = elem[o];
+      ++n;
+    }
+    if (n === 2) break;
+  }
+
+  return t.fiber.return.memoizedProps;
+}
+
+function getBeginChat(lang) {
+	switch (lang) {
+    case 0:
+      return "Перейти в начало чата";
+      break;
+    case 1:
+      return "На початок чату";
+      break;
+    case 454:
+      return "На початок чату";
+      break;
+    case 114:
+      return "Перайсці ў пачатак чата";
+      break;
+    case 2:
+      return "Перайсці ў пачатак чата";
+      break;
+    case 777:
+      return "Открыть первую телеграмму";
+      break;
+    case 97:
+      return "Чаттың басына өтіңіз";
+      break;
+    case 100:
+      return "Пѣрѣйти въ начало чата";
+      break;
+    case 3:
+      return "Go to the beginning of the chat";
+      break;
+    default:
+      return "Go to the beginning of the chat";
+      break;
+  }
+}
+
+document.arrive(".ConvoHeader__controls", { existing: true }, async function (e) {
+  let upToButton = document.createElement('button');
+  upToButton.classList.add('ConvoHeader__action');
+ /* upToButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+ <path fill="currentColor" fill-rule="evenodd" d="M14.95 3.801a2.72 2.72 0 0 0-3.857 0L5.56 9.35a4.49 4.49 0 0 0 0 6.338 4.46 4.46 0 0 0 6.317 0l.002-.002 2.88-2.86a.75.75 0 0 1 1.057 1.064l-2.877 2.857-.002.002a5.96 5.96 0 0 1-8.439-.001 5.99 5.99 0 0 1 0-8.458l5.534-5.548a4.22 4.22 0 0 1 5.981 0 4.244 4.244 0 0 1 0 5.991l-5.534 5.548a2.486 2.486 0 0 1-3.521 0 2.497 2.497 0 0 1 0-3.525l.002-.002 3.102-3.083a.75.75 0 0 1 1.058 1.064l-3.1 3.08-.001.002a.997.997 0 0 0 0 1.405.986.986 0 0 0 1.398 0l5.534-5.548a2.744 2.744 0 0 0 0-3.873" clip-rule="evenodd"></path></svg>`;*/
+ upToButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" style="scale:0.85" width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M1 11.52C1 8.77645 1.00212 6.81938 1.20197 5.33297C1.39794 3.87534 1.76741 3.02094 2.39418 2.39417C3.02094 1.76741 3.87532 1.39794 5.33295 1.20197C6.81936 1.00212 8.77643 1 11.52 1H12.48C15.2236 1 17.1807 1.00212 18.667 1.20197C20.1247 1.39794 20.979 1.76741 21.6058 2.39418C22.2326 3.02095 22.6021 3.87534 22.798 5.33297C22.9979 6.81938 23 8.77645 23 11.52V12.48C23 15.2236 22.9979 17.1807 22.798 18.667C22.6021 20.1247 22.2326 20.979 21.6058 21.6058C20.979 22.2326 20.1247 22.6021 18.667 22.798C17.1807 22.9979 15.2236 23 12.48 23H11.52C8.77643 23 6.81936 22.9979 5.33295 22.798C3.87532 22.6021 3.02094 22.2326 2.39418 21.6058L1.70689 22.2931L2.39418 21.6058C1.76741 20.979 1.39794 20.1247 1.20197 18.667C1.00212 17.1807 1 15.2236 1 12.48V11.52Z" stroke="currentColor" stroke-width="2"/>
+<path d="M13.2307 16.9934C7.45719 16.9934 4.16416 13.426 4.02695 7.48999H6.91896C7.01395 11.8469 9.14597 13.6923 10.8347 14.0729V7.48999H11.2357C14.4373 7.48999 16.4805 7.48999 17.7776 7.48999C19.0316 7.48999 19.9006 8.50652 19.9006 9.76039C19.9006 9.76039 15.5861 9.76039 13.558 9.76039V11.3497H19.9006V13.5066H13.558V15.031H19.9006C19.9006 16.1148 19.022 16.9934 17.9382 16.9934H13.2307Z" fill="currentColor"/>
+</svg>`;
+  let ActionEnhancerMenu = document.createElement('div');
+  ActionEnhancerMenu.classList = 'ActionsMenu ConvoMainActionsMenu';
+  ActionEnhancerMenu.innerHTML = `<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular vkEnUp">
+  <i class="ActionsMenuAction__icon">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M13 19C13 19.5523 12.5523 20 12 20C11.4477 20 11 19.5523 11 19L11 7.41421L6.70711 11.7071C6.31658 12.0976 5.68342 12.0976 5.29289 11.7071C4.90237 11.3166 4.90237 10.6834 5.29289 10.2929L11.2929 4.29289C11.6834 3.90237 12.3166 3.90237 12.7071 4.29289L18.7071 10.2929C19.0976 10.6834 19.0976 11.3166 18.7071 11.7071C18.3166 12.0976 17.6834 12.0976 17.2929 11.7071L13 7.41421L13 19Z" fill="currentColor"/>
+</svg></i>
+  <span class="ActionsMenuAction__title">${getBeginChat(vk.lang)}</span>
+  </button>
+  
+  <button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular vkEnAttaches">
+  <i class="ActionsMenuAction__icon">
+  <svg style = "padding-top: 1px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+ <path style="scale:1.2;" fill="currentColor" fill-rule="evenodd" d="M14.95 3.801a2.72 2.72 0 0 0-3.857 0L5.56 9.35a4.49 4.49 0 0 0 0 6.338 4.46 4.46 0 0 0 6.317 0l.002-.002 2.88-2.86a.75.75 0 0 1 1.057 1.064l-2.877 2.857-.002.002a5.96 5.96 0 0 1-8.439-.001 5.99 5.99 0 0 1 0-8.458l5.534-5.548a4.22 4.22 0 0 1 5.981 0 4.244 4.244 0 0 1 0 5.991l-5.534 5.548a2.486 2.486 0 0 1-3.521 0 2.497 2.497 0 0 1 0-3.525l.002-.002 3.102-3.083a.75.75 0 0 1 1.058 1.064l-3.1 3.08-.001.002a.997.997 0 0 0 0 1.405.986.986 0 0 0 1.398 0l5.534-5.548a2.744 2.744 0 0 0 0-3.873" clip-rule="evenodd"></path></svg></i>
+  <span class="ActionsMenuAction__title">${getLang("me_convo_action_attach")}</span></button></div>`;
+  ActionEnhancerMenu.style.position = 'absolute';
+  ActionEnhancerMenu.style.display = 'none';
+  ActionEnhancerMenu.style.marginTop = '40px';
+  ActionEnhancerMenu.style.right = '20px';
+  ActionEnhancerMenu.style.padding = '4px';
+  upToButton.addEventListener('click', function() {
+    if (ActionEnhancerMenu.style.display == 'none') ActionEnhancerMenu.style.display = 'flex';
+	else ActionEnhancerMenu.style.display = 'none';
+  });
+  e.prepend(ActionEnhancerMenu);
+  let memoizedPeer = getPeerProps(e.parentElement).peer.id;
+  ActionEnhancerMenu.querySelector('.vkEnAttaches').addEventListener('click',function() {
+	window.showWiki({w: `history${memoizedPeer}_photo` }, null, {});
+	ActionEnhancerMenu.style.display = "none";
+  });
+  let cmid;
+  console.log(memoizedPeer);
+  try {
+	let reoo = await vkApi.api('messages.getHistory',{count:1,peer_id:memoizedPeer,rev:1});
+	cmid = reoo.items[0].conversation_message_id;
+  }
+  catch(error) {
+	cmid = 1;  
+  }
+  ActionEnhancerMenu.querySelector('.vkEnUp').addEventListener('click',function() {
+	nav.go(`${window.location.href}?cmid=${cmid}`); 
+	ActionEnhancerMenu.style.display = "none";
+  });
+  try{
+  e.prepend(upToButton); }
+  catch(error){}
+});
+///КОНЕЦ СТАРОГО ДИЗАЙНА ПОКАЗАТЬ ВЛОЖЕНИЯ - МЕНЮ ЭНХАНСЕРА///
 ///РЕДАКТОР ГРАФФИТИ В КОММЕНТАХ///
 document.arrive(".ms_items_more._more_items", { existing: true }, function (e) {
 	let grafelem = document.createElement('a');
@@ -365,7 +793,8 @@ document.arrive(".ms_items_more._more_items", { existing: true }, function (e) {
 	e.appendChild(grafelem);
 });
 ///КОНЕЦ РЕДАКТОРА ГРАФФИТИ В КОММЕНТАХ///
-///ПЕРЕХОД К ПЕРВОМУ СООБЩ БЕСЕДЫ///
+///ПЕРЕХОД К ПЕРВОМУ СООБЩ БЕСЕДЫ - СТАРОЕ///
+/*
 document.arrive(".ConvoHeader__controls", { existing: true }, async function (e) {
   let upToButton = document.createElement('button');
   upToButton.classList.add('ConvoHeader__action');
@@ -387,7 +816,8 @@ document.arrive(".ConvoHeader__controls", { existing: true }, async function (e)
   e.prepend(upToButton); }
   catch(error){}
 });
-///КОНЕЦ ПЕРЕХОДА К ПЕРВОМУ СООБЩ БЕСЕДЫ///
+*/
+///КОНЕЦ ПЕРЕХОДА К ПЕРВОМУ СООБЩ БЕСЕДЫ - СТАРОЕ///
 ///ПОСТЕРЫ///
 document.arrive("#page_add_media > .media_selector", { existing: true }, function (e) {
   let posters = document.createElement('a');
