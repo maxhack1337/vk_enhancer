@@ -159,7 +159,8 @@ function createReloadButton() {
   reloadButton.addEventListener("click", (event) => {
     reloadButton.classList.add("vkEnhancerRebootLoading");
     chrome.storage.local.get(
-      [ "oldBadgeState",
+      [ "fixMenuState",
+	    "oldBadgeState",
 	    "defaultThemeState",
 	    "tabletMenuState",
         "oldHoverState",
@@ -226,7 +227,8 @@ function createReloadButton() {
         oldHoverState,
         tabletMenuState,
 		defaultThemeState,
-		oldBadgeState
+		oldBadgeState,
+		fixMenuState
       }) =>
         applyStyles(
           checkboxState,
@@ -261,7 +263,8 @@ function createReloadButton() {
           oldHoverState,
           tabletMenuState,
 		  defaultThemeState,
-		  oldBadgeState
+		  oldBadgeState,
+		  fixMenuState
         )
     );
     setTimeout(() => reloadButton.classList.remove("vkEnhancerRebootLoading"), 250);
@@ -872,6 +875,23 @@ function closeTabletMenu() {
     customStyle.remove();
   }
 }
+//Зафиксировать левое меню//
+function fixLeftMenu() {
+  let styleElement = fromId("fixMenuLeft");
+  if (!styleElement) {
+    styleElement = create("style", {}, { id: "fixMenuLeft" });
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML =
+    `#side_bar:has([data-testid="leftmenu"]){position:fixed!important; top:0px!important;}`;
+}
+
+function unFixLeftMenu() {
+  const customStyle = fromId("fixMenuLeft");
+  if (customStyle) {
+    customStyle.remove();
+  }
+}
 // Функция для добавления стилей
 function applyStyles(
   isOldAccentChecked,
@@ -906,7 +926,8 @@ function applyStyles(
   oldHoverChecked,
   tabletMenuChecked,
   defaultThemeChecked,
-  oldBadgeChecked
+  oldBadgeChecked,
+  fixMenuChecked
 ) {
   if (isOldAccentChecked) {
     hideNFT_Avatars();
@@ -1164,11 +1185,18 @@ function applyStyles(
       "*"
     );
   }
+  if(fixMenuChecked) {
+	 fixLeftMenu();  
+  }
+  else {
+	 unFixLeftMenu();  
+  }
 }
 // Функция для получения состояния чекбоксов из локального хранилища и применения стилей
 function applySavedStyles() {
   chrome.storage.local.get(
     [
+	  "fixMenuState",
 	  "oldBadgeState",
 	  "defaultThemeState",
       "tabletMenuState",
@@ -1237,6 +1265,7 @@ function applySavedStyles() {
       const tabletMenuChecked = items.tabletMenuState;
 	  const defaultThemeChecked = items.defaultThemeState;
 	  const oldBadgeChecked = items.oldBadgeState;
+	  const fixMenuChecked = items.fixMenuState;
       applyStyles(
         isOldAccentChecked,
         isMsgReactionsChecked,
@@ -1270,7 +1299,8 @@ function applySavedStyles() {
         oldHoverChecked,
         tabletMenuChecked,
 		defaultThemeChecked,
-		oldBadgeChecked
+		oldBadgeChecked,
+		fixMenuChecked
       );
     }
   );
@@ -1312,7 +1342,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     message.type === "toggleOldHover" ||
     message.type === "toggleTabletMenu" ||
     message.type === "toggleDefaultTheme" ||
-    message.type === "toggleOldBadge"
+    message.type === "toggleOldBadge" || 
+	message.type === "toggleFixMenu"
   ) {
     applySavedStyles();
   }

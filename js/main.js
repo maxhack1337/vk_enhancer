@@ -95,6 +95,111 @@ window.urls = null;
 window.vkenh = {};
 window.vkenh.setEnglishMusic = 0;
 
+async function restoreOrig() {
+                    const e = new window.MessageBox;
+                    if (await new Promise((t => {
+                                e.setOptions({
+                                    title: getLang("photos_filtered_restore")
+                                }),
+                                e.addButton(getLang('box_restore'), (() => {
+                                        t(!0)
+                                    })),
+                                e.addButton(getLang('box_cancel'), (() => e.hide())),
+                                e.content(getLang('payments_verify_start_over_header')),
+                                e.show()
+                            })), !cur.pvCurPhoto)
+                        return;
+                    const[t, a] = cur.pvCurPhoto.id.split("_").map((e => parseInt(e))),
+                    i = cur.pvCurPhoto.peHash;
+                    e.showProgress(),
+                    window.ajax.post("al_photos.php", {
+                        act: "restore_original",
+                        oid: t,
+                        pid: a,
+                        hash: i
+                    }, {
+                        onDone: async function (t, a) {
+                            e.hide(),
+                            window.showPhoto(t.id, a, t),
+                            cur.pvPhoto.getElementsByTagName("img")[0].src = a
+                        }
+                    })
+}
+
+document.addEventListener('keydown', function(event) {
+    if ((event.ctrlKey && event.key === ']') || (event.ctrlKey && event.key === 'ъ')) {
+        event.preventDefault();
+        const activeElement = document.activeElement;
+
+        if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable)) {
+            toggleLayout(activeElement);
+        }
+    }
+});
+
+function toggleLayout(element) {
+    let selectedText, start, end;
+
+    if (element.isContentEditable) {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            selectedText = range.toString();
+            start = range.startOffset;
+            end = range.endOffset;
+        }
+    } else {
+        start = element.selectionStart;
+        end = element.selectionEnd;
+        selectedText = element.value.substring(start, end);
+    }
+
+    if (selectedText) {
+        const convertedText = convertLayout(selectedText);
+
+        if (element.isContentEditable) {
+            const selection = window.getSelection();
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(document.createTextNode(convertedText));
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } else {
+            const beforeText = element.value.substring(0, start);
+            const afterText = element.value.substring(end);
+
+            element.value = beforeText + convertedText + afterText;
+            element.setSelectionRange(start, start + convertedText.length);
+        }
+    }
+}
+
+    function convertLayout(text) {
+        const layoutMap = {
+            'а': 'f', 'б': ',', 'в': 'd', 'г': 'u', 'д': 'l', 'е': 't', 'ё': '`', 'ж': ';', 'з': 'p', 'и': 'b', 
+            'й': 'q', 'к': 'r', 'л': 'k', 'м': 'v', 'н': 'y', 'о': 'j', 'п': 'g', 'р': 'h', 'с': 'c', 'т': 'n', 
+            'у': 'e', 'ф': 'a', 'х': '[', 'ц': 'w', 'ч': 'x', 'ш': 'i', 'щ': 'o', 'ъ': ']', 'ы': 's', 'ь': 'm', 
+            'э': "'", 'ю': '.', 'я': 'z',
+
+            'F': 'А', ',': 'Б', 'D': 'В', 'U': 'Г', 'L': 'Д', 'T': 'Е', '`': 'Ё', ';': 'Ж', 'P': 'З', 'B': 'И', 
+            'Q': 'Й', 'R': 'К', 'K': 'Л', 'V': 'М', 'Y': 'Н', 'J': 'О', 'G': 'П', 'H': 'Р', 'C': 'С', 'N': 'Т', 
+            'E': 'У', 'A': 'Ф', '[': 'Х', 'W': 'Ц', 'X': 'Ч', 'I': 'Ш', 'O': 'Щ', ']': 'Ъ', 'S': 'Ы', 'M': 'Ь', 
+            "'": 'Э', '.': 'Ю', 'Z': 'Я',
+
+            'f': 'а', ',': 'б', 'd': 'в', 'u': 'г', 'l': 'д', 't': 'е', '`': 'ё', ';': 'ж', 'p': 'з', 'b': 'и', 
+            'q': 'й', 'r': 'к', 'k': 'л', 'v': 'м', 'y': 'н', 'j': 'о', 'g': 'п', 'h': 'р', 'c': 'с', 'n': 'т', 
+            'e': 'у', 'a': 'ф', '[': 'х', 'w': 'ц', 'x': 'ч', 'i': 'ш', 'o': 'щ', ']': 'ъ', 's': 'ы', 'm': 'ь', 
+            "'": 'э', '.': 'ю', 'z': 'я',
+
+            'А': 'F', 'Б': ',', 'В': 'D', 'Г': 'U', 'Д': 'L', 'Е': 'T', 'Ё': '`', 'Ж': ';', 'З': 'P', 'И': 'B', 
+            'Й': 'Q', 'К': 'R', 'Л': 'K', 'М': 'V', 'Н': 'Y', 'О': 'J', 'П': 'G', 'Р': 'H', 'С': 'C', 'Т': 'N', 
+            'У': 'E', 'Ф': 'A', 'Х': '[', 'Ц': 'W', 'Ч': 'X', 'Ш': 'I', 'Щ': 'O', 'Ъ': ']', 'Ы': 'S', 'Ь': 'M', 
+            'Э': "'", 'Ю': '.', 'Я': 'Z'
+        };
+
+        return text.split('').map(char => layoutMap[char] || char).join('');
+    }
+
 deferredCallback(
   async (_vk) => {
     await getUserDataLocalStoragePhoto(vk.id);
@@ -354,6 +459,48 @@ window.addEventListener("message", async (event) => {
 
 document.arrive(".OwnerPageName__icons", { existing: true }, function (e) {
   updateUsers();
+});
+
+document.arrive(".pv_more_acts", { existing: true }, function (e) {
+   let i = document.createElement('button');
+   i.textContent = getLang("photos_filtered_restore");
+   i.classList.add("pv_more_act_item");
+   i.id = "pv_more_act_orig";
+   i.addEventListener('click',async function() {
+	  restoreOrig(); 
+   });
+  if(cur.pvCurPhoto.actions.edit && window.cur.pvCurPhoto.was_edited) {
+       let styleElement = fromId("restorePhotoStyle");
+  if (!styleElement) {
+    styleElement = create("style", {}, { id: "restorePhotoStyle" });
+    document.head.appendChild(styleElement);
+  }
+  styleElement.innerHTML =
+    `#pv_more_act_orig:before{
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='%23fff' viewBox='0 0 20 20'%3E%3Cpath fill-rule='evenodd' d='M10 5.75a.75.75 0 0 1 .75.75v2.837c0 .129 0 .2.003.255a.238.238 0 0 0 .067.164c.037.04.088.09.18.182l1.533 1.531a.75.75 0 1 1-1.06 1.062c-.523-.522-1.044-1.045-1.568-1.566a2.569 2.569 0 0 1-.397-.464 1.75 1.75 0 0 1-.21-.507c-.049-.204-.048-.414-.048-.61.002-.96 0-1.922 0-2.884a.75.75 0 0 1 .75-.75Z M8.106 3.261a7 7 0 1 1-2.847 11.89.75.75 0 0 0-1.015 1.103A8.5 8.5 0 1 0 4 3.98v-.976a.75.75 0 0 0-1.5 0v2.36c0 .058 0 .139.006.212.007.088.027.229.103.379a1 1 0 0 0 .437.437c.15.076.29.096.379.103.073.006.154.006.212.006H6A.75.75 0 0 0 6 5h-.899a7 7 0 0 1 3.005-1.739Z'%3E%3C/path%3E%3C/svg%3E")!important;
+	scale: .9;
+	background-position: 0;}`;
+	e.prepend(i);
+  }
+  else {
+	  const customStyle = fromId("restorePhotoStyle");
+  if (customStyle) {
+    customStyle.remove();
+  }
+  }
+});
+
+document.arrive(".ComposerInput__input", { existing: true }, function (e) {
+  e.addEventListener('keydown', function(event) {
+    if ((event.ctrlKey && event.key === ']') || (event.ctrlKey && event.key === 'ъ')) {
+        event.preventDefault();
+        const activeElement = document.activeElement;
+
+        if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable)) {
+            toggleLayout(activeElement);
+        }
+    }
+});
 });
 ///ДАТА РЕГИ В НОВОМ ПРОФИЛЕ///
 async function getIdAntiAsync1() {
@@ -1074,7 +1221,7 @@ document.arrive(".videoplayer_btn_mute", { existing: true }, function (e) {
     if (vidUrl == undefined) { vidUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
     let videoButton = document.createElement('a');
     videoButton.href = vidUrl;
-    videoButton.style.padding = "5px 10px 0 8px";
+    videoButton.style.padding = "15px 10px 0 8px";
     videoButton.setAttribute('onmouseover', `showTooltip(this, { text: '${getLang("video_download_short")}', black: true, shift: [2, 24] });`);
     videoButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 16 16" style="min-width: 20px;"><path fill-rule="evenodd" d="M8.75 1.75a.75.75 0 0 0-1.5 0v6.6893L5.0303 6.2197a.75.75 0 0 0-1.0606 1.0606l3.5 3.5a.7498.7498 0 0 0 1.0606 0l3.5-3.5a.75.75 0 0 0-1.0606-1.0606L8.75 8.4393V1.75Zm-6 10.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z" clip-rule="evenodd"/></svg>`;
     e.parentNode.insertBefore(videoButton, e);
@@ -1568,13 +1715,9 @@ deferredCallback(
     document.arrive(".photos_album_intro", { existing: true }, function (e) {
       let buttonAlbumSettings = document.querySelector('.page_block_header_extra._header_extra');
       let updateButton = document.createElement('div');
-      updateButton.style.marginRight = '38px';
-      updateButton.style.marginLeft = '12px';
       updateButton.style.marginTop = '12px';
-      updateButton.innerHTML = `<div class="vkEnhancerDownloadAlbumButton">
-	<a style="background-color:var(--vkui--color_background_accent_themed);color:var(--vkui--color_text_contrast_themed)" class="Button-module__root--enpNU vkuiButton vkuiButton--size-m vkuiButton--appearance-accent vkuiButton--align-center vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive vkui-focus-visible">
-	<span class="vkuiButton__in"><span class="vkuiButton__content">${getLang("photos_album_menu_download")}</span></span></a></div>`;
-      buttonAlbumSettings.appendChild(updateButton);
+      updateButton.innerHTML = `<span class="photos_album_info"><a>${getLang("photos_album_menu_download")}</a></span>`;
+      e.querySelector('.photos_album_intro_info').appendChild(updateButton);
       updateButton.addEventListener('click', async function () {
         await parseAlbum();
       });
