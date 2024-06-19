@@ -4,6 +4,8 @@
 ## Функции расширения
 ```
  * Возможность активации классического интерфейса профиля
+ * Возможность переключения раскладки выделенного текста(CTRL + ])
+ * Возможность фиксации левого меню
  * Отображение даты регистрации профиля
  * Отображение знака зодиака и возраста профиля
  * Возвращение возможности публикации постеров в записи
@@ -94,7 +96,7 @@
 </p>
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.12/VK.Enhancer.zip">
+<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.13/VK.Enhancer.zip">
   <img src="https://vkenhancer.ru/download.png" width="202" height="83">
 </a></p>
 <div>
