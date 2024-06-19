@@ -21,6 +21,7 @@ function fillStrings() {
     document.querySelector('#AwayR > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.disableAway);
     document.querySelector('#HiderL > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.hideNamesAvatars);
     document.querySelector('#idName > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.avatarNameNear);
+	document.querySelector('#FixMenu > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.fixLeftMenu);
     document.querySelector('#GroupsRecent > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.hideRecentCommunities);
     document.querySelector('#ScrollBar > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.alternativeScrollbar);
     document.querySelector('#ReconnectInd > div > div > .vkenhancerChoosePickerText1').textContent = getLocalizedString(strings.disableReconnectIndicator);
