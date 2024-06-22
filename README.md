@@ -87,13 +87,13 @@
 
 Готово! Расширение установлено!
 <p align="center">
-  <img src="https://sun9-51.userapi.com/impg/lGq5thKQ2-LF_svUoedES4XEWt-rgRBS4HvVqQ/RT9CvC4Cma4.jpg?size=689x736&quality=95&sign=56f9367b72f0678196a289a2c55c8870&type=album">
+  <img src="https://sun9-60.userapi.com/impf/EHplda42_iWeykS1iEsz_FdztB-GTRpoUYHzYw/kTGoPh-5c1U.jpg?quality=95&as=32x35,48x53,72x79,108x118,160x175,240x263,360x394,480x525,540x591,640x701,686x751&sign=6cb87420a1030cdf2f0fbeaf5b19ec10&from=bu&u=x6qg5rhd9Yfq7-m2btX57HcRSwZN32iSOO_4iDKx6uE&cs=686x751">
 </p>
 <p align="center">
   <strong>P.S. Не забудьте закрепить расширение для более удобного доступа 😉</strong>
   </br>
   </br>
-  <img src="https://sun9-48.userapi.com/impg/5rGoDVWaSWYAR9_4aB5WJYLAQeqdaswre6Guwg/DthwKdQJ7Bg.jpg?size=230x49&quality=95&sign=00022ec72a04974290675c61a981efe1&type=album">
+  <img src="https://sun9-19.userapi.com/impf/aN1sqXYMcU_84Z3RP3PGqHFL6T_jdugAA-cJ2Q/Cu_FNyQfpvU.jpg?quality=95&as=32x19,48x28,72x42,108x63,160x94,240x141,360x211,480x282,540x317,543x319&sign=fd5af419d60913d4582143eb256002a7&from=bu&u=DLQQ5AvOY25SfHewouNVYsCROzRBJbDzQd0x-2Jsl78&cs=543x319">
 </p>
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
