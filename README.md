@@ -1,9 +1,10 @@
-# VK Enhancer
+# VK Tools
 ### Наслаждайтесь VK по полной!
-<a href="https://vkenhancer.ru/"><img style="border-radius:8px;" src="https://vkenhancer.ru/main.png"></a>
+<a href="https://vkenhancer.ru/"><img style="border-radius:8px;" src="https://vkenhancer.ru/tulz.png"></a>
 ## Функции расширения
 ```
  * Возможность активации классического интерфейса профиля
+ * Возможность просмотра онлайн-участников беседы
  * Возможность переключения раскладки выделенного текста(CTRL + ])
  * Возможность фиксации левого меню
  * Отображение даты регистрации профиля
@@ -96,8 +97,8 @@
 </p>
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.13/VK.Enhancer.zip">
-  <img src="https://vkenhancer.ru/download.png" width="202" height="83">
+<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.14/VK.Enhancer.zip">
+  <img src="https://vkenhancer.ru/install.png" width="202" height="83">
 </a></p>
 <div>
   
