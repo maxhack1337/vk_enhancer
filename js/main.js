@@ -54,6 +54,10 @@ const newDesignFunctions = [
   "vkm_business_folder",
   "vkm_sublists_in_folder",
   "vkm_new_convo_folder_logic",
+  "vkm_stickers_animation_setting",
+  "vkm_gifs_autoplay",
+  "vkm_fastchat_in_spa",
+  "vkm_chat_list_collapse"
 ];
 const adsSelector = [
   ".page_block.feed_blog_reminder_large",
@@ -265,6 +269,13 @@ deferredCallback(
       );
       localStorage.setItem("currentVKID", vk.id);
     }
+	let styleElement = fromId("CheckValidationPhone");
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = "CheckValidationPhone";
+      document.head.appendChild(styleElement);
+    }
+    styleElement.innerHTML = "#react_rootCheckValidationPhone{display: none;}";
   },
   { variable: "vkApi" }
 );
@@ -878,10 +889,12 @@ document.arrive(".ConvoHeader__controls", { existing: true }, async function (e)
   upToButton.classList.add('ConvoHeader__action');
  /* upToButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
  <path fill="currentColor" fill-rule="evenodd" d="M14.95 3.801a2.72 2.72 0 0 0-3.857 0L5.56 9.35a4.49 4.49 0 0 0 0 6.338 4.46 4.46 0 0 0 6.317 0l.002-.002 2.88-2.86a.75.75 0 0 1 1.057 1.064l-2.877 2.857-.002.002a5.96 5.96 0 0 1-8.439-.001 5.99 5.99 0 0 1 0-8.458l5.534-5.548a4.22 4.22 0 0 1 5.981 0 4.244 4.244 0 0 1 0 5.991l-5.534 5.548a2.486 2.486 0 0 1-3.521 0 2.497 2.497 0 0 1 0-3.525l.002-.002 3.102-3.083a.75.75 0 0 1 1.058 1.064l-3.1 3.08-.001.002a.997.997 0 0 0 0 1.405.986.986 0 0 0 1.398 0l5.534-5.548a2.744 2.744 0 0 0 0-3.873" clip-rule="evenodd"></path></svg>`;*/
- upToButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" style="scale:0.85" width="24" height="24" viewBox="0 0 24 24" fill="none">
-<path d="M1 11.52C1 8.77645 1.00212 6.81938 1.20197 5.33297C1.39794 3.87534 1.76741 3.02094 2.39418 2.39417C3.02094 1.76741 3.87532 1.39794 5.33295 1.20197C6.81936 1.00212 8.77643 1 11.52 1H12.48C15.2236 1 17.1807 1.00212 18.667 1.20197C20.1247 1.39794 20.979 1.76741 21.6058 2.39418C22.2326 3.02095 22.6021 3.87534 22.798 5.33297C22.9979 6.81938 23 8.77645 23 11.52V12.48C23 15.2236 22.9979 17.1807 22.798 18.667C22.6021 20.1247 22.2326 20.979 21.6058 21.6058C20.979 22.2326 20.1247 22.6021 18.667 22.798C17.1807 22.9979 15.2236 23 12.48 23H11.52C8.77643 23 6.81936 22.9979 5.33295 22.798C3.87532 22.6021 3.02094 22.2326 2.39418 21.6058L1.70689 22.2931L2.39418 21.6058C1.76741 20.979 1.39794 20.1247 1.20197 18.667C1.00212 17.1807 1 15.2236 1 12.48V11.52Z" stroke="currentColor" stroke-width="2"/>
-<path d="M13.2307 16.9934C7.45719 16.9934 4.16416 13.426 4.02695 7.48999H6.91896C7.01395 11.8469 9.14597 13.6923 10.8347 14.0729V7.48999H11.2357C14.4373 7.48999 16.4805 7.48999 17.7776 7.48999C19.0316 7.48999 19.9006 8.50652 19.9006 9.76039C19.9006 9.76039 15.5861 9.76039 13.558 9.76039V11.3497H19.9006V13.5066H13.558V15.031H19.9006C19.9006 16.1148 19.022 16.9934 17.9382 16.9934H13.2307Z" fill="currentColor"/>
-</svg>`;
+ upToButton.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M15.2156 12.0544C15.2156 13.8258 13.7764 15.2618 12.001 15.2618C10.2256 15.2618 8.78632 13.8258 8.78632 12.0544C8.78632 10.283 10.2256 8.84698 12.001 8.84698C13.7764 8.84698 15.2156 10.283 15.2156 12.0544ZM12.001 14.1926C13.1846 14.1926 14.1441 13.2353 14.1441 12.0544C14.1441 10.8734 13.1846 9.91611 12.001 9.91611C10.8174 9.91611 9.85787 10.8734 9.85787 12.0544C9.85787 13.2353 10.8174 14.1926 12.001 14.1926Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12.4516 3.43023C12.1667 3.43017 11.881 3.43628 11.5961 3.42957C11.4497 3.42613 10.9359 3.41402 10.504 3.75935C10.0803 4.09817 9.92244 4.61563 9.82732 4.99591C9.77042 5.22341 9.66028 5.51469 9.51138 5.79361C9.21102 5.91293 8.92139 6.05313 8.64429 6.21236C8.343 6.15214 8.0578 6.05703 7.85155 5.96106C7.49587 5.79556 6.9931 5.59199 6.46192 5.70814C5.92151 5.8263 5.60785 6.23276 5.51857 6.34845C5.35397 6.56175 5.18343 6.77214 5.00895 6.97747C4.91403 7.08917 4.58233 7.47952 4.57906 8.03068C4.57584 8.57215 4.87853 9.02021 5.11465 9.33381C5.25992 9.52675 5.4219 9.80562 5.54639 10.106C5.45667 10.4029 5.38692 10.7084 5.33867 11.0208C5.09846 11.2312 4.83626 11.4064 4.62525 11.514C4.2754 11.6925 3.80622 11.9629 3.57137 12.4515C3.33255 12.9484 3.45945 13.4443 3.49575 13.5862C3.56253 13.8472 3.6235 14.111 3.67792 14.3748C3.70745 14.518 3.81096 15.0199 4.24413 15.3623C4.67023 15.6992 5.21122 15.7366 5.60377 15.7437C5.83588 15.7479 6.14113 15.7889 6.44388 15.8698C6.62622 16.1346 6.82698 16.3856 7.0443 16.6211C7.05447 16.9324 7.02578 17.2368 6.97791 17.4625C6.89657 17.8462 6.81165 18.38 7.04357 18.8695C7.27988 19.3683 7.74628 19.5823 7.87951 19.6434C8.12445 19.7557 8.36795 19.8744 8.60731 19.9982C8.73719 20.0653 9.19384 20.3015 9.73392 20.1802C10.2642 20.0612 10.6335 19.6646 10.8857 19.3645C11.0397 19.1813 11.2723 18.9631 11.5342 18.7755C11.8429 18.7967 12.159 18.7967 12.4677 18.7755C12.7296 18.9631 12.9622 19.1813 13.1162 19.3645C13.3685 19.6646 13.7377 20.0612 14.268 20.1802C14.8081 20.3015 15.2647 20.0653 15.3946 19.9982C15.634 19.8744 15.8775 19.7558 16.1224 19.6434C16.2557 19.5823 16.7221 19.3683 16.9584 18.8695C17.1903 18.38 17.1054 17.8462 17.024 17.4625C16.9762 17.2368 16.9475 16.9324 16.9576 16.6211C17.1749 16.3856 17.3757 16.1346 17.558 15.8698C17.8608 15.7889 18.166 15.7479 18.3982 15.7437C18.7907 15.7366 19.3317 15.6992 19.7578 15.3623C20.191 15.0199 20.2945 14.5181 20.324 14.3748C20.3784 14.111 20.4394 13.8472 20.5062 13.5862C20.5425 13.4443 20.6694 12.9484 20.4306 12.4515C20.1957 11.9629 19.7265 11.6925 19.3767 11.514C19.1657 11.4064 18.9035 11.2312 18.6633 11.0208C18.615 10.7084 18.5453 10.4029 18.4555 10.106C18.58 9.80562 18.742 9.52675 18.8873 9.33381C19.1234 9.02021 19.4261 8.57215 19.4229 8.03068C19.4196 7.47952 19.0879 7.08917 18.993 6.97746C18.8185 6.77213 18.6479 6.56175 18.4834 6.34845C18.3941 6.23276 18.0804 5.8263 17.54 5.70814C17.0088 5.59199 16.5061 5.79556 16.1504 5.96106C15.9441 6.05703 15.6589 6.15214 15.3576 6.21236C15.0805 6.05313 14.7909 5.91293 14.4905 5.79361C14.3417 5.51469 14.2315 5.22341 14.1746 4.99591C14.0832 4.63046 13.937 4.15753 13.5737 3.82428C13.148 3.43376 12.6467 3.43123 12.4672 3.43032L12.4516 3.43023ZM15.6276 18.6942L14.9481 19.0254C14.6084 19.191 14.4385 19.2738 13.9372 18.6775C13.6562 18.3431 13.2162 17.9541 12.7349 17.6753C12.2544 17.7374 11.7476 17.7374 11.2671 17.6753C10.7858 17.9541 10.3458 18.3431 10.0647 18.6775C9.56342 19.2738 9.39355 19.191 9.05382 19.0254L8.37434 18.6942C8.0346 18.5285 7.86473 18.4457 8.02627 17.6838C8.11524 17.2641 8.15142 16.6911 8.08009 16.1489C7.71605 15.8005 7.3984 15.404 7.13733 14.9697C6.62333 14.7768 6.05396 14.6825 5.62318 14.6747C4.84406 14.6606 4.80154 14.4766 4.71651 14.1084L4.54645 13.3722C4.46142 13.0041 4.41891 12.82 5.113 12.466C5.5005 12.2683 5.97627 11.9295 6.35549 11.5258C6.40173 11.027 6.51264 10.547 6.67976 10.0941C6.51655 9.56053 6.23511 9.04193 5.97138 8.69166C5.50281 8.06933 5.62175 7.92253 5.85963 7.62892L6.33539 7.0417C6.57327 6.74809 6.69221 6.60129 7.39866 6.93C7.78581 7.11015 8.33263 7.27352 8.87449 7.32688C9.29254 7.05018 9.74942 6.82739 10.2352 6.66841C10.5407 6.21002 10.7621 5.6742 10.867 5.25479C11.056 4.49918 11.245 4.49918 11.623 4.49918L12.4437 4.49933C12.7792 4.50179 12.9571 4.54363 13.1349 5.25479C13.2398 5.6742 13.4612 6.21002 13.7667 6.66841C14.2525 6.82739 14.7094 7.05018 15.1274 7.32688C15.6693 7.27352 16.2161 7.11015 16.6033 6.93C17.3097 6.60129 17.4287 6.74809 17.6665 7.0417L18.1423 7.62892C18.3802 7.92253 18.4991 8.06933 18.0305 8.69166C17.7668 9.04193 17.4854 9.56053 17.3222 10.0941C17.4893 10.547 17.6002 11.027 17.6464 11.5258C18.0257 11.9295 18.5014 12.2683 18.8889 12.466C19.583 12.82 19.5405 13.0041 19.4555 13.3722L19.2854 14.1084C19.2004 14.4766 19.1579 14.6606 18.3787 14.6747C17.948 14.6825 17.3786 14.7768 16.8646 14.9697C16.6035 15.404 16.2859 15.8005 15.9218 16.1489C15.8505 16.6911 15.8867 17.2641 15.9757 17.6838C16.1372 18.4457 15.9673 18.5285 15.6276 18.6942Z" fill="currentColor"/>
+<path d="M12.4516 3.43023C12.4565 3.43027 12.4617 3.43029 12.4672 3.43032M12.4516 3.43023L12.4672 3.43032M12.4516 3.43023C12.1667 3.43017 11.881 3.43628 11.5961 3.42957C11.4497 3.42613 10.9359 3.41402 10.504 3.75935C10.0803 4.09817 9.92244 4.61563 9.82732 4.99591C9.77042 5.22341 9.66028 5.51469 9.51138 5.79361C9.21102 5.91293 8.92139 6.05313 8.64429 6.21236C8.343 6.15214 8.0578 6.05703 7.85155 5.96106C7.49587 5.79556 6.9931 5.59199 6.46192 5.70814C5.92151 5.8263 5.60785 6.23276 5.51857 6.34845C5.35397 6.56175 5.18343 6.77214 5.00895 6.97747C4.91403 7.08917 4.58233 7.47952 4.57906 8.03068C4.57584 8.57215 4.87853 9.02021 5.11465 9.33381C5.25992 9.52675 5.4219 9.80562 5.54639 10.106C5.45667 10.4029 5.38692 10.7084 5.33867 11.0208C5.09846 11.2312 4.83626 11.4064 4.62525 11.514C4.2754 11.6925 3.80622 11.9629 3.57137 12.4515C3.33255 12.9484 3.45945 13.4443 3.49575 13.5862C3.56253 13.8472 3.6235 14.111 3.67792 14.3748C3.70745 14.518 3.81096 15.0199 4.24413 15.3623C4.67023 15.6992 5.21122 15.7366 5.60377 15.7437C5.83588 15.7479 6.14113 15.7889 6.44388 15.8698C6.62622 16.1346 6.82698 16.3856 7.0443 16.6211C7.05447 16.9324 7.02578 17.2368 6.97791 17.4625C6.89657 17.8462 6.81165 18.38 7.04357 18.8695C7.27988 19.3683 7.74628 19.5823 7.87951 19.6434C8.12445 19.7557 8.36795 19.8744 8.60731 19.9982C8.73719 20.0653 9.19384 20.3015 9.73392 20.1802C10.2642 20.0612 10.6335 19.6646 10.8857 19.3645C11.0397 19.1813 11.2723 18.9631 11.5342 18.7755C11.8429 18.7967 12.159 18.7967 12.4677 18.7755C12.7296 18.9631 12.9622 19.1813 13.1162 19.3645C13.3685 19.6646 13.7377 20.0612 14.268 20.1802C14.8081 20.3015 15.2647 20.0653 15.3946 19.9982C15.634 19.8744 15.8775 19.7558 16.1224 19.6434C16.2557 19.5823 16.7221 19.3683 16.9584 18.8695C17.1903 18.38 17.1054 17.8462 17.024 17.4625C16.9762 17.2368 16.9475 16.9324 16.9576 16.6211C17.1749 16.3856 17.3757 16.1346 17.558 15.8698C17.8608 15.7889 18.166 15.7479 18.3982 15.7437C18.7907 15.7366 19.3317 15.6992 19.7578 15.3623C20.191 15.0199 20.2945 14.5181 20.324 14.3748C20.3784 14.111 20.4394 13.8472 20.5062 13.5862C20.5425 13.4443 20.6694 12.9484 20.4306 12.4515C20.1957 11.9629 19.7265 11.6925 19.3767 11.514C19.1657 11.4064 18.9035 11.2312 18.6633 11.0208C18.615 10.7084 18.5453 10.4029 18.4555 10.106C18.58 9.80562 18.742 9.52675 18.8873 9.33381C19.1234 9.02021 19.4261 8.57215 19.4229 8.03068C19.4196 7.47952 19.0879 7.08917 18.993 6.97746C18.8185 6.77213 18.6479 6.56175 18.4834 6.34845C18.3941 6.23276 18.0804 5.8263 17.54 5.70814C17.0088 5.59199 16.5061 5.79556 16.1504 5.96106C15.9441 6.05703 15.6589 6.15214 15.3576 6.21236C15.0805 6.05313 14.7909 5.91293 14.4905 5.79361C14.3417 5.51469 14.2315 5.22341 14.1746 4.99591C14.0832 4.63046 13.937 4.15753 13.5737 3.82428C13.148 3.43376 12.6467 3.43123 12.4672 3.43032M14.9481 19.0254L15.6276 18.6942C15.9673 18.5285 16.1372 18.4457 15.9757 17.6838C15.8867 17.2641 15.8505 16.6911 15.9218 16.1489C16.2859 15.8005 16.6035 15.404 16.8646 14.9697C17.3786 14.7768 17.948 14.6825 18.3787 14.6747C19.1579 14.6606 19.2004 14.4766 19.2854 14.1084L19.4555 13.3722C19.5405 13.0041 19.583 12.82 18.8889 12.466C18.5014 12.2683 18.0257 11.9295 17.6464 11.5258C17.6002 11.027 17.4893 10.547 17.3222 10.0941C17.4854 9.56053 17.7668 9.04193 18.0305 8.69166C18.4991 8.06933 18.3802 7.92253 18.1423 7.62892L17.6665 7.0417C17.4287 6.74809 17.3097 6.60129 16.6033 6.93C16.2161 7.11015 15.6693 7.27352 15.1274 7.32688C14.7094 7.05018 14.2525 6.82739 13.7667 6.66841C13.4612 6.21002 13.2398 5.6742 13.1349 5.25479C12.9571 4.54363 12.7792 4.50179 12.4437 4.49933L11.623 4.49918C11.245 4.49918 11.056 4.49918 10.867 5.25479C10.7621 5.6742 10.5407 6.21002 10.2352 6.66841C9.74942 6.82739 9.29254 7.05018 8.87449 7.32688C8.33263 7.27352 7.78581 7.11015 7.39866 6.93C6.69221 6.60129 6.57327 6.74809 6.33539 7.0417L5.85963 7.62892C5.62175 7.92253 5.50281 8.06933 5.97138 8.69166C6.23511 9.04193 6.51655 9.56053 6.67976 10.0941C6.51264 10.547 6.40173 11.027 6.35549 11.5258C5.97627 11.9295 5.5005 12.2683 5.113 12.466C4.41891 12.82 4.46142 13.0041 4.54645 13.3722L4.71651 14.1084C4.80154 14.4766 4.84406 14.6606 5.62318 14.6747C6.05396 14.6825 6.62333 14.7768 7.13733 14.9697C7.3984 15.404 7.71605 15.8005 8.08009 16.1489C8.15142 16.6911 8.11524 17.2641 8.02627 17.6838C7.86473 18.4457 8.0346 18.5285 8.37434 18.6942L9.05382 19.0254C9.39355 19.191 9.56342 19.2738 10.0647 18.6775C10.3458 18.3431 10.7858 17.9541 11.2671 17.6753C11.7476 17.7374 12.2544 17.7374 12.7349 17.6753C13.2162 17.9541 13.6562 18.3431 13.9372 18.6775C14.4385 19.2738 14.6084 19.191 14.9481 19.0254ZM12.001 15.2618C13.7764 15.2618 15.2156 13.8258 15.2156 12.0544C15.2156 10.283 13.7764 8.84698 12.001 8.84698C10.2256 8.84698 8.78632 10.283 8.78632 12.0544C8.78632 13.8258 10.2256 15.2618 12.001 15.2618ZM14.1441 12.0544C14.1441 13.2353 13.1846 14.1926 12.001 14.1926C10.8174 14.1926 9.85787 13.2353 9.85787 12.0544C9.85787 10.8734 10.8174 9.91611 12.001 9.91611C13.1846 9.91611 14.1441 10.8734 14.1441 12.0544Z" stroke="currentColor" stroke-width="0.5"/>
+</svg>
+`;
   let ActionEnhancerMenu = document.createElement('div');
   ActionEnhancerMenu.classList = 'ActionsMenu ConvoMainActionsMenu';
   ActionEnhancerMenu.innerHTML = `<button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular vkEnUp">
@@ -896,7 +909,13 @@ document.arrive(".ConvoHeader__controls", { existing: true }, async function (e)
   <i class="ActionsMenuAction__icon">
   <svg style = "padding-top: 1px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
  <path style="scale:1.2;" fill="currentColor" fill-rule="evenodd" d="M14.95 3.801a2.72 2.72 0 0 0-3.857 0L5.56 9.35a4.49 4.49 0 0 0 0 6.338 4.46 4.46 0 0 0 6.317 0l.002-.002 2.88-2.86a.75.75 0 0 1 1.057 1.064l-2.877 2.857-.002.002a5.96 5.96 0 0 1-8.439-.001 5.99 5.99 0 0 1 0-8.458l5.534-5.548a4.22 4.22 0 0 1 5.981 0 4.244 4.244 0 0 1 0 5.991l-5.534 5.548a2.486 2.486 0 0 1-3.521 0 2.497 2.497 0 0 1 0-3.525l.002-.002 3.102-3.083a.75.75 0 0 1 1.058 1.064l-3.1 3.08-.001.002a.997.997 0 0 0 0 1.405.986.986 0 0 0 1.398 0l5.534-5.548a2.744 2.744 0 0 0 0-3.873" clip-rule="evenodd"></path></svg></i>
-  <span class="ActionsMenuAction__title">${getLang("me_convo_action_attach")}</span></button></div>`;
+  <span class="ActionsMenuAction__title">${getLang("me_convo_action_attach")}</span></button>
+  
+    <button class="ActionsMenuAction ActionsMenuAction--secondary ActionsMenuAction--size-regular vkEnOnline">
+  <i class="ActionsMenuAction__icon">
+  <svg width="24" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 9.25a.75.75 0 0 1 .75.75v4a.75.75 0 0 1-1.5 0v-4a.75.75 0 0 1 .75-.75z" fill="currentColor"></path><path d="M11 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M3.99 3.99A8.48 8.48 0 0 1 10 1.5c2.35 0 4.47.95 6.01 2.49A8.48 8.48 0 0 1 18.5 10a8.48 8.48 0 0 1-2.49 6.01A8.48 8.48 0 0 1 10 18.5a8.48 8.48 0 0 1-6.01-2.49A8.48 8.48 0 0 1 1.5 10c0-2.35.95-4.47 2.49-6.01zM10 3a6.98 6.98 0 0 0-4.95 2.05A6.98 6.98 0 0 0 3 10c0 1.93.78 3.68 2.05 4.95A6.98 6.98 0 0 0 10 17a6.97 6.97 0 0 0 4.95-2.05A6.97 6.97 0 0 0 17 10a6.98 6.98 0 0 0-2.05-4.95A6.98 6.98 0 0 0 10 3z" fill="currentColor"></path></svg>
+  </i><span class="ActionsMenuAction__title">${getLang("mail_im_mention_online")}</span></button>
+  </div>`;
   ActionEnhancerMenu.style.position = 'absolute';
   ActionEnhancerMenu.style.display = 'none';
   ActionEnhancerMenu.style.marginTop = '40px';
@@ -907,6 +926,80 @@ document.arrive(".ConvoHeader__controls", { existing: true }, async function (e)
 	else ActionEnhancerMenu.style.display = 'none';
   });
   e.prepend(ActionEnhancerMenu);
+  let onlineArr = [];
+  try {
+	let onlineUsersOf = getPeerProps(e.parentElement).convo.peerId;
+	let onlUsersRes = await vkApi.api('messages.getConversationMembers',{peer_id:onlineUsersOf,fields:'online_info, photo_50',extended:1});
+	let countOnl = 0;
+	let ita = 0;
+	for (const o of onlUsersRes.profiles) {
+		if (o.online_info.is_online) { 
+			countOnl++;
+			onlineArr[ita] = [o.first_name + " " + o.last_name, o.id, o.photo_50];
+			ita += 1;
+		}
+	}
+	let onlUsDiv = document.createElement('div');
+	onlUsDiv.classList.add('vkenhancerUsersOnline');
+	if(countOnl > 1 && onlineUsersOf > 2000000000) {
+	    onlUsDiv.textContent = '​ - ' + countOnl + ` ` + getLang("global_user_is_online");
+		e.parentElement.querySelector('.ConvoHeader__infoContainer > h5').appendChild(onlUsDiv);
+	}
+	else {
+		ActionEnhancerMenu.querySelector('.vkEnOnline').style.display = "none";
+	}
+  }
+  catch(error) {
+	  
+  }
+  ActionEnhancerMenu.querySelector('.vkEnOnline').addEventListener('click',async function() {
+          let styleElement = fromId("vkenOnline");
+        if (!styleElement) {
+          styleElement = document.createElement("style");
+          styleElement.id = "vkenOnline";
+          document.head.appendChild(styleElement);
+        }
+        styleElement.innerHTML = `
+		.arrLen{color:var(--vkui--color_text_secondary); padding-left:6px;}
+		::-webkit-scrollbar { background-color: var(--scrollbar_background, var(--vkui--color_background_content)); width: 16px; } ::-webkit-scrollbar-track { background-color: var(--scrollbar_background, var(--vkui--color_background_content)); } ::-webkit-scrollbar-thumb { background-color: var(--scrollbar_thumb, var(--vkui--color_icon_tertiary)); border-radius: 16px; border: 4px solid var(--scrollbar_background, var(--vkui--color_background_content)); } ::-webkit-scrollbar-button { display: none; }
+		.vkEnBgWhiteOnline {
+		border-radius: 8px;
+		border: 1px solid var(--vkui--color_separator_primary);
+		background-color: var(--vkui--color_background_modal);
+		}
+		.vkEnhancerModalPageHeader{
+		background-color:var(--vkui--color_background_tertiary)!important; border-radius:8px 8px 0 0!important;
+		} .vkEnhancerSeparator
+		{ display:none!important; }
+		.vkEnhancerModalPage__header
+		{ border-bottom:1px solid var(--vkui--color_separator_primary)!important; }
+		.vkEnhancerPanelHeader__in
+		{ justify-content:flex-start!important; }
+		.vkEnhancerPanelHeader__content-in
+		{ font-family: var(--palette-vk-font,-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)!important; padding-left: 12px!important; font-size: 14px!important; color: var(--vkui--color_text_primary)!important; overflow: hidden!important; text-overflow: ellipsis!important; white-space: nowrap!important; font-weight:400!important; }
+		.vkEnhancerTappable { background:var(--vkui--color_background_secondary)!important; border-radius:0px!important; --vkui_internal--icon_color:var(--vkui--color_text_link)!important; color:var(--vkui--color_text_link)!important; }
+		.vkEnhancerTappable:hover { background: var(--vkui--color_background_secondary_alpha)!important;}
+		.vkEnhancerDiv { padding:0!important; }
+		div:has(>.vkEnhancerModalPage__in-wrap) { display:flex; justify-content:center; align-items: center; height:100%; inline-size: 100%; block-size: 100%; overflow: hidden; position: absolute; box-sizing: border-box; }
+		.vkEnhancerModalPage__in-wrap { font-family:var(--vkui--font_family_base); max-inline-size: var(--vkui--size_popup_medium--regular); position: relative; align-items: initial; margin-block: 32px; margin-inline: 56px; block-size: auto; max-block-size: 640px; opacity: 0; transform: none; transition: opacity 340ms var(--vkui--animation_easing_platform); inline-size: 100%; inset-inline: 0; inset-block-end: 0; display: flex; }
+		.vkEnhancerModalPage__in { block-size: auto; box-shadow: var(--vkui--elevation3); border-end-end-radius: var(--vkui--size_border_radius_paper--regular); border-end-start-radius: var(--vkui--size_border_radius_paper--regular); }
+		.vkEnhancerModalPage__in { background-color: var(--vkui--color_background_modal); overflow: visible; position: relative; box-sizing: border-box; inline-size: 100%; display: flex; flex-direction: column; border-start-end-radius: var(--vkui--size_border_radius_paper--regular); border-start-start-radius: var(--vkui--size_border_radius_paper--regular); --vkui_internal--background: var(--vkui--color_background_modal); }
+		.vkEnhancerModalPage__header { inline-size: 100%; }
+		.vkEnhancerModalPageHeader { padding-inline: 8px; --vkui_internal--safe_area_inset_top: 0; }
+		.vkEnhancerPanelHeader { position: relative; } .vkEnhancerPanelHeader__in { display:flex; justify-content:center; }
+		.vkEnhancerPanelHeader__content { text-align: center; opacity: 1; transition: opacity .3s var(--vkui--animation_easing_platform); }
+		.vkEnhancerPanelHeader__content-in { font-size:18px; color: var(--vkui--color_text_primary); font-weight: 500; font-family: var(--vkui--font_family_accent); user-select:none; }
+		.vkEnhancerSeparator { color: var(--vkui--color_separator_primary); }
+		.vkEnhancerSeparator__in { block-size: var(--vkui--size_border--regular); margin: 0; background: currentColor; color: inherit; border: 0; transform-origin: center top; }
+		.vkEnhancerModalPage__content-wrap { position: relative; display: flex; block-size: 100%; flex-direction: column; overflow: hidden; border-end-start-radius: inherit; border-end-end-radius: inherit; }
+		.vkEnhancerModalPage__content { overflow-y: auto; -webkit-overflow-scrolling: touch; block-size: 100%; overflow-x: hidden; box-sizing: border-box; }
+		.vkEnhancerModalPage__content-in { block-size:100%; }
+		.vkEnhancerDiv { padding-block: var(--vkui--size_base_padding_vertical--regular); padding-inline: var(--vkui--size_base_padding_horizontal--regular); }
+		.vkEnhancerSpacing { position: relative; box-sizing: border-box; }
+		.vkEnhancerTappable { min-height: 22px; --vkui_internal--icon_color: var(--vkui--color_icon_accent); color: var(--vkui--color_text_accent); justify-content: center; text-align: center; box-sizing: border-box; text-decoration: none; margin: 0; border: 0; inline-size: 100%; background: rgba(0,0,0,0); padding-block: 0; min-block-size: 44px; display: flex; align-items: center; white-space: nowrap; padding-inline: var(--vkui--size_base_padding_horizontal--regular); isolation: isolate; position: relative; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; transition: background-color .15s ease-out; } .vkEnhancerSimpleCell__before { padding-block: 4px; flex-grow: initial; max-inline-size: initial; display: flex; align-items: center; padding-inline-end: 12px; color: var(--vkui_internal--icon_color, var(--vkui--color_icon_accent)); position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__middle { flex-grow: initial; max-inline-size: initial; display: flex; flex-direction: column; justify-content: center; padding-block: 10px; min-inline-size: 0; overflow: hidden; position: relative; z-index: var(--vkui_internal--z_index_tappable_element); } .vkEnhancerSimpleCell__content { justify-content: flex-start; display: flex; align-content: flex-start; align-items: center; max-inline-size: 100%; } .vkEnhancerTypography { font-weight: var(--vkui--font_weight_accent3); font-size: var(--vkui--font_headline1--font_size--compact); line-height: var(--vkui--font_headline1--line_height--compact); color: inherit; text-overflow: ellipsis; overflow: hidden; display: block; margin: 0; padding: 0; } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; } .vkEnhancerTappable:hover{ background-color:var(--vkui--color_transparent--hover); } .vkEnhancerGraffitiList { display: grid; gap: 4px; grid-template-columns: repeat(4,1fr); } .vkEnhancerGraffitiList__item { height: 158px; width: 158px; align-items: center; background-color: var(--vkui--color_transparent--hover); border-radius: 10px; cursor: pointer; display: flex; justify-content: center; transition: all .15s ease; vertical-align: bottom; } .vkEnhancerGraffitiList__item:hover { background-color: var(--vkui--color_transparent--active); } .vkEnhancerGraffitiList__item--doc { background-position: 50%; background-repeat: no-repeat; background-size: contain; border-radius: 10px; height: 158px; width: 158px; } .vkEnhancerCloseButton { position: absolute; justify-content: center; inset-block-start: 0; inset-inline-end: -56px; inline-size: 56px; block-size: 56px; padding: 18px; box-sizing: border-box; color: var(--vkui--color_icon_contrast); transition: opacity .15s ease-out; isolation: isolate; border-radius: var(--vkui--size_border_radius--regular); cursor: pointer; --vkui_internal--outline_width: 2px; } .vkEnhancerCloseButton:before { display: block; content: ""; inset: 14px; background: var(--vkui--color_overlay_primary); border-radius: 50%; position: absolute; } .vkEnhancerCloseButton:hover:before { background:var(--vkui--color_overlay_primary--hover); } .vkEnhancerVisuallyHidden { position: absolute !important; block-size: 1px !important; inline-size: 1px !important; padding: 0 !important; margin: -1px !important; white-space: nowrap !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%); overflow: hidden !important; border: 0 !important; opacity: 0; z-index: var(--vkui_internal--z_index_tappable_element); }`;
+       
+	await VKEnhancerOnineBox(onlineArr);
+  });
   let memoizedPeer = getPeerProps(e.parentElement).peer.id;
   ActionEnhancerMenu.querySelector('.vkEnAttaches').addEventListener('click',function() {
 	window.showWiki({w: `history${memoizedPeer}_photo` }, null, {});
@@ -929,6 +1022,107 @@ document.arrive(".ConvoHeader__controls", { existing: true }, async function (e)
   e.prepend(upToButton); }
   catch(error){}
 });
+
+function onClose() {
+		let customStyle = fromId("vkenOnline");
+      if (customStyle) {
+        customStyle.remove();
+      }
+      let mainGrafBox = document.querySelector('.vkEnhancerOnlineMainBox');
+      mainGrafBox.remove();
+    }
+
+async function VKEnhancerOnineBox(onlineArr) {
+	  let arrLen = onlineArr.length;
+      let boxG = document.createElement("div");
+      boxG.classList.add("vkEnhancerOnlineMainBox");
+      boxG.innerHTML = `<div class="vkEnhancerModalPage__in-wrap" style="opacity: 1;">
+  <div class="vkEnhancerModalPage__in">
+    <div class="vkEnhancerModalPage__header">
+      <div class="vkEnhancerModalPageHeader vkEnhancerModalPageHeader--withGaps vkEnhancerModalPageHeader--desktop">
+        <div class="vkEnhancerPanelHeader">
+          <div class="vkEnhancerPanelHeader__in" data-onboarding-tooltip-container="fixed">
+            <div class="vkEnhancerPanelHeader__content">
+              <h2 class="vkEnhancerPanelHeader__content-in" id=":r1:-label" style="
+    display: flex;
+">` + getLang("mail_im_mention_online") + `<div class="arrLen">${arrLen}</div></h2>
+            </div>
+          </div>
+        </div>
+        <div class="vkEnhancerSeparator">
+          <hr class="vkEnhancerSeparator__in">
+        </div>
+        <div class="RE_ModalBody RE_ModalBody--fullScreen vkEnBgWhiteOnline">
+          <div data-scrollbar="cropped" style="position: relative; width: 100%; height: 100%; overflow: hidden;">
+            <div class="MessageReactedPeersModal__wrapper" style="width: 96%; height: 100%; max-width: inherit; max-height: inherit; overflow: hidden auto;" data-scrollbar="scrollable">
+              <div style="width: 100%; height: min-content;" data-scrollbar="content">
+                <section class="MessageReactedPeersModal__content" aria-label="Реакции на сообщение">
+                  <div class="PeerList vkenPeerList">
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="vkEnhancerCloseButton" role="button" tabindex="0"><span class="vkEnhancerVisuallyHidden">Закрыть</span>
+      <svg aria-hidden="true" display="block" class="vkuiIcon vkuiIcon--20 vkuiIcon--w-20 vkuiIcon--h-20 vkuiIcon--cancel_20" viewBox="0 0 20 20" width="20" height="20" style="width: 20px; height: 20px;">
+        <path fill="currentColor" fill-rule="evenodd" d="M4.72 4.72a.75.75 0 0 1 1.06 0L10 8.94l4.22-4.22a.75.75 0 1 1 1.06 1.06L11.06 10l4.22 4.22a.75.75 0 1 1-1.06 1.06L10 11.06l-4.22 4.22a.75.75 0 0 1-1.06-1.06L8.94 10 4.72 5.78a.75.75 0 0 1 0-1.06" clip-rule="evenodd"></path>
+      </svg>
+    </div>
+  </div>
+</div>`;
+      let peerList = boxG.querySelector('.vkenPeerList');
+	  console.log(onlineArr);
+	  for (const user of onlineArr) {
+		let peer = document.createElement(`a`);
+		peer.title = user[0];
+		peer.classList.add('PeerListItemLink');
+		peer.href = `/id${user[1]}`;
+		peer.target = `_blank`;
+		peer.innerHTML = `
+		<div class="PeerListItem PeerListItem--clickable" tabindex="-1">
+  <div class="PeerListItem__main">
+    <div class="PeerListItem__avatar" style="
+    width: 40px;
+    height: 40px;
+">
+      <figure class="MEAvatar MEAvatar--size-40" style="margin: 0;width: 40px;height: 40px;">
+        <div class="MEAvatar__imgWrapper" style="clip-path: url(&quot;#mePeerFrameOffline40Mask265672157&quot;);">
+          <div class="BasicAvatar BasicAvatar--size-40"><img class="BasicAvatar__img" alt="${user[0]}" src="${user[2]}"></div>
+        </div>
+        <svg class="MEAvatar__svg">
+          <clipPath id="mePeerFrameOffline40Mask265672157">
+            <use href="#mePeerFrameOffline40"></use>
+          </clipPath>
+          <use href="#mePeerFrameOffline40" class="MEAvatar__shadow" clip-path="url(#mePeerFrameOffline40Mask265672157)"></use>
+        </svg>
+      </figure>
+    </div>
+    <div class="PeerListItem__content">
+      <div class="PeerListItem__name">${user[0]}</div>
+    </div>
+  </div>
+</div>
+		`;
+		peerList.appendChild(peer);
+	  }
+	  let boxLayer = document.getElementById('box_layer');
+      boxG.style.top = "0px";
+      boxG.style.zIndex = "999999";
+      boxG.style.backgroundColor = "#000000B3";
+      document.body.appendChild(boxG);
+      let closeButton = document.querySelector('.vkEnhancerCloseButton');
+      closeButton.addEventListener("click", function () {
+        onClose();
+      });
+      boxG.addEventListener("click", function (event) {
+        if (!event.target.closest('.vkEnhancerModalPage__in-wrap')) {
+          onClose();
+        }
+      });
+    }
 ///КОНЕЦ СТАРОГО ДИЗАЙНА ПОКАЗАТЬ ВЛОЖЕНИЯ - МЕНЮ ЭНХАНСЕРА///
 ///РЕДАКТОР ГРАФФИТИ В КОММЕНТАХ///
 document.arrive(".ms_items_more._more_items", { existing: true }, function (e) {
@@ -6560,42 +6754,20 @@ function createSVG() {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("width", "20");
   svg.setAttribute("height", "20");
-  svg.setAttribute("viewBox", "0 0 20 20");
+  svg.setAttribute("viewBox", "0 0 72 72");
   svg.setAttribute("fill", "none");
   svg.classList.add("vkEnhancerBadgeStaff");
   svg.style.marginLeft = "8px";
   svg.style.marginTop = "6px";
 
-  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  g.setAttribute("clip-path", "url(#clip0_120_106)");
+  svg.innerHTML=`
+<path d="M0 33.12C0 17.507 0 9.70062 4.85031 4.85031C9.70062 0 17.507 0 33.12 0H35.88C51.4929 0 59.2993 0 64.1498 4.85031C69 9.70062 69 17.507 69 33.12V35.88C69 51.4929 69 59.2993 64.1498 64.1498C59.2993 69 51.4929 69 35.88 69H33.12C17.507 69 9.70062 69 4.85031 64.1498C0 59.2993 0 51.4929 0 35.88V33.12Z" fill="#2961F4"></path>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M63.9062 64.3869C59.0385 69 51.2343 69 35.88 69H33.12C17.766 69 9.96169 69 5.09409 64.3872V59.7384C5.09409 53.728 9.96636 48.8557 15.9766 48.8557H53.0235C59.0339 48.8557 63.9062 53.728 63.9062 59.7384V64.3869Z" fill="#589AFA"></path>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M41.7103 34.4176C41.7103 38.5041 38.3901 41.8168 34.2944 41.8168C30.1987 41.8168 26.8784 38.5041 26.8784 34.4176C26.8784 30.3311 30.1987 27.0184 34.2944 27.0184C38.3901 27.0184 41.7103 30.3311 41.7103 34.4176ZM34.2944 39.3504C37.0249 39.3504 39.2384 37.1419 39.2384 34.4176C39.2384 31.6933 37.0249 29.4848 34.2944 29.4848C31.5639 29.4848 29.3504 31.6933 29.3504 34.4176C29.3504 37.1419 31.5639 39.3504 34.2944 39.3504Z" fill="white"></path>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M35.334 14.5223C34.6767 14.5222 34.0176 14.5363 33.3604 14.5208C33.0227 14.5129 31.8373 14.485 30.841 15.2816C29.8635 16.0632 29.4994 17.257 29.28 18.1343C29.1487 18.6591 28.8946 19.331 28.5511 19.9745C27.8582 20.2498 27.19 20.5732 26.5508 20.9405C25.8557 20.8016 25.1978 20.5822 24.722 20.3608C23.9015 19.979 22.7416 19.5094 21.5162 19.7773C20.2695 20.0499 19.5459 20.9876 19.34 21.2545C18.9603 21.7465 18.5668 22.2319 18.1643 22.7056C17.9453 22.9633 17.1801 23.8638 17.1726 25.1353C17.1652 26.3844 17.8635 27.418 18.4082 28.1415C18.7433 28.5866 19.117 29.2299 19.4041 29.9228C19.1972 30.6078 19.0363 31.3126 18.925 32.0332C18.3708 32.5187 17.7659 32.9228 17.2791 33.1711C16.4721 33.5828 15.3897 34.2066 14.8479 35.3338C14.297 36.48 14.5897 37.6241 14.6735 37.9513C14.8275 38.5534 14.9682 39.1621 15.0937 39.7708C15.1619 40.1011 15.4006 41.2589 16.3999 42.0489C17.3829 42.8259 18.6309 42.9122 19.5365 42.9285C20.072 42.9382 20.7762 43.0328 21.4746 43.2194C21.8953 43.8303 22.3584 44.4095 22.8597 44.9526C22.8832 45.6709 22.817 46.373 22.7066 46.8939C22.5189 47.779 22.323 49.0104 22.858 50.1397C23.4032 51.2903 24.4791 51.7839 24.7865 51.9249C25.3516 52.1841 25.9133 52.4579 26.4655 52.7434C26.7651 52.8983 27.8186 53.4431 29.0645 53.1634C30.2878 52.8887 31.1396 51.9739 31.7216 51.2816C32.0768 50.859 32.6134 50.3557 33.2176 49.9228C33.9298 49.9716 34.659 49.9716 35.3712 49.9228C35.9754 50.3557 36.512 50.859 36.8672 51.2816C37.4491 51.9739 38.301 52.8887 39.5243 53.1634C40.7702 53.4431 41.8237 52.8983 42.1233 52.7434C42.6755 52.4579 43.2372 52.1842 43.8023 51.9249C44.1097 51.7839 45.1856 51.2903 45.7307 50.1397C46.2658 49.0104 46.0699 47.779 45.8822 46.8939C45.7718 46.373 45.7056 45.6709 45.729 44.9526C46.2304 44.4095 46.6935 43.8303 47.1142 43.2194C47.8126 43.0328 48.5168 42.9382 49.0522 42.9285C49.9578 42.9122 51.2059 42.8259 52.1888 42.0489C53.1881 41.2589 53.4269 40.1011 53.495 39.7708C53.6206 39.1621 53.7613 38.5535 53.9153 37.9513C53.999 37.6241 54.2918 36.48 53.7409 35.3338C53.1991 34.2066 52.1167 33.5828 51.3096 33.1711C50.8228 32.9228 50.218 32.5187 49.6638 32.0332C49.5525 31.3126 49.3916 30.6078 49.1846 29.9228C49.4718 29.2299 49.8455 28.5866 50.1806 28.1415C50.7253 27.418 51.4236 26.3844 51.4162 25.1353C51.4086 23.8637 50.6434 22.9633 50.4244 22.7056C50.022 22.2319 49.6285 21.7465 49.2488 21.2545C49.0428 20.9876 48.3193 20.0499 47.0726 19.7773C45.8472 19.5094 44.6873 19.979 43.8668 20.3608C43.391 20.5822 42.7331 20.8016 42.038 20.9405C41.3987 20.5732 40.7306 20.2498 40.0377 19.9745C39.6942 19.331 39.4401 18.6591 39.3088 18.1343C39.0979 17.2912 38.7606 16.2002 37.9226 15.4314C36.9406 14.5305 35.784 14.5246 35.3699 14.5225L35.334 14.5223ZM42.6607 49.7351L41.0932 50.4993C40.3095 50.8813 39.9176 51.0724 38.7612 49.6967C38.1128 48.9253 37.0978 48.0278 35.9874 47.3847C34.879 47.5278 33.7098 47.5278 32.6014 47.3847C31.491 48.0278 30.476 48.9253 29.8276 49.6967C28.6712 51.0724 28.2793 50.8813 27.4955 50.4993L25.928 49.7351C25.1443 49.353 24.7524 49.162 25.125 47.4043C25.3303 46.436 25.4138 45.1142 25.2492 43.8634C24.4094 43.0596 23.6766 42.145 23.0743 41.1431C21.8886 40.6982 20.5751 40.4805 19.5813 40.4625C17.7839 40.4301 17.6858 40.0054 17.4897 39.1562L17.0974 37.4578C16.9012 36.6085 16.8031 36.1839 18.4044 35.3672C19.2983 34.9112 20.3959 34.1295 21.2707 33.1982C21.3773 32.0475 21.6332 30.9401 22.0187 29.8954C21.6422 28.6645 20.993 27.4681 20.3846 26.6601C19.3036 25.2244 19.578 24.8857 20.1268 24.2084L21.2243 22.8537C21.7731 22.1764 22.0475 21.8377 23.6772 22.5961C24.5703 23.0116 25.8318 23.3885 27.0818 23.5116C28.0463 22.8733 29.1002 22.3593 30.2209 21.9926C30.9257 20.9351 31.4364 19.699 31.6784 18.7315C32.1144 16.9883 32.5504 16.9883 33.4224 16.9883L35.3158 16.9887C36.0897 16.9944 36.5 17.0909 36.9104 18.7315C37.1524 19.699 37.6631 20.9351 38.3679 21.9926C39.4885 22.3593 40.5425 22.8733 41.5069 23.5116C42.757 23.3885 44.0184 23.0116 44.9116 22.5961C46.5413 21.8377 46.8157 22.1764 47.3645 22.8537L48.462 24.2084C49.0108 24.8857 49.2852 25.2244 48.2042 26.6601C47.5958 27.4681 46.9465 28.6645 46.57 29.8954C46.9556 30.9401 47.2114 32.0475 47.3181 33.1982C48.1929 34.1295 49.2905 34.9112 50.1844 35.3672C51.7856 36.1839 51.6876 36.6085 51.4914 37.4578L51.0991 39.1562C50.9029 40.0054 50.8048 40.4301 49.0075 40.4625C48.0137 40.4805 46.7002 40.6982 45.5144 41.1431C44.9122 42.145 44.1794 43.0596 43.3396 43.8634C43.175 45.1142 43.2585 46.436 43.4637 47.4043C43.8364 49.162 43.4445 49.353 42.6607 49.7351Z" fill="white"></path>
+<path d="M18 25.5L22 21H28.5L31.5 15.5H36L39 21L42 22.5L48.5 21L49.5 25.5L48.5 30.5L49.5 33L52 35.5V39.5L49.5 41L44.5 44.5V50.5L39 52L36 49H33L28.5 52L23.5 49V43.5L18 41L15.5 35.5L22 30.5L18 25.5Z" fill="white"></path>
 
-  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path1.setAttribute(
-    "d",
-    "M0 9.6C0 5.0745 0 2.81177 1.40589 1.40589C2.81177 0 5.0745 0 9.6 0H10.4C14.9255 0 17.1882 0 18.5941 1.40589C20 2.81177 20 5.0745 20 9.6V10.4C20 14.9255 20 17.1882 18.5941 18.5941C17.1882 20 14.9255 20 10.4 20H9.6C5.0745 20 2.81177 20 1.40589 18.5941C0 17.1882 0 14.9255 0 10.4V9.6Z"
-  );
-  path1.setAttribute("fill", "#2961F4");
-
-  const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path2.setAttribute("fill-rule", "evenodd");
-  path2.setAttribute("clip-rule", "evenodd");
-  path2.setAttribute(
-    "d",
-    "M18.5236 18.6629C17.1126 20.0001 14.8506 20.0001 10.4 20.0001H9.60002C5.14957 20.0001 2.88746 20.0001 1.47656 18.663V17.3155C1.47656 15.5734 2.88882 14.1611 4.63092 14.1611H15.3692C17.1113 14.1611 18.5236 15.5734 18.5236 17.3155V18.6629Z"
-  );
-  path2.setAttribute("fill", "#589AFA");
-
-  const path3 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path3.setAttribute(
-    "d",
-    "M11.0255 14.1612C6.21427 14.1612 3.47006 11.1884 3.35571 6.2417H5.76573C5.84489 9.87243 7.6216 11.4104 9.02887 11.7274V6.2417H9.363C12.0311 6.2417 13.7337 6.2417 14.8147 6.2417C15.8596 6.2417 16.5837 7.08876 16.5837 8.13369C16.5837 8.13369 12.9883 8.13369 11.2983 8.13369V9.45816H16.5837V11.2556H11.2983V12.5259H16.5837C16.5837 13.429 15.8516 14.1612 14.9485 14.1612H11.0255Z"
-  );
-  path3.setAttribute("fill", "white");
-
-  g.appendChild(path1);
-  g.appendChild(path2);
-  g.appendChild(path3);
-  svg.appendChild(g);
+<circle cx="34.5" cy="34.5" r="7.5" fill="#2961F4"></circle>`;
 
   return svg;
 }
@@ -6620,23 +6792,23 @@ function createTooltipText(roles) {
     switch (role) {
       case "founder":
         text =
-          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="10" fill="url(#paint0_linear_35635_1132)"/><path d="M11.9853 7.37283L14.614 7.63087C15.5287 7.72065 15.8092 8.6348 15.1029 9.23539L13.0449 10.9854L13.8089 13.8362C14.0598 14.7724 13.2814 15.3392 12.5018 14.7757L10.0012 12.9686L7.50063 14.7757C6.72414 15.3369 5.94255 14.7726 6.19348 13.8362L6.95747 10.9854L4.8995 9.23539C4.19024 8.63228 4.46965 7.72106 5.38824 7.63087L8.01645 7.37283L9.17437 4.64137C9.53698 3.78598 10.4656 3.78641 10.828 4.64146L11.9853 7.37283Z" fill="white"/><defs><linearGradient id="paint0_linear_35635_1132" x1="-10" y1="10" x2="10" y2="30" gradientUnits="userSpaceOnUse"><stop stop-color="#70B2FF"/><stop offset="1" stop-color="#5C9CE6"/></linearGradient></defs></svg><div style="margin-left: 8px;">Создатель расширения VK Enhancer</div></div>';
+          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="10" fill="url(#paint0_linear_35635_1132)"/><path d="M11.9853 7.37283L14.614 7.63087C15.5287 7.72065 15.8092 8.6348 15.1029 9.23539L13.0449 10.9854L13.8089 13.8362C14.0598 14.7724 13.2814 15.3392 12.5018 14.7757L10.0012 12.9686L7.50063 14.7757C6.72414 15.3369 5.94255 14.7726 6.19348 13.8362L6.95747 10.9854L4.8995 9.23539C4.19024 8.63228 4.46965 7.72106 5.38824 7.63087L8.01645 7.37283L9.17437 4.64137C9.53698 3.78598 10.4656 3.78641 10.828 4.64146L11.9853 7.37283Z" fill="white"/><defs><linearGradient id="paint0_linear_35635_1132" x1="-10" y1="10" x2="10" y2="30" gradientUnits="userSpaceOnUse"><stop stop-color="#70B2FF"/><stop offset="1" stop-color="#5C9CE6"/></linearGradient></defs></svg><div style="margin-left: 8px;">Создатель расширения VK Tools</div></div>';
         break;
       case "dev":
         text =
-          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="url(#paint0_linear_35635_1242)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.63935 15.1031C3.78688 14.2515 3.78688 12.8706 4.63935 12.0189L6.19473 10.465C6.30756 10.3522 6.34834 10.1873 6.31179 10.032C6.22658 9.67008 6.18151 9.29268 6.18151 8.90475C6.18151 6.19593 8.37945 4 11.0908 4C11.693 4 12.2699 4.10833 12.803 4.30656C13.0793 4.40932 13.1349 4.76017 12.9269 4.96912L11.036 6.86858C10.9546 6.95036 10.9089 7.06105 10.9089 7.17644V8.65467C10.9089 8.89567 11.1043 9.09104 11.3453 9.09104H12.8209C12.9362 9.09104 13.0469 9.04535 13.1287 8.96397L15.0309 7.07085C15.2398 6.86297 15.5905 6.91843 15.6933 7.19461C15.8916 7.72708 16 8.30328 16 8.90475C16 11.6136 13.8021 13.8095 11.0908 13.8095C10.7081 13.8095 10.3356 13.7658 9.97808 13.683C9.82346 13.6472 9.65948 13.688 9.5472 13.8002L7.98473 15.3612C7.13226 16.2129 5.75014 16.2129 4.89767 15.3612L4.63935 15.1031Z" fill="white"/><defs><linearGradient id="paint0_linear_35635_1242" x1="-11.3295" y1="-12.7168" x2="18.3815" y2="17.4567" gradientUnits="userSpaceOnUse"><stop stop-color="#FFB73D"/><stop offset="1" stop-color="#FFA000"/></linearGradient></defs></svg><div style="margin-left: 8px;">Разработчик расширения VK Enhancer</div></div>';
+          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="url(#paint0_linear_35635_1242)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.63935 15.1031C3.78688 14.2515 3.78688 12.8706 4.63935 12.0189L6.19473 10.465C6.30756 10.3522 6.34834 10.1873 6.31179 10.032C6.22658 9.67008 6.18151 9.29268 6.18151 8.90475C6.18151 6.19593 8.37945 4 11.0908 4C11.693 4 12.2699 4.10833 12.803 4.30656C13.0793 4.40932 13.1349 4.76017 12.9269 4.96912L11.036 6.86858C10.9546 6.95036 10.9089 7.06105 10.9089 7.17644V8.65467C10.9089 8.89567 11.1043 9.09104 11.3453 9.09104H12.8209C12.9362 9.09104 13.0469 9.04535 13.1287 8.96397L15.0309 7.07085C15.2398 6.86297 15.5905 6.91843 15.6933 7.19461C15.8916 7.72708 16 8.30328 16 8.90475C16 11.6136 13.8021 13.8095 11.0908 13.8095C10.7081 13.8095 10.3356 13.7658 9.97808 13.683C9.82346 13.6472 9.65948 13.688 9.5472 13.8002L7.98473 15.3612C7.13226 16.2129 5.75014 16.2129 4.89767 15.3612L4.63935 15.1031Z" fill="white"/><defs><linearGradient id="paint0_linear_35635_1242" x1="-11.3295" y1="-12.7168" x2="18.3815" y2="17.4567" gradientUnits="userSpaceOnUse"><stop stop-color="#FFB73D"/><stop offset="1" stop-color="#FFA000"/></linearGradient></defs></svg><div style="margin-left: 8px;">Разработчик расширения VK Tools</div></div>';
         break;
       case "designer":
         text =
-          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="url(#paint0_radial_35635_1237)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M11.2494 4.7288C11.8594 5.41811 11.7951 6.47143 11.1058 7.08144L9.69121 8.33333H13.83C15.6712 8.33333 16.5343 10.6109 15.1554 11.8311L11.1058 15.4148C10.4165 16.0248 9.3632 15.9605 8.75319 15.2712C8.14317 14.5819 8.20746 13.5286 8.89678 12.9185L10.3114 11.6667H6.17262C4.3314 11.6667 3.46838 9.38911 4.84719 8.16892L8.89678 4.58521C9.58609 3.9752 10.6394 4.03948 11.2494 4.7288Z" fill="white"/><defs><radialGradient id="paint0_radial_35635_1237" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(3.52601 2.36994) rotate(45.4424) scale(21.173 27.2409)"><stop offset="0.0433247" stop-color="#FFD44C"/><stop offset="0.353531" stop-color="#FF962E"/><stop offset="0.702496" stop-color="#FF5773"/><stop offset="1" stop-color="#FA60A3"/></radialGradient></defs></svg><div style="margin-left: 8px;">Дизайнер расширения VK Enhancer</div></div>';
+          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="url(#paint0_radial_35635_1237)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M11.2494 4.7288C11.8594 5.41811 11.7951 6.47143 11.1058 7.08144L9.69121 8.33333H13.83C15.6712 8.33333 16.5343 10.6109 15.1554 11.8311L11.1058 15.4148C10.4165 16.0248 9.3632 15.9605 8.75319 15.2712C8.14317 14.5819 8.20746 13.5286 8.89678 12.9185L10.3114 11.6667H6.17262C4.3314 11.6667 3.46838 9.38911 4.84719 8.16892L8.89678 4.58521C9.58609 3.9752 10.6394 4.03948 11.2494 4.7288Z" fill="white"/><defs><radialGradient id="paint0_radial_35635_1237" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(3.52601 2.36994) rotate(45.4424) scale(21.173 27.2409)"><stop offset="0.0433247" stop-color="#FFD44C"/><stop offset="0.353531" stop-color="#FF962E"/><stop offset="0.702496" stop-color="#FF5773"/><stop offset="1" stop-color="#FA60A3"/></radialGradient></defs></svg><div style="margin-left: 8px;">Дизайнер расширения VK Tools</div></div>';
         break;
       case "help":
         text =
-          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"> <rect width="20" height="20" rx="10" fill="url(#paint0_linear_35635_1261)"/> <path d="M6.2 6.5C6.53137 6.5 6.8 6.76863 6.8 7.1V9.3498C6.8 9.59833 7.00147 9.7998 7.25 9.7998V9.7998C7.49853 9.7998 7.7 9.59833 7.7 9.3498V5.6C7.7 5.26863 7.96863 5 8.3 5V5C8.63137 5 8.9 5.26863 8.9 5.6V8.8498C8.9 9.09833 9.10147 9.2998 9.35 9.2998V9.2998C9.59853 9.2998 9.8 9.09833 9.8 8.8498V4.89981C9.8 4.56843 10.0686 4.2998 10.4 4.2998V4.2998C10.7314 4.2998 11 4.56843 11 4.8998V8.8498C11 9.09833 11.2015 9.2998 11.45 9.2998V9.2998C11.6985 9.2998 11.9 9.09833 11.9 8.8498V5.8998C11.9 5.56843 12.1686 5.2998 12.5 5.2998V5.2998C12.8314 5.2998 13.1 5.56843 13.1 5.8998V11.3698L14.5154 9.80029C14.805 9.47916 15.3045 9.46601 15.6106 9.77146V9.77146C15.8876 10.048 15.9083 10.4895 15.6575 10.7901C15.0449 11.5242 13.9413 12.8469 13.2986 13.6182C12.2472 14.8799 10.7073 15.2999 9.54876 15.2999C5.76833 15.2999 5.6 12.7544 5.6 11.8928L5.6 7.1C5.6 6.76863 5.86863 6.5 6.2 6.5V6.5Z" fill="white"/> <defs> <linearGradient id="paint0_linear_35635_1261" x1="-10" y1="10" x2="10" y2="30" gradientUnits="userSpaceOnUse"> <stop stop-color="#70B2FF"/> <stop offset="1" stop-color="#5C9CE6"/> </linearGradient> </defs> </svg><div style="margin-left: 8px;">Тестер расширения VK Enhancer</div></div>';
+          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"> <rect width="20" height="20" rx="10" fill="url(#paint0_linear_35635_1261)"/> <path d="M6.2 6.5C6.53137 6.5 6.8 6.76863 6.8 7.1V9.3498C6.8 9.59833 7.00147 9.7998 7.25 9.7998V9.7998C7.49853 9.7998 7.7 9.59833 7.7 9.3498V5.6C7.7 5.26863 7.96863 5 8.3 5V5C8.63137 5 8.9 5.26863 8.9 5.6V8.8498C8.9 9.09833 9.10147 9.2998 9.35 9.2998V9.2998C9.59853 9.2998 9.8 9.09833 9.8 8.8498V4.89981C9.8 4.56843 10.0686 4.2998 10.4 4.2998V4.2998C10.7314 4.2998 11 4.56843 11 4.8998V8.8498C11 9.09833 11.2015 9.2998 11.45 9.2998V9.2998C11.6985 9.2998 11.9 9.09833 11.9 8.8498V5.8998C11.9 5.56843 12.1686 5.2998 12.5 5.2998V5.2998C12.8314 5.2998 13.1 5.56843 13.1 5.8998V11.3698L14.5154 9.80029C14.805 9.47916 15.3045 9.46601 15.6106 9.77146V9.77146C15.8876 10.048 15.9083 10.4895 15.6575 10.7901C15.0449 11.5242 13.9413 12.8469 13.2986 13.6182C12.2472 14.8799 10.7073 15.2999 9.54876 15.2999C5.76833 15.2999 5.6 12.7544 5.6 11.8928L5.6 7.1C5.6 6.76863 5.86863 6.5 6.2 6.5V6.5Z" fill="white"/> <defs> <linearGradient id="paint0_linear_35635_1261" x1="-10" y1="10" x2="10" y2="30" gradientUnits="userSpaceOnUse"> <stop stop-color="#70B2FF"/> <stop offset="1" stop-color="#5C9CE6"/> </linearGradient> </defs> </svg><div style="margin-left: 8px;">Тестер расширения VK Tools</div></div>';
         break;
       case "old":
         text =
-          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"> <rect width="20" height="20" rx="10" fill="url(#paint0_linear_35635_1259)"/> <path d="M9.54691 4.03936C9.5956 4.00469 9.65761 3.99211 9.71676 4.00488C9.82904 4.02913 9.89958 4.13616 9.87432 4.24395L9.87428 4.24394C9.84477 4.36985 9.80783 4.46569 9.76346 4.53147C8.19037 6.86335 8.88126 8.26503 9.94201 8.41565C11.0392 8.57145 11.8417 7.86577 11.67 6.3426C11.6404 6.08032 11.6157 5.85929 11.5958 5.67949C11.5912 5.63709 11.602 5.59444 11.6264 5.55884C11.6846 5.474 11.8035 5.45056 11.8919 5.50647L11.8919 5.50645C12.2484 5.73205 12.6751 6.14228 13.172 6.73714C14.9401 8.85418 15.0092 10.6262 14.9993 11.3883C14.9636 14.1208 12.8566 16 9.99964 16C7.1427 16 5 14.1212 5 11.3883C5.01265 9.31934 6.1013 6.40699 9.10674 4.34818C9.21899 4.27128 9.36571 4.16834 9.54691 4.03936Z" fill="white"/> <defs> <linearGradient id="paint0_linear_35635_1259" x1="-10" y1="10" x2="10" y2="30" gradientUnits="userSpaceOnUse"> <stop stop-color="#FF5263"/> <stop offset="1" stop-color="#FF3347"/> </linearGradient> </defs> </svg><div style="margin-left: 8px;">Установил VK Enhancer до релиза в магазине Chrome</div></div>';
+          '<div style="display:flex;align-items:center;" class="optionContainer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"> <rect width="20" height="20" rx="10" fill="url(#paint0_linear_35635_1259)"/> <path d="M9.54691 4.03936C9.5956 4.00469 9.65761 3.99211 9.71676 4.00488C9.82904 4.02913 9.89958 4.13616 9.87432 4.24395L9.87428 4.24394C9.84477 4.36985 9.80783 4.46569 9.76346 4.53147C8.19037 6.86335 8.88126 8.26503 9.94201 8.41565C11.0392 8.57145 11.8417 7.86577 11.67 6.3426C11.6404 6.08032 11.6157 5.85929 11.5958 5.67949C11.5912 5.63709 11.602 5.59444 11.6264 5.55884C11.6846 5.474 11.8035 5.45056 11.8919 5.50647L11.8919 5.50645C12.2484 5.73205 12.6751 6.14228 13.172 6.73714C14.9401 8.85418 15.0092 10.6262 14.9993 11.3883C14.9636 14.1208 12.8566 16 9.99964 16C7.1427 16 5 14.1212 5 11.3883C5.01265 9.31934 6.1013 6.40699 9.10674 4.34818C9.21899 4.27128 9.36571 4.16834 9.54691 4.03936Z" fill="white"/> <defs> <linearGradient id="paint0_linear_35635_1259" x1="-10" y1="10" x2="10" y2="30" gradientUnits="userSpaceOnUse"> <stop stop-color="#FF5263"/> <stop offset="1" stop-color="#FF3347"/> </linearGradient> </defs> </svg><div style="margin-left: 8px;">Установил VK Tools до релиза в магазине Chrome</div></div>';
         break;
       default:
         text = "";
@@ -8455,7 +8627,7 @@ deferredCallback(
               );
               document.head.appendChild(styleElement);
             }
-            styleElement.innerHTML = ".MEApp__mainPanel {display:none;}";
+            styleElement.innerHTML = ".CollapsibleContainer:has(.MEApp__mainPanel) {display:none;}";
           }
 
           const vkuiRoot = e;
@@ -8683,7 +8855,7 @@ deferredCallback(
           styleElement = create("style", {}, { id: "MEApp__mainPanel1234" });
           document.head.appendChild(styleElement);
         }
-        styleElement.innerHTML = ".MEApp__mainPanel {display:none;}";
+        styleElement.innerHTML = ".CollapsibleContainer:has(.MEApp__mainPanel) {display:none;}";
       } else {
         const customStyle = fromId("MEApp__mainPanel1234");
         if (customStyle) {
@@ -8765,6 +8937,7 @@ function newDesign() {
     window.vk.pe.me_vkcom_api_feature_flags = 1;
     window.vk.pe.vkm_hide_forward_author = 1;
     window.vk.pe.vkm_theme_styles_settings = 1;
+	window.vk.pe.vkm_reactions || (window.vk.pe.vkm_reactions = 20);
     localStorage.setItem("isVKMReforgedDesign", true);
 
     window.MECommonContext &&
@@ -9052,6 +9225,8 @@ function OldDesign() {
 			e.store.featureFlags["vkm_reactions"] = 20;
 			e.store.featureFlags["me_reactions"] = 20;
             e.store.featureFlags["vkm_integration_media_viewer"] = false;
+			e.store.featureFlags["me_theme_styles_settings"] = true;
+			e.store.featureFlags["vkm_chat_list_collapse"] = true;
           } else {
             console.error("Feature flags object is not available");
           }

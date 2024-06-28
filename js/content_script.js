@@ -154,7 +154,7 @@ function createReloadButton() {
   );
   reloadButton.setAttribute(
     "onmouseover",
-    "showTooltip(this, { text: 'Перезагрузить функции VK Enhancer', black: true, shift: [4, 5] });"
+    "showTooltip(this, { text: 'Перезагрузить функции VK Tools', black: true, shift: [4, 5] });"
   );
   reloadButton.addEventListener("click", (event) => {
     reloadButton.classList.add("vkEnhancerRebootLoading");
