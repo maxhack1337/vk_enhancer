@@ -1,3 +1,6 @@
+div.vkenhancerPreLogo > div.vkuiInternalPanelHead__before.vkuiInternalPanelHeader__before > div > svg > path:nth-child(6) {
+	fill:#fff!important
+}
 .vkEnhancerHeaderRatioPseudo1,.vkEnhancerHeaderRatioPseudo2,.vkEnhancerHeaderRatioPseudo3 {
 	color: #fff;
 	line-height: 26px;
