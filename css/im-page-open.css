@@ -1,7 +1,9 @@
-.ConvoHeader__action.ConvoHeader__back
+.ConvoHeader__action.ConvoHeader__back,.CollapsibleContainer__widthControllerButton,.CollapsibleContainer__widthControllerArea,.ConvoList__folderDropDown
 {
 	display:none;
 }
+.CollapsibleContainer__widthControllerButton,.MEApp__convoPlaceholder,.CollapsibleContainer::after {display:none!important;}
+.CollapsibleContainer {width:550px!important;}
 .ConvoProfileSettings {
 	min-width: calc(100% - 319px - var(--aside_panel_width));
 }
