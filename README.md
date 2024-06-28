@@ -97,7 +97,7 @@
 </p>
 </details>
 <p align="center"><strong>Установить расширение</strong></br></br>
-<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.14/VK.Enhancer.zip">
+<a href="https://github.com/maxhack1337/vk_enhancer/releases/download/v3.14.1/VK.Enhancer.zip">
   <img src="https://vkenhancer.ru/install.png" width="202" height="54">
 </a></p>
 <div>
